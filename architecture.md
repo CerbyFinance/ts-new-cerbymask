@@ -24,6 +24,9 @@ All `.svg` icons should be stored in `icons/` folder.
 
 All other images except `.svg` should be stored in `assets/img/` folder.
 
+## api/
+Here all the logic of interaction between the client and the server is stored.
+
 ## components/
 
 We stick to atomic architecture.
