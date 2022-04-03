@@ -25,7 +25,8 @@
         "@components/*": ["components/*"],
         "@assets/*": ["assets/*"],
         "@api": ["api/index"],
-        "@types/*": ["types/index"],
+        "@types": ["types/index"],
+        "@types/*": ["types/*"],
         "@utils/*": ["utils/*"],
         "@views": ["views/*"]
       }

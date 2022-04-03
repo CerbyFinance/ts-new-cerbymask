@@ -1,11 +1,11 @@
-import { Network, Wallet } from "@crypto/types";
+import { Network } from "@crypto/types";
 import {
   RequestT,
   SignedTransactionT,
   StakeT,
   TransactionFieldsT,
   ValidatorT,
-} from "../types";
+} from "@types";
 import { XRD_RRI } from "@crypto/config";
 
 export function getCurrentXRDUSDValue(): Promise<any> {
