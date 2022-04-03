@@ -18,11 +18,21 @@
       "resolveJsonModule": true,
       "isolatedModules": true,
       "noEmit": true,
-      "jsx": "react"
+      "jsx": "react",
+      "baseUrl": "src",
+      "paths": {
+        "@crypto/*": ["crypto/*"],
+        "@components/*": ["components/*"],
+        "@assets/*": ["assets/*"],
+        "@api": ["api/index"],
+        "@types/*": ["types/index"],
+        "@utils/*": ["utils/*"],
+        "@views": ["views/*"]
+      }
     },
     "include": [
-      "src"
+      "src/**/*"
     ],
-    "exclude": ["radixdlt-javascript"]
+    "exclude": ["radixdlt-javascript"],
 }
   

@@ -3,7 +3,7 @@ import {
   WalletBalanceT,
   WalletStakeT,
   WalletTokensT,
-} from "../../classes/wallet";
+} from "@crypto/types";
 import {
   MnemomicT,
   KeystoreT,
@@ -14,26 +14,15 @@ import {
   Network as RadixNetwork,
   AccountT,
 } from "@radixdlt/application";
-import { Provider } from "../../providers/local";
-import { resolve } from "path";
+import { Provider } from "@crypto/types";
 import {
   getCurrentXRDUSDValue,
   getWalletBalance,
   getStakedPositions as getStakes,
   getAddressTokens,
-  setNetwork,
 } from "./background";
 import BigNumber from "bignumber.js";
-import { formatBigNumber, numberFormatUSA } from "./formatters";
-import { Network } from "../../classes/network";
-
-export const XRD_RRI = ["xrd_rr1qy5wfsfh", "xrd_tr1qyf0x76s"];
-
-export async function generateWalletWithKeyAndMnemonic() {
-  let wallet = new Wallet();
-  wallet.key = Wallet.newKey();
-  return wallet;
-}
+import { formatBigNumber } from "./formatters";
 
 export function saveWalletForProvider(
   wallet: Wallet,
@@ -44,44 +33,30 @@ export function saveWalletForProvider(
       await SigningKeychain.byEncryptingMnemonicAndSavingKeystore({
         mnemonic: wallet.key?.mnemonic as MnemomicT,
         password: wallet.password as string,
-        save: (keystore: KeystoreT): Promise<void> => {
-          return provider.saveWallet(keystore, wallet);
+        save: async (keystore: KeystoreT): Promise<void> => {
+          chrome.runtime.sendMessage({
+            title: "debug-log",
+            data: ["debugging saveWalletForProvider", keystore, wallet],
+          });
+          // return Promise.resolve(provider.walletProvider.saveWallet(keystore, wallet));
         },
       });
     if (walletResult.isErr()) {
-      console.log("Throwing error");
+      console.log("Throwing error", walletResult);
       reject();
     }
     walletResult.match(
       async (signingKeychain: SigningKeychainT) => {
-        const networkName = (await provider.getCurrentNetwork()).name;
+        const networkName = provider.network.selectedNetwork.name;
         const radixWallet = RadixWallet.create({
           signingKeychain: signingKeychain,
           network: networkName as RadixNetwork,
         });
         resolve(radixWallet);
       },
-      (error) => new Promise(() => reject())
+      async (error) => reject(error)
     );
   });
-}
-
-export function saveViewingAddressForProvider(
-  index: number,
-  provider: Provider
-) {
-  return provider.saveViewingAddress(index);
-}
-
-export function monitorAddressesForProvider(
-  addresses: AccountT[],
-  provider: Provider
-) {
-  return provider.monitorAddresses(addresses);
-}
-
-export function setBackgroundNetwork(network: Network) {
-  return setNetwork(network);
 }
 
 export function unlockWallet(
@@ -101,9 +76,7 @@ export function unlockWallet(
 
     walletResult.match(
       async (signingKeychain: SigningKeychainT) => {
-        const networkName = (
-          await provider.getCurrentNetwork()
-        ).name.toUpperCase();
+        const networkName = provider.network.selectedNetwork.name.toUpperCase();
         const radixWallet = RadixWallet.create({
           signingKeychain: signingKeychain,
           network: networkName as RadixNetwork,
@@ -114,18 +87,18 @@ export function unlockWallet(
         });
         resolve(radixWallet);
       },
-      (error) => new Promise(() => reject())
+      async (error) => reject(error)
     );
   });
 }
 
 export async function getXRDUSDBalances(radixPublicAddresses: AccountT[]) {
-  let xrdValue = await getCurrentXRDUSDValue();
+  const xrdValue = await getCurrentXRDUSDValue();
   return Promise.all(
     radixPublicAddresses.map(async (address) => {
-      let balance = await getWalletBalance(address?.address.toString());
+      const balance = await getWalletBalance(address?.address.toString());
 
-      let usdBalance = new BigNumber(balance.toString())
+      const usdBalance = new BigNumber(balance.toString())
         .multipliedBy(parseFloat(xrdValue.bid))
         .shiftedBy(-18)
         .toFixed(4);
@@ -141,26 +114,24 @@ export async function getXRDUSDBalances(radixPublicAddresses: AccountT[]) {
 export async function getTokenBalances(radixPublicAddresses: AccountT[]) {
   return Promise.all(
     radixPublicAddresses.map(async (account: AccountT) => {
-      let address = account.address.toString();
-      let response = await getAddressTokens(address);
-      let result = {
-        address: address,
-        tokens: response,
-      } as WalletTokensT;
-      return result;
+      const address = account.address.toString();
+      return {
+        address,
+        tokens: await getAddressTokens(address),
+      };
     })
   );
 }
 
 export async function getStakedPositions(radixPublicAddresses: AccountT[]) {
-  let xrdValue = await getCurrentXRDUSDValue();
+  const xrdValue = await getCurrentXRDUSDValue();
   return Promise.all(
     radixPublicAddresses.map(async (address) => {
-      let stakedValue = new BigNumber(
+      const stakedValue = new BigNumber(
         (await getStakes(address?.address.toString())).value
       );
-      let staked = "";
 
+      let staked = "";
       let usdBalance = "";
       if (stakedValue) {
         usdBalance = stakedValue
