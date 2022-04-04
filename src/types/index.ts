@@ -1,1 +1,1 @@
-export * from "./tx";
+export * as radix from "./radix";

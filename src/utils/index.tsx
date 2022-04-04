@@ -1,9 +1,4 @@
-import {
-  Wallet,
-  WalletBalanceT,
-  WalletStakeT,
-  WalletTokensT,
-} from "@crypto/types";
+import { Wallet, WalletBalanceT, WalletStakeT } from "@crypto/radix/types";
 import {
   MnemomicT,
   KeystoreT,
@@ -14,13 +9,8 @@ import {
   Network as RadixNetwork,
   AccountT,
 } from "@radixdlt/application";
-import { Provider } from "@crypto/types";
-import {
-  getCurrentXRDUSDValue,
-  getWalletBalance,
-  getStakedPositions as getStakes,
-  getAddressTokens,
-} from "./background";
+import { Provider } from "@crypto/radix/types";
+
 import BigNumber from "bignumber.js";
 import { formatBigNumber } from "./formatters";
 

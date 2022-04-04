@@ -10,7 +10,7 @@ export type TransactionFieldsT = Readonly<{
   to: string;
   amount: string;
   rri: string;
-  token: number; //index of token in users token list
+  token: number; // index of token in users token list
 }>;
 
 export type SignedTransactionT = Readonly<{

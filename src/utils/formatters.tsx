@@ -2,8 +2,8 @@ import { AmountT } from "@radixdlt/application";
 
 import BigNumber from "bignumber.js";
 
-import { Network } from "@crypto/types";
-import { NETWORKS_LIST } from "@crypto/config";
+import { Network } from "@crypto/radix/types";
+import { NETWORKS_LIST } from "@crypto/radix/config";
 
 BigNumber.set({
   ROUNDING_MODE: BigNumber.ROUND_HALF_UP,
