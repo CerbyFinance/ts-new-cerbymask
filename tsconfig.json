@@ -29,7 +29,8 @@
         "@types": ["types/index"],
         "@types/*": ["types/*"],
         "@utils/*": ["utils/*"],
-        "@views": ["views/*"]
+        "@views": ["views/*"],
+        "@chains/*": ["chains/*"]
       }
     },
     "include": [

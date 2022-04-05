@@ -1,8 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-import { NETWORKS_LIST } from "@crypto/radix/config";
-import { NetworkApi } from "@types/radix";
+import { NETWORKS_LIST, NetworkApi, Network } from "@chains/radix";
 
 import * as tokens from "./tokens";
 import * as account from "./account";
@@ -26,14 +25,12 @@ const stokenet = axios.create({
   },
 });
 
-export const useRadixApi = (defaultNetwork?: string) => {
-  const [network, setNetwork] = useState(
-    defaultNetwork || NETWORKS_LIST.mainnet.name
-  );
+export const useRadixApi = (network: Network) => {
+  const { name } = network;
 
   const networkApi: NetworkApi = {
-    name: network,
-    api: network === NETWORKS_LIST.mainnet.name ? mainnet : stokenet,
+    name,
+    api: name === NETWORKS_LIST.mainnet.name ? mainnet : stokenet,
   };
 
   const domains = Object.fromEntries(

@@ -2,10 +2,11 @@ import React, { useEffect } from "react";
 
 import { GlobalStyle } from "./globalStyle";
 
-import { useRadixApi } from "@api/radix";
+import { useRadixApi, useNetwork } from "@chains/radix";
 
 export const App = () => {
-  const radixApi = useRadixApi();
+  const [network, changeNetwork] = useNetwork();
+  const radixApi = useRadixApi(network);
 
   useEffect(() => {
     // test if the right network was chosen
