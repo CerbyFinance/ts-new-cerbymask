@@ -11,16 +11,16 @@ Global list of rules:
 
 `assets/` include style files, fonts, pictures, icons and everything related to media files.
 
-### assets/fonts/
+#### assets/fonts/
 
 Fonts should be separated by folders named with the font name.
 For example, if font is named `IBMPlexSans` there should be a folder named `IBMPlexSans/` which contains this font family.
 
-### assets/icons/
+#### assets/icons/
 
 All `.svg` icons should be stored in `icons/` folder.
 
-### assets/img/
+#### assets/img/
 
 All other images except `.svg` should be stored in `assets/img/` folder.
 
@@ -38,24 +38,24 @@ This folder will contain views assembled using atoms, molecules and organisms. V
 
 The logic of various networks is stored here. Each network has the following folders:
 
-### api/
+#### api/
 
 The logic of interaction with the server, network, external requests for various data is stored here. Index file in each network should export a hook which will be used by components.
 
-### crypto/
+#### crypto/
 
 All provider, network, etc. logic is stored in `crypto/` folder.
 
-### hooks/
+#### hooks/
 
 All hooks related to the network are stored here.
 
-### utils/
+#### utils/
 
 Utility functions and helpers related to the network are stored here.
 Note: If some function is used throughout the project or by several networks, it should be stored in global folder `utils/`.
 
-### types/
+#### types/
 
 Types or interfaces that are being used by the network in several folders should be stored here.
 
