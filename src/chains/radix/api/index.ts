@@ -1,4 +1,3 @@
-import { useState } from "react";
 import axios from "axios";
 
 import { NETWORKS_LIST, NetworkApi, Network } from "@chains/radix";
@@ -12,13 +11,14 @@ const commonHeaders = {
   "X-Radixdlt-Target-Gw-Api": "1.1.0",
   "Content-Type": "application/json",
 };
-const mainnet = axios.create({
+
+export const mainnet = axios.create({
   baseURL: NETWORKS_LIST.mainnet.url,
   headers: {
     ...commonHeaders,
   },
 });
-const stokenet = axios.create({
+export const stokenet = axios.create({
   baseURL: NETWORKS_LIST.stokenet.url,
   headers: {
     ...commonHeaders,
@@ -57,5 +57,3 @@ export const useRadixApi = (network: Network) => {
     ...domains,
   };
 };
-
-export { mainnet, stokenet };
