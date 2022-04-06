@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { NETWORKS_LIST } from "./config";
 import { UseNetworkProps, Network, NetworkProvider } from "./types";
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { NetworkApi } from "@types/radix";
+import { NetworkApi } from "@chains/radix";
 
 export const getValidators = async (network: NetworkApi) => {
   const { api, name } = network;

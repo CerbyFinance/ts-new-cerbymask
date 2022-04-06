@@ -1,10 +1,10 @@
+import React from "react";
 import {
   AccountT,
   KeystoreT,
   MnemomicT as MnemonicT,
   WalletT,
 } from "@radixdlt/application";
-import React from "react";
 
 export type Network = Readonly<{
   name: string;

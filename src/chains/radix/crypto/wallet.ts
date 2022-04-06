@@ -1,9 +1,8 @@
+import { useState } from "react";
 import { AccountT, WalletT } from "@radixdlt/application";
 import { KeystoreT } from "@radixdlt/crypto";
 
 import { Wallet, WalletProvider } from "./types";
-
-import { useState } from "react";
 import { generateKey } from "./key";
 
 const local = chrome.storage.local;

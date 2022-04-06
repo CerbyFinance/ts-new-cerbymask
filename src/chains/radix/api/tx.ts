@@ -1,4 +1,4 @@
-import { NetworkApi } from "@types/radix";
+import { NetworkApi } from "@chains/radix";
 
 export const buildTx = async (network: NetworkApi, options: any) => {
   const { api, name } = network;
