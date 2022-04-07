@@ -4,6 +4,8 @@ export const Reset = createGlobalStyle`
 * {
     box-sizing: border-box;
     letter-spacing: .02rem;
+    font-family: "Product Sans", sans-serif;
+    color: white;
 }
 
 html, body {

@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { GlobalStyle } from "./globalStyle";
 
 import { useRadixApi, useNetwork } from "@chains/radix";
+import { Dashboard } from "@views";
 
 export const App = () => {
   const [network, changeNetwork] = useNetwork();
@@ -19,7 +20,7 @@ export const App = () => {
   return (
     <>
       <GlobalStyle />
-      <div>test</div>
+      <Dashboard />
     </>
   );
 };
