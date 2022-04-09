@@ -1,4 +1,4 @@
-import { NetworkApi } from "@types/radix";
+import { NetworkApi } from "@chains/radix";
 
 export const getWalletFunds = async (network: NetworkApi, options: any) => {
   const { name, api } = network;

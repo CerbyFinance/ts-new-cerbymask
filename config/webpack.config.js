@@ -1,3 +1,4 @@
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
@@ -28,6 +29,12 @@ module.exports = {
     path: path.resolve(__dirname, "../dist"),
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+    }),
+    new webpack.ProvidePlugin({
+      process: "process/browser",
+    }),
     new Dotenv(),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "../public", "index.html"),
@@ -46,11 +53,24 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "../src/"),
-      "@api": path.resolve(__dirname, "../src/api/"),
-      "@crypto": path.resolve(__dirname, "../src/crypto/"),
       "@types": path.resolve(__dirname, "../src/types/"),
+      "@views": path.resolve(__dirname, "../src/views/"),
+      "@globalStyle": path.resolve(__dirname, "../src/globalStyle/"),
+      "@components": path.resolve(__dirname, "../src/components/"),
+      "@chains": path.resolve(__dirname, "../src/chains/"),
+      "@assets": path.resolve(__dirname, "../src/assets/"),
+      "@tokens": path.resolve(__dirname, "../src/tokens"),
     },
     extensions: [".js", ".jsx", ".ts", ".tsx"],
+    fallback: {
+      assert: require.resolve("assert"),
+      buffer: require.resolve("buffer"),
+      crypto: require.resolve("crypto-browserify"),
+      os: require.resolve("os-browserify/browser"),
+      path: require.resolve("path-browserify"),
+      stream: require.resolve("stream-browserify"),
+      fs: require.resolve("browserify-fs"),
+      process: require.resolve("process/browser"),
+    },
   },
 };
