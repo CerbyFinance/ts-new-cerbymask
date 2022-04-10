@@ -22,10 +22,20 @@ a {
     color: black;
 }
 
-input {
+input, textarea {
     font-size: 1rem;
     border: none;
     outline: none;
     background: none;
+    padding: 0;
+    margin: 0;
+}
+
+textarea {
+    resize: none;
+}
+
+input, textarea, label {
+    cursor: inherit;
 }
 `;
