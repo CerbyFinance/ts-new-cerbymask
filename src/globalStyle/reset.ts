@@ -4,6 +4,8 @@ export const Reset = createGlobalStyle`
 * {
     box-sizing: border-box;
     letter-spacing: .02rem;
+    font-family: "Product Sans", sans-serif;
+    color: white;
 }
 
 html, body {
@@ -20,10 +22,20 @@ a {
     color: black;
 }
 
-input {
+input, textarea {
     font-size: 1rem;
     border: none;
     outline: none;
     background: none;
+    padding: 0;
+    margin: 0;
+}
+
+textarea {
+    resize: none;
+}
+
+input, textarea, label {
+    cursor: inherit;
 }
 `;

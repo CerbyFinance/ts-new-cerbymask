@@ -27,8 +27,10 @@ All other images except `.svg` should be stored in `assets/img/` folder.
 ## components/
 
 We stick to atomic architecture.
-`components/` include **atoms**, **molecules** and **organisms**.
+`components/` include **atoms**, **molecules**, **organisms** and **template**.
 [More about atomic architecture](https://github.com/danilowoz/react-atomic-design)
+**template** folder stores all components that are needed for templating views (e.g. Layout, because it's global).
+Each subfolder exports all components that exists in this subfolder (for example, atoms) and also it exports all types in the separate file called `types.ts`. Export separation is mandatory.
 
 ## views/
 
@@ -77,3 +79,7 @@ Global styles are stored in this folder.
 `reset.ts` - remove default CSS styles
 `fonts.ts` - include fonts
 `index.tsx` - combine global styles and export `GlobalStyle` component
+
+## tokens.tsx
+
+Temporary mock file that exports token icons and its names.
