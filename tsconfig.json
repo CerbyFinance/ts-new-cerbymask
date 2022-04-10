@@ -18,7 +18,7 @@
       "resolveJsonModule": true,
       "isolatedModules": true,
       "noEmit": true,
-      "jsx": "react",
+      "jsx": "react-jsx",
       "baseUrl": "src",
       "paths": {
         "@crypto/*": ["crypto/*"],
@@ -28,9 +28,12 @@
         "@api/*": ["api/*"],
         "@types": ["types/index"],
         "@types/*": ["types/*"],
+        "@utils": ["utils/index"],
         "@utils/*": ["utils/*"],
-        "@views": ["views/*"],
-        "@chains/*": ["chains/*"]
+        "@views": ["views/index"],
+        "@chains/*": ["chains/*"],
+        "@globalStyle/*": ["globalStyle/*"],
+        "@tokens": ["tokens"]
       }
     },
     "include": [
