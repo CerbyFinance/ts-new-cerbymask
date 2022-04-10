@@ -2,42 +2,34 @@ import styled from "styled-components";
 
 import { COLORS } from "@globalStyle/colors";
 
-import WolfTransparent from "@assets/img/wolfTransparent.png";
-
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<{ coinImg: string }>`
   border-radius: 1.5rem;
   background-color: ${COLORS.blue};
-  background-image: url(${WolfTransparent});
+  background-image: url(${({ coinImg }) => coinImg});
   background-position: right;
   background-repeat: no-repeat;
   padding: 1.25rem;
   position: relative;
+  min-height: 12rem;
 `;
 
 export const Header = styled.header`
   display: flex;
   justify-content: space-between;
 `;
-export const HeaderActions = styled.div`
-  display: flex;
-  align-items: center;
-  position: relative;
-  top: -0.5rem;
-
-  div {
-    cursor: pointer;
-    &:not(:last-child) {
-      margin-right: 1.25rem;
-    }
-  }
-`;
 
 export const Balance = styled.div`
-  font-size: 2.25rem;
   margin-top: 0.625rem;
 
-  span {
-    color: rgba(255, 255, 255, 0.3);
+  div {
+    font-size: 2.25rem;
+    &:last-child {
+      font-size: 1rem;
+    }
+
+    span {
+      color: rgba(255, 255, 255, 0.3);
+    }
   }
 `;
 
