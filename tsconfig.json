@@ -28,6 +28,7 @@
         "@api/*": ["api/*"],
         "@types": ["types/index"],
         "@types/*": ["types/*"],
+        "@utils": ["utils/index"],
         "@utils/*": ["utils/*"],
         "@views": ["views/index"],
         "@chains/*": ["chains/*"],

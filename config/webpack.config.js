@@ -60,6 +60,7 @@ module.exports = {
       "@chains": path.resolve(__dirname, "../src/chains/"),
       "@assets": path.resolve(__dirname, "../src/assets/"),
       "@tokens": path.resolve(__dirname, "../src/tokens"),
+      "@utils": path.resolve(__dirname, "../src/utils/"),
     },
     extensions: [".js", ".jsx", ".ts", ".tsx"],
     fallback: {
