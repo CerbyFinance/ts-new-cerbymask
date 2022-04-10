@@ -7,7 +7,7 @@ import { COLORS } from "@globalStyle/colors";
 export const Label = styled.label`
   display: block;
   color: rgba(255, 255, 255, 0.6);
-  font-size: 0.675rem;
+  font-size: 0.825rem;
 `;
 export const ValueInput = styled.input<TextSC>`
   font-size: 0.875rem;
