@@ -46,10 +46,10 @@ export const Stake = (props: StakeProps) => {
       </S.Header>
       <S.Balance>
         <div>
-          <span>{ticker}</span> {amount}
+          <span>{ticker}</span> {amount.toLocaleString()}
         </div>
         <div>
-          <span>USD</span> {usdEquivalent}
+          <span>USD</span> {usdEquivalent.toLocaleString()}
         </div>
       </S.Balance>
       <S.Footer>

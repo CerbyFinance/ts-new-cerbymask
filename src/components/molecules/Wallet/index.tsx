@@ -64,7 +64,7 @@ export const Wallet = (props: WalletProps) => {
         )}
       </S.Header>
       <S.Balance>
-        <span>USD</span> {usdBalance}
+        <span>USD</span> {usdBalance.toLocaleString()}
       </S.Balance>
       {buttons && buttons.length > 0 && (
         <S.Footer>

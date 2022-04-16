@@ -39,7 +39,7 @@ export const Token = (props: TokenProps) => {
           {priceChange > 0 ? "+" : null}
           {priceChange}%
         </span>
-        ${currentPrice}
+        ${currentPrice.toLocaleString()}
       </S.TokenPrice>
     </S.Wrapper>
   );
