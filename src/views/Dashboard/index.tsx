@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { Token, WalletButton } from "@components/molecules/types";
 
@@ -9,8 +9,11 @@ import { TokensList } from "@components/organisms";
 
 import { ICONS } from "@globalStyle/icons";
 import WalletIcon from "@assets/svg/wallet.svg";
+import { log } from "@utils";
 
 export const Dashboard = () => {
+  const [tempBalance, setTempBalance] = useState<number | null>(null);
+
   const tokensMock: Token[] = [
     {
       key: "bitcoin",
@@ -28,7 +31,7 @@ export const Dashboard = () => {
 
   const walletMock = {
     address: "0x2C0D2C991EC23D21d982A8F62f7AbB69ce1fa9a1",
-    usdBalance: 2852.49,
+    usdBalance: tempBalance || 0,
   };
   const walletButtons: WalletButton[] = [
     {
@@ -47,6 +50,17 @@ export const Dashboard = () => {
       icon: <ICONS.ArrowUp />,
     },
   ];
+
+  useEffect(() => {
+    (async () => {
+      const xrdUsd = (await chrome.storage.local.get("xrdUsd")).xrdUsd;
+      const {
+        account_balances: { liquid_balances },
+      } = JSON.parse((await chrome.storage.local.get("balances")).balances);
+      log("\nDashboard");
+      setTempBalance((liquid_balances[0].value / 10 ** 18) * xrdUsd);
+    })();
+  });
 
   return (
     <Layout>
