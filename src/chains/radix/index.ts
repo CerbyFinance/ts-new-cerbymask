@@ -1,5 +1,3 @@
-export * from "./crypto";
-export * from "./api";
-export * from "./types";
-export * from "./hooks";
-export * from "./utils";
+import { createRadixApi } from "./api";
+
+export const connectRadixApi = createRadixApi();

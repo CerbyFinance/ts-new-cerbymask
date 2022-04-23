@@ -1,12 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
+import { useStore } from "effector-react";
+
+import { routesNames, useRouter } from "@router";
+import { RouteKey } from "@router/types";
+
+import { $password, setPassword } from "@chains/radix/store";
 
 import { Layout } from "@components/template";
-import { Logo, Input, Button, Title, Paragraph } from "@components/atoms";
+import { Input, Button, Title, Paragraph } from "@components/atoms";
 
 import * as S from "./style";
 
 export const SecureAccount = () => {
-  const [password, setPassword] = useState<string>("");
+  const password = useStore($password);
+  const router = useRouter();
+
   const footer = (
     <>
       <S.Title>Set a new password</S.Title>
@@ -17,12 +25,7 @@ export const SecureAccount = () => {
       />
       <Button
         style={{ marginTop: "1.5rem" }}
-        onClick={() =>
-          chrome.runtime.sendMessage({
-            title: "debug-log",
-            data: "click",
-          })
-        }
+        onClick={() => router.push(routesNames.CREATE_ACCOUNT as RouteKey)}
         disabled={!password}
       >
         Confirm

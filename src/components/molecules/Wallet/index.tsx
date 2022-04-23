@@ -69,7 +69,7 @@ export const Wallet = (props: WalletProps) => {
       {buttons && buttons.length > 0 && (
         <S.Footer>
           {buttons.map(({ name, icon, onClick }: WalletButton) => (
-            <S.FooterAction onClick={() => onClick(data)}>
+            <S.FooterAction key={name} onClick={() => onClick(data)}>
               {icon}
               {name}
             </S.FooterAction>

@@ -1,42 +1,37 @@
-import { NetworkApi } from "@chains/radix";
+import { AccountAddressT } from "@radixdlt/account";
+import { AccountBalancesEndpoint } from "@radixdlt/application/dist/api/open-api/_types";
 
-export const getWalletFunds = async (network: NetworkApi, options: any) => {
-  const { name, api } = network;
-  const { address } = options;
+import { Action } from "@chains/radix/types";
+import { log } from "@utils";
 
-  const params = {
-    network_identifier: {
-      network: name,
-    },
-    account_identifier: {
-      address,
-    },
-  };
-
-  try {
-    const response = await api.get("account/balances", { params });
-    chrome.runtime.sendMessage({
-      title: "debug-log",
-      data: ["getWalletFunds", response],
+export const fetchActiveAddress = (
+  action: Action
+): Promise<AccountAddressT> => {
+  const { api } = action;
+  return new Promise((resolve, reject) => {
+    api.activeAddress.subscribe((address: AccountAddressT) => {
+      // chrome.storage.local.set({ activeAddress: address });
+      // setState((state: any) => ({ ...state, activeAddress: address }));
+      log("Active address set");
+      resolve(address);
     });
-  } catch (e) {
-    throw new Error("getWalletFunds failed");
-  }
+  });
 };
-
-export const getStakePositions = async (network: NetworkApi, options: any) => {
-  const { api } = network;
-  const { address } = options;
-
-  try {
-    const response = await api.get("account.get_stake_positions", {
-      params: { address },
-    });
-    chrome.runtime.sendMessage({
-      title: "debug-log",
-      data: ["getStakePositions", response],
-    });
-  } catch (e) {
-    throw new Error("getStakePositions failed");
-  }
+export const fetchTokenBalances = (
+  action: Action<{ address: AccountAddressT }>
+): Promise<AccountBalancesEndpoint.DecodedResponse> => {
+  const {
+    api,
+    payload: { address },
+  } = action;
+  return new Promise((resolve, reject) => {
+    api.ledger
+      .tokenBalancesForAddress(address)
+      .subscribe((balances: AccountBalancesEndpoint.DecodedResponse) => {
+        // setState((state: any) => ({ ...state, balances }));
+        // chrome.storage.local.set({ balances: JSON.stringify(balances) });
+        log("Get token balances");
+        resolve(balances);
+      });
+  });
 };

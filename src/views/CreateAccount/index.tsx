@@ -1,35 +1,39 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useStore } from "effector-react";
+
+import { routesNames, useRouter } from "@router";
+import { RouteKey } from "@router/types";
+
+import { createWallet } from "@chains/radix/crypto";
+
+import { $password } from "@chains/radix/store";
+
+import { RadixApiContext } from "@chains/radix/api";
 
 import { Layout } from "@components/template";
 import { Button, Checkbox, Paragraph, Title, Warning } from "@components/atoms";
 
 import { theme as checkboxTheme } from "@components/atoms/Checkbox/theme";
 import * as S from "./style";
-
 import CopyIcon from "@assets/svg/copy.svg";
 
 export const CreateAccount = () => {
+  const router = useRouter();
+
+  const radixApi = useContext(RadixApiContext);
+
+  const password = useStore($password);
+
+  const [words, setWords] = useState<string[]>([]);
   const [memorized, setMemorized] = useState<boolean>(false);
 
   const handleMemorize = (checked: boolean) => {
     setMemorized(checked);
   };
-  const handleCreateWallet = () => {};
-
-  const words = [
-    "carry",
-    "domain",
-    "gloom",
-    "there",
-    "big",
-    "shuffle",
-    "net",
-    "pair",
-    "range",
-    "pill",
-    "warning",
-    "demand",
-  ];
+  const handleCreateWallet = async () => {
+    await radixApi.connect(password);
+    router.push(routesNames.DASHBOARD as RouteKey);
+  };
 
   const footer = (
     <>
@@ -51,14 +55,23 @@ export const CreateAccount = () => {
         I understand that if I lose my recovery phrase, I will not be able to
         access my funds.
       </Checkbox>
-      <Button onClick={handleCreateWallet}>Create my first wallet</Button>
+      <Button onClick={() => handleCreateWallet()}>
+        Create my first wallet
+      </Button>
     </>
   );
 
+  useEffect(() => {
+    (async () => {
+      const mnemonic = await createWallet(password);
+      setWords(mnemonic.toString().split(" "));
+    })();
+  }, []);
+
   return (
-    <Layout footer={footer}>
+    <Layout backButton footer={footer}>
       <Title>Create account</Title>
-      <Warning style={{ margin: "1.25rem 0" }}>
+      <Warning style={{ margin: "1rem 0" }}>
         Never share recovery phrase with anyone, store it securely!
       </Warning>
       <S.Phrases>

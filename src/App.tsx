@@ -1,73 +1,66 @@
 import React, { useEffect, useState } from "react";
+import { useStore } from "effector-react";
+import { Toaster } from "react-hot-toast";
+
+import { Radix as RadixApi } from "@radixdlt/application";
+
+import { connectRadixApi } from "@chains/radix";
+import { RadixApiContext } from "@chains/radix/api";
+import {
+  $activeAddress,
+  $network,
+  setActiveAddress,
+  setBalances,
+} from "@chains/radix/store";
+import { RadixApiType } from "@chains/radix/types";
+
+import { log } from "@utils";
+import { Router, RouterView } from "@router";
 
 import { GlobalStyle } from "./globalStyle";
 
-import {
-  useRadixApi,
-  useNetwork,
-  loadKeystore,
-  NETWORKS_LIST,
-} from "@chains/radix";
-import {
-  AddStake,
-  CreateAccount,
-  Dashboard,
-  ImportWallet,
-  MyWallets,
-  ReceiveCoins,
-  SecureAccount,
-  SendCoins,
-  SignIn,
-  SignUp,
-  Stakes,
-  Tokens,
-} from "@views";
-import { log, patchKeystore } from "@utils";
-
-const views = {
-  AddStake: () => <AddStake />,
-  CreateAccount: () => <CreateAccount />,
-  Dashboard: () => <Dashboard />,
-  ImportWallet: () => <ImportWallet />,
-  MyWallets: () => <MyWallets />,
-  ReceiveCoins: () => <ReceiveCoins />,
-  SecureAccount: () => <SecureAccount />,
-  SendCoins: () => <SendCoins />,
-  SignIn: () => <SignIn />,
-  SignUp: () => <SignUp />,
-  Stakes: () => <Stakes />,
-  Tokens: () => <Tokens />,
-};
-
 export const App = () => {
-  const [view, setView] = useState<keyof typeof views>("AddStake");
-  const [network, changeNetwork] = useNetwork();
-  const api = useRadixApi({
-    url: NETWORKS_LIST.stokenet.url,
-    password: "qwerty",
-  });
+  const network = useStore($network);
+  const activeAddress = useStore($activeAddress);
+  const [isRadixApiConnected, setRadixApiConnected] = useState<boolean>(false);
+  const [radixApi, setRadixApi] = useState<RadixApiType>(RadixApi.create());
+
+  const connect = async (password: string) => {
+    try {
+      const api = await connectRadixApi({
+        url: network.url,
+        password,
+      });
+      setRadixApi(api);
+      setRadixApiConnected(true);
+
+      setActiveAddress({ api });
+    } catch {}
+  };
 
   useEffect(() => {
-    log(api);
-  }, [api]);
+    if (activeAddress) {
+      setBalances({ api: radixApi, payload: { address: activeAddress } });
+    }
+  }, [activeAddress]);
 
+  log(`isApiConnected = ${isRadixApiConnected}`);
+
+  // Auth state
+  const authenticated = isRadixApiConnected;
   return (
-    <>
+    <RadixApiContext.Provider
+      value={{
+        api: radixApi,
+        connect,
+        connected: isRadixApiConnected,
+      }}
+    >
+      <Toaster />
       <GlobalStyle />
-      {views[view]()}
-
-      {/* for test purposes */}
-      <select
-        value={view}
-        onChange={(e) => setView(e.target.value as keyof typeof views)}
-        style={{ color: "black" }}
-      >
-        {Object.keys(views).map((view) => (
-          <option key={view} value={view}>
-            {view}
-          </option>
-        ))}
-      </select>
-    </>
+      <Router>
+        <RouterView authenticated={authenticated} />
+      </Router>
+    </RadixApiContext.Provider>
   );
 };

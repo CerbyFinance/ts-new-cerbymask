@@ -7,3 +7,9 @@ export interface NetworkApi {
   api: AxiosInstance;
   name: string;
 }
+
+export interface Network {
+  name: string;
+  url: string;
+  xrd_rri: string;
+}
