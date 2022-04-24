@@ -15,6 +15,7 @@ import { log } from "@utils";
 
 export * from "./account";
 export * from "./token";
+export * from "./tx";
 
 const { byLoadingAndDecryptingKeystore } = SigningKeychain;
 
