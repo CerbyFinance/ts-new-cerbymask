@@ -21,7 +21,7 @@ export const SignIn = () => {
   const signIn = async () => {
     await radixApi.connect(password);
     if (radixApi.connected) {
-      router.redirect(routesNames.DASHBOARD as RouteKey);
+      router.redirect(routesNames.SEND_COINS as RouteKey);
     }
   };
 

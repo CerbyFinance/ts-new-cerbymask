@@ -1,14 +1,10 @@
 import React from "react";
 
-import { Token } from "@components/molecules/types";
+import { TokenWithIcon } from "@chains/radix/types";
+
+import { TokensListProps } from "./types";
 
 import * as S from "./style";
-
-interface TokensListProps {
-  tokens: Token[];
-  header: string | React.ReactNode;
-  style?: React.CSSProperties;
-}
 
 export const TokensList = (props: TokensListProps) => {
   const { tokens, header, style } = props;
@@ -20,8 +16,8 @@ export const TokensList = (props: TokensListProps) => {
       ) : (
         header
       )}
-      {tokens.map((token: Token) => (
-        <S.Token data={token} key={token.key} />
+      {tokens.map((token: TokenWithIcon) => (
+        <S.Token data={token} key={token.rri} />
       ))}
     </div>
   );

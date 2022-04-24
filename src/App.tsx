@@ -10,7 +10,7 @@ import {
   $activeAddress,
   $network,
   setActiveAddress,
-  setBalances,
+  setUserTokens,
 } from "@chains/radix/store";
 import { RadixApiType } from "@chains/radix/types";
 
@@ -40,11 +40,9 @@ export const App = () => {
 
   useEffect(() => {
     if (activeAddress) {
-      setBalances({ api: radixApi, payload: { address: activeAddress } });
+      setUserTokens({ api: radixApi, payload: { address: activeAddress } });
     }
   }, [activeAddress]);
-
-  log(`isApiConnected = ${isRadixApiConnected}`);
 
   // Auth state
   const authenticated = isRadixApiConnected;

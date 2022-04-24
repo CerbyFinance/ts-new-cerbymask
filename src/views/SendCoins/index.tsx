@@ -1,9 +1,43 @@
 import React, { useState } from "react";
+import { useStore } from "effector-react";
+import ReactSelect, { StylesConfig } from "react-select";
+
+import { $userTokens } from "@chains/radix/store";
 
 import { Layout } from "@components/template";
 import { Button, Input, Title } from "@components/atoms";
 
+import { COLORS } from "@globalStyle/colors";
+
+const selectStyles: StylesConfig = {
+  menu: (provided, state) => ({
+    ...provided,
+    backgroundColor: COLORS.background,
+    border: "2px solid rgba(255, 255, 255, 0.1)",
+    padding: "0.5rem 0.875rem",
+    borderRadius: "0.75rem",
+  }),
+  container: (provided, state) => ({
+    ...provided,
+    borderRadius: ".75rem",
+  }),
+  control: (provided, state) => ({
+    ...provided,
+    backgroundColor: COLORS.background,
+  }),
+  indicatorsContainer: (provided, state) => ({
+    ...provided,
+    color: "rgba(255, 255, 255, 0.1)",
+  }),
+  indicatorSeparator: (provided, state) => ({
+    ...provided,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+  }),
+};
+
 export const SendCoins = () => {
+  const userTokens = useStore($userTokens);
+
   const [formData, setFormData] = useState({
     amount: "0",
   });
@@ -13,8 +47,9 @@ export const SendCoins = () => {
   };
 
   return (
-    <Layout>
+    <Layout backButton>
       <Title>Send coins</Title>
+      <ReactSelect options={[]} styles={selectStyles} />
       <Input
         label="$3.01"
         value={`${formData.amount} ETH`}

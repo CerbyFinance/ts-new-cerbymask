@@ -47,7 +47,11 @@ export const Router = ({ children }: { children: React.ReactNode }) => {
         back: () => {
           if (history.length > 0) {
             const newHistory = history.slice(0, history.length - 1);
-            setRoute(newHistory[history.length - 1]);
+            setRoute(
+              newHistory.length > 0
+                ? newHistory[history.length - 1]
+                : (routesNames.DASHBOARD as RouteKey)
+            );
             setHistory(newHistory);
           }
         },
@@ -78,6 +82,5 @@ export const RouterView = ({
     }
   }, [current, authenticated]);
 
-  log(`Current route ${current}, authenticated = ${authenticated}`);
   return current && views[current] ? views[current]() : <div>Loading...</div>;
 };

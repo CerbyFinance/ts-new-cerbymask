@@ -26,3 +26,12 @@ export const TokenPrice = styled.div`
     display: block;
   }
 `;
+
+export const TokenIcon = styled.div`
+  margin-right: 0.625rem;
+
+  & > img {
+    width: 2rem;
+    height: 2rem;
+  }
+`;

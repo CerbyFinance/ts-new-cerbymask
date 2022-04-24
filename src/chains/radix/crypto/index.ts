@@ -6,6 +6,7 @@ import { log } from "@utils";
 import { loadKeystore } from "@chains/radix/utils";
 
 export * from "./config";
+export * from "./tokenIcons";
 
 const {
   byEncryptingMnemonicAndSavingKeystore,
@@ -19,7 +20,6 @@ export const createWallet = async (password: string) => {
     password,
     save: (keystore) => chrome.storage.local.set({ keystore }),
   });
-  log("New wallet was created");
   return mnemonic;
 };
 export const retrieveWallet = async (password: string) => {
@@ -27,6 +27,5 @@ export const retrieveWallet = async (password: string) => {
     password,
     load: loadKeystore,
   });
-  log("Wallet was retrieved");
   return wallet;
 };
