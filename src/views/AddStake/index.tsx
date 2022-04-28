@@ -4,17 +4,24 @@ import { Layout } from "@components/template";
 import { Button, Input, Title } from "@components/atoms";
 
 import * as S from "./style";
+import { useStore } from "effector-react";
+import { $activeAddress } from "@chains/radix/store";
+import { $validators } from "@chains/radix/store/stakes";
+import { log } from "@utils";
 
 export const AddStake = () => {
+  const activeAddress = useStore($activeAddress);
+  const validators = useStore($validators);
+  log(validators);
+
   const [wasProceeded, setProceeded] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
   const [formData, setFormData] = useState({
-    account:
-      "tdx1qsp352e5zhh9qlpm2xvvswzx85mq9al54z4sa2epp8jsnswlggnd4pgx6padw",
-    validator: "",
+    account: activeAddress.toString(),
+    validator: validators.length > 0 ? validators[0].address.toString() : "",
     amount: "",
   });
-  const validation = formData.account && formData.validator && formData.amount;
+  const validation = formData.amount;
 
   const handleProceed = () => {
     if (validation) {
@@ -61,6 +68,8 @@ export const AddStake = () => {
         label="Validator"
         value={formData.validator}
         onChange={(v) => handleFieldChange("validator", v)}
+        disabled
+        useTextarea
       />
       <Input
         label="Amount"

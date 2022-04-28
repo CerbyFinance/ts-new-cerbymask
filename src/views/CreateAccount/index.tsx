@@ -1,14 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useStore } from "effector-react";
 
-import { routesNames, useRouter } from "@router";
-import { RouteKey } from "@router/types";
+import { afterAuth } from "@utils";
+
+import { useRouter } from "@router";
 
 import { createWallet } from "@chains/radix/crypto";
-
-import { $password } from "@chains/radix/store";
-
-import { RadixApiContext } from "@chains/radix/api";
+import { $network, $password } from "@chains/radix/store";
 
 import { Layout } from "@components/template";
 import { Button, Checkbox, Paragraph, Title, Warning } from "@components/atoms";
@@ -20,8 +18,7 @@ import CopyIcon from "@assets/svg/copy.svg";
 export const CreateAccount = () => {
   const router = useRouter();
 
-  const radixApi = useContext(RadixApiContext);
-
+  const network = useStore($network);
   const password = useStore($password);
 
   const [words, setWords] = useState<string[]>([]);
@@ -29,10 +26,6 @@ export const CreateAccount = () => {
 
   const handleMemorize = (checked: boolean) => {
     setMemorized(checked);
-  };
-  const handleCreateWallet = async () => {
-    await radixApi.connect(password);
-    router.push(routesNames.DASHBOARD as RouteKey);
   };
 
   const footer = (
@@ -55,7 +48,7 @@ export const CreateAccount = () => {
         I understand that if I lose my recovery phrase, I will not be able to
         access my funds.
       </Checkbox>
-      <Button onClick={() => handleCreateWallet()}>
+      <Button onClick={() => afterAuth({ password, url: network.url }, router)}>
         Create my first wallet
       </Button>
     </>

@@ -1,40 +1,56 @@
-import { ReplaySubject } from "rxjs";
-import { Action } from "@chains/radix/types";
+import { interval, ReplaySubject } from "rxjs";
+import { AccountAddress } from "@radixdlt/account";
+import { Amount, ManualUserConfirmTX } from "@radixdlt/application";
 import BigNumber from "bignumber.js";
+
 import { log } from "@utils";
-import { AccountAddress, ResourceIdentifier } from "@radixdlt/account";
 
-export const sendCoins = (action: Action): Promise<void> => {
-  const { api, payload } = action;
+import { radixApi } from ".";
 
-  const { to, amount, rri } = payload;
+const userConfirmation = new ReplaySubject<ManualUserConfirmTX>();
+userConfirmation.subscribe((txToConfirm) => {
+  log("txToConfirm");
+  log(txToConfirm);
+  txToConfirm.confirm();
+});
+
+// onSubmit callback to redirect user on Dashboard when send operation was handled
+export const sendCoins = (payload: any): Promise<void> => {
+  const { to, amount, rri, onSubmit } = payload;
 
   return new Promise((resolve, reject) => {
-    const event = api.transferTokens({
-      transferInput: {
-        to_account: AccountAddress.fromUnsafe(to).unwrapOr(to),
-        amount: new BigNumber(amount).multipliedBy(10 ** 18).toString(),
-        tokenIdentifier: ResourceIdentifier.fromUnsafe(rri).unwrapOr(rri),
-      },
-      userConfirmation: "skip",
+    const recipientResult = AccountAddress.fromUnsafe(to);
+    if (recipientResult.isErr()) {
+      return reject("Invalid address");
+    }
+
+    const amountResult = Amount.fromUnsafe(
+      new BigNumber(+amount).shiftedBy(18).toFixed()
+    );
+    if (amountResult.isErr()) {
+      return reject("Amount is wrong");
+    }
+
+    const transferInput = {
+      to_account: recipientResult.value,
+      amount: amountResult.value,
+      tokenIdentifier: rri,
+    };
+    log("transferInput");
+    log(transferInput);
+    const { events, completion } = radixApi.transferTokens({
+      transferInput,
+      userConfirmation,
+      pollTXStatusTrigger: interval(1000),
     });
-    event.completion.subscribe((v) => {
-      log("completion");
-      log(v);
+    onSubmit();
+    events.subscribe((txState) => {
+      log("txState");
+      log(txState);
     });
-    event.events.subscribe({
-      error: (e) => {
-        log("error");
-        log(e);
-      },
-      next: (e) => {
-        log("next");
-        log(e);
-      },
-      complete: () => {
-        log("complete");
-      },
+    completion.subscribe(() => {
+      log("tx completed");
+      resolve();
     });
-    resolve();
   });
 };

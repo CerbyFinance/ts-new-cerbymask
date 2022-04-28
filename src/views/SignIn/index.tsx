@@ -1,11 +1,12 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
+import { useStore } from "effector-react";
 
-import { log } from "@utils";
+import { afterAuth } from "@utils";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { RadixApiContext } from "@chains/radix/api";
+import { $network } from "@chains/radix/store";
 
 import { Layout } from "@components/template";
 import { Logo, Input, Button } from "@components/atoms";
@@ -13,17 +14,10 @@ import { Logo, Input, Button } from "@components/atoms";
 import * as S from "./style";
 
 export const SignIn = () => {
+  const network = useStore($network);
   const router = useRouter();
-  const radixApi = useContext(RadixApiContext);
 
   const [password, setPassword] = useState<string>("");
-
-  const signIn = async () => {
-    await radixApi.connect(password);
-    if (radixApi.connected) {
-      router.redirect(routesNames.SEND_COINS as RouteKey);
-    }
-  };
 
   const footer = (
     <>
@@ -35,7 +29,7 @@ export const SignIn = () => {
       />
       <Button
         style={{ marginTop: "1.5rem" }}
-        onClick={() => signIn()}
+        onClick={() => afterAuth({ password, url: network.url }, router)}
         disabled={!password}
       >
         Sign in to your account

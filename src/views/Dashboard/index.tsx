@@ -38,7 +38,9 @@ export const Dashboard = () => {
   const walletButtons: WalletButton[] = [
     {
       name: "Stake",
-      onClick: () => {},
+      onClick: () => {
+        router.push(routesNames.STAKES as RouteKey);
+      },
       icon: <ICONS.Stake />,
     },
     {

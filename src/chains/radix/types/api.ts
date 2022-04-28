@@ -1,10 +1,5 @@
 import { Radix } from "@radixdlt/application";
 
-export type Action<T = any> = {
-  api: RadixApiType;
-  payload?: T;
-};
-
 export type RadixApiType = ReturnType<typeof Radix.create>;
 
 export interface RadixApiOpts {

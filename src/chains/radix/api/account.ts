@@ -1,30 +1,24 @@
 import { AccountAddressT } from "@radixdlt/account";
 import { AccountBalancesEndpoint } from "@radixdlt/application/dist/api/open-api/_types";
 
-import { Action } from "@chains/radix/types";
+import { radixApi } from ".";
 
-export const fetchActiveAddress = (
-  action: Action
-): Promise<AccountAddressT> => {
-  const { api } = action;
+export const fetchActiveAddress = (): Promise<AccountAddressT> => {
   return new Promise((resolve, reject) => {
-    api.activeAddress.subscribe((address: AccountAddressT) => {
+    radixApi.activeAddress.subscribe((address: AccountAddressT) => {
       resolve(address);
     });
   });
 };
 
 // TypeScript TODO - optional generic
-export const fetchTokenBalances = (
-  action: Action<{ address: AccountAddressT }>
-): Promise<AccountBalancesEndpoint.DecodedResponse> => {
-  const {
-    api,
-    payload: { address },
-  } = action;
+export const fetchTokenBalances = (payload: {
+  activeAddress: AccountAddressT;
+}): Promise<AccountBalancesEndpoint.DecodedResponse> => {
+  const { activeAddress } = payload;
   return new Promise((resolve, reject) => {
-    api.ledger
-      .tokenBalancesForAddress(address)
+    radixApi.ledger
+      .tokenBalancesForAddress(activeAddress)
       .subscribe((balances: AccountBalancesEndpoint.DecodedResponse) => {
         resolve(balances);
       });

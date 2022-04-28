@@ -3,7 +3,7 @@ import { forward } from "effector";
 import { AccountAddressT } from "@radixdlt/account";
 
 import { buildTokenData } from "@chains/radix/utils";
-import { Action, BalanceToken, Token } from "@chains/radix/types";
+import { BalanceToken, Token } from "@chains/radix/types";
 import {
   fetchPairs,
   fetchActiveAddress,
@@ -12,6 +12,11 @@ import {
 
 import { radix } from "./domain";
 import { log } from "@utils";
+
+export const $authenticated = radix.createStore<boolean>(false);
+export const authenticate = radix.createEvent<boolean>();
+
+$authenticated.on(authenticate, (_, auth) => auth);
 
 // Temporary password (for wallet creation)
 export const $password = radix.createStore<string>("");
@@ -22,11 +27,9 @@ $password.on(setPassword, (_, password) => password);
 export const $activeAddress = radix.createStore<AccountAddressT | "">("", {
   name: "$radixActiveAddress",
 });
-export const setActiveAddress = radix.createEvent<Action>(
-  "setRadixActiveAddress"
-);
-const setActiveAddressFx = radix.createEffect(async (action: Action) => {
-  const address = await fetchActiveAddress(action);
+export const setActiveAddress = radix.createEvent("setRadixActiveAddress");
+const setActiveAddressFx = radix.createEffect(async () => {
+  const address = await fetchActiveAddress();
   return address;
 });
 
@@ -41,11 +44,12 @@ forward({
 export const $userTokens = radix.createStore<Token[] | null>(null, {
   name: "$radixUserTokens",
 });
-export const setUserTokens =
-  radix.createEvent<Action<{ address: AccountAddressT }>>("setRadixUserTokens");
+export const setUserTokens = radix.createEvent<{
+  activeAddress: AccountAddressT;
+}>("setRadixUserTokens");
 const setUserTokensFx = radix.createEffect(
-  async (action: Action<{ address: AccountAddressT }>) => {
-    const balances = await fetchTokenBalances(action);
+  async (payload: { activeAddress: AccountAddressT }) => {
+    const balances = await fetchTokenBalances(payload);
     const mappedBalances: BalanceToken[] =
       balances.account_balances.liquid_balances.map((balance) => {
         const {

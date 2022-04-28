@@ -1,38 +1,44 @@
 import React, { useContext, useState } from "react";
 import { useStore } from "effector-react";
-import ReactSelect, {
-  ControlProps,
-  OptionProps,
-  StylesConfig,
-} from "react-select";
+import ReactSelect, { OptionProps, StylesConfig } from "react-select";
+import toast from "react-hot-toast";
+import { AccountAddressT } from "@radixdlt/account";
+
+import { log } from "@utils";
+
+import { routesNames, useRouter } from "@router";
+import { RouteKey } from "@router/types";
 
 import { convertToMainUnit } from "@chains/radix/utils";
 import { Token } from "@chains/radix/types";
-import { $userTokens } from "@chains/radix/store";
+import {
+  $activeAddress,
+  $userTokens,
+  setUserTokens,
+} from "@chains/radix/store";
 import { TOKEN_ICONS } from "@chains/radix/crypto";
+import { sendCoins } from "@chains/radix/api";
 
 import { Layout } from "@components/template";
 import { Button, Input, Title } from "@components/atoms";
 
 import * as S from "./style";
 import { COLORS } from "@globalStyle/colors";
-import { log } from "@utils";
-import { RadixApiContext, sendCoins } from "@chains/radix/api";
 
 const selectStyles: StylesConfig = {
-  menu: (provided, state) => ({
+  menu: (provided) => ({
     ...provided,
     backgroundColor: COLORS.background,
     border: "2px solid rgba(255, 255, 255, 0.1)",
     padding: "0.5rem 0.875rem",
     borderRadius: "0.75rem",
   }),
-  container: (provided, state) => ({
+  container: (provided) => ({
     ...provided,
     borderRadius: ".75rem",
     margin: ".625rem 0",
   }),
-  control: (provided, state) => ({
+  control: (provided) => ({
     ...provided,
     backgroundColor: COLORS.background,
     padding: "0 .175rem",
@@ -41,11 +47,11 @@ const selectStyles: StylesConfig = {
     borderRadius: "0.75rem",
     fontSize: ".875rem",
   }),
-  dropdownIndicator: (provided, state) => ({
+  dropdownIndicator: (provided) => ({
     ...provided,
     color: "rgba(255, 255, 255, 0.1)",
   }),
-  indicatorSeparator: (provided, state) => ({
+  indicatorSeparator: (provided) => ({
     ...provided,
     backgroundColor: "rgba(255, 255, 255, 0.1)",
   }),
@@ -59,7 +65,7 @@ const Option: React.FC<OptionProps> = (props) => {
   return (
     <S.CoinOption ref={innerRef} {...innerProps}>
       <S.CoinBalance>
-        ${usdBalance}
+        ${usdBalance.toFixed(2)}
         <strong>
           {convertToMainUnit(value)} {ticker}
         </strong>
@@ -79,13 +85,14 @@ const formatOptionLabel = (data: any) => {
 };
 
 export const SendCoins = () => {
-  const radixApi = useContext(RadixApiContext);
+  const activeAddress = useStore($activeAddress);
   const userTokens = useStore($userTokens);
+  const router = useRouter();
 
   const [selectedToken, setSelectedToken] = useState<Token>();
   const [formData, setFormData] = useState({
     amount: "0",
-    token: "",
+    rri: "",
     to: "",
   });
 
@@ -94,7 +101,19 @@ export const SendCoins = () => {
   };
   const handleSendCoins = async () => {
     log(formData);
-    await sendCoins({ api: radixApi.api, payload: formData });
+    await toast.promise(
+      sendCoins({
+        ...formData,
+        onSubmit: () => router.redirect(routesNames.DASHBOARD as RouteKey),
+      }),
+      {
+        loading: "Transaction is in progress...",
+        success: "Transaction was submitted!",
+        error: "Transaction error!",
+      }
+    );
+
+    setUserTokens({ activeAddress: activeAddress as AccountAddressT });
   };
 
   const { amount, to } = formData;
@@ -109,7 +128,7 @@ export const SendCoins = () => {
         isSearchable={false}
         onChange={(token: any) => {
           setSelectedToken(token);
-          handleFieldChange("token", (token as Token).rri);
+          handleFieldChange("rri", (token as Token).rri);
         }}
       />
       {selectedToken && (
