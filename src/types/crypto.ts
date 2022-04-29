@@ -15,4 +15,5 @@ export interface Stake {
   coinImg?: string;
   validator: string;
   rri: string;
+  isPending?: boolean;
 }

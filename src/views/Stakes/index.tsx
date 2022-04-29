@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useStore } from "effector-react";
 import toast from "react-hot-toast";
 
-import { AccountAddressT, ValidatorAddress } from "@radixdlt/account";
+import { AccountAddressT } from "@radixdlt/account";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
@@ -28,8 +28,6 @@ import { Title } from "@components/atoms";
 
 import * as S from "./style";
 import PlusIcon from "@assets/svg/plus.svg";
-import { Amount } from "@radixdlt/application";
-import BigNumber from "bignumber.js";
 
 export const Stakes = () => {
   const router = useRouter();
@@ -74,7 +72,9 @@ export const Stakes = () => {
 
   const xrdToken = userTokens?.find((token) => token.ticker === "XRD");
   const userStakes = formatXrdStakes(
-    stakes.concat(pendingStakes),
+    stakes.concat(
+      pendingStakes.map((stake) => ({ ...stake, isPending: true }))
+    ),
     activeAddress.toString(),
     xrdToken?.price || 0,
     network

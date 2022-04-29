@@ -34,7 +34,7 @@ export const setStorage = async (key: string, value: any) => {
 export const convertToMainUnit = (balance: UInt256) =>
   new BigNumber(balance.toString())
     .dividedBy(10 ** 18)
-    .toFixed(2)
+    .toFixed()
     .toString();
 
 export const convertToUsd = (balance: UInt256, price: number) => {
@@ -65,16 +65,18 @@ export const afterAuth = async (
 };
 
 export const formatXrdStakes = (
-  positions: StakePosition[],
+  positions: (StakePosition & { isPending?: boolean })[],
   address: string,
   price: number,
   network: Network
-): Stake[] =>
-  positions.map(({ validator, amount }) => ({
+): Stake[] => {
+  return positions.map(({ validator, amount, isPending }) => ({
     ticker: "XRD",
     rri: network.xrd_rri,
     address,
     usdEquivalent: convertToUsd(amount, price),
     amount: convertToMainUnit(amount),
     validator: validator.toString(),
+    isPending,
   }));
+};

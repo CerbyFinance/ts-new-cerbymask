@@ -15,7 +15,7 @@ const BADGE_COPY_TIMEOUT_DURATION = 2500;
 // Stake was built from Wallet
 export const Stake = (props: StakeProps) => {
   const { style, className, data, onUnstake } = props;
-  const { ticker, address, amount, usdEquivalent } = data;
+  const { ticker, address, amount, usdEquivalent, isPending } = data;
 
   const [badgeTimeout, setBadgeTimeout] = useState<NodeJS.Timeout>();
   const [badgeState, setBadgeState] = useState<string>("");
@@ -49,9 +49,12 @@ export const Stake = (props: StakeProps) => {
         </div>
       </S.Balance>
       <S.Footer>
-        <S.FooterAction onClick={() => onUnstake(data)}>
-          <ICONS.ArrowDown /> Unstake
-        </S.FooterAction>
+        {isPending && <div>Pending stake</div>}
+        {!isPending && (
+          <S.FooterAction onClick={() => onUnstake(data)}>
+            <ICONS.ArrowDown /> Unstake
+          </S.FooterAction>
+        )}
       </S.Footer>
     </S.Wrapper>
   );
