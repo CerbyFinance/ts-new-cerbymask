@@ -4,7 +4,6 @@ import { TextProps } from "./types";
 
 import * as S from "./style";
 
-// TODO: jsdoc
 export const Text = (props: TextProps) => {
   const {
     onChange,

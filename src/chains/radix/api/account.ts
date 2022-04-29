@@ -11,7 +11,6 @@ export const fetchActiveAddress = (): Promise<AccountAddressT> => {
   });
 };
 
-// TypeScript TODO - optional generic
 export const fetchTokenBalances = (payload: {
   activeAddress: AccountAddressT;
 }): Promise<AccountBalancesEndpoint.DecodedResponse> => {

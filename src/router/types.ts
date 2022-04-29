@@ -1,4 +1,3 @@
-// TODO:
 import {
   protectedRoutesNames,
   publicRoutesNames,
@@ -15,5 +14,3 @@ export interface RouterContextValue {
   back: () => void;
   redirect: (route: RouteKey) => void;
 }
-
-// Я ЛЮБЛЮ МАРФУ!
