@@ -7,8 +7,7 @@ chrome.runtime.onInstalled.addListener(function () {
 });
 
 chrome.runtime.onMessage.addListener((request) => {
-  if (request.title == "debug-log") {
+  if (request.title === "debug-log") {
     console.log("[DEBUG]", request.data);
   }
-  return true;
 });
