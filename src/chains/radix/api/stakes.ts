@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { interval, mergeMap } from "rxjs";
 
 import { AccountAddressT, ValidatorAddress } from "@radixdlt/account";
-import { Amount, StakePosition, Validator } from "@radixdlt/application";
+import { Amount, Validator } from "@radixdlt/application";
 
 import { Stakes } from "@chains/radix/types";
 

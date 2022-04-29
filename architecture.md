@@ -87,7 +87,3 @@ Global styles are stored in this folder.
 `reset.ts` - remove default CSS styles
 `fonts.ts` - include fonts
 `index.tsx` - combine global styles and export `GlobalStyle` component
-
-## tokens.tsx
-
-Temporary mock file that exports token icons and its names.

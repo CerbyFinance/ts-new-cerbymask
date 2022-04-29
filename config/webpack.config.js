@@ -59,7 +59,6 @@ module.exports = {
       "@components": path.resolve(__dirname, "../src/components/"),
       "@chains": path.resolve(__dirname, "../src/chains/"),
       "@assets": path.resolve(__dirname, "../src/assets/"),
-      "@tokens": path.resolve(__dirname, "../src/tokens"),
       "@utils": path.resolve(__dirname, "../src/utils/"),
       "@router": path.resolve(__dirname, "../src/router/"),
       "@store": path.resolve(__dirname, "../src/store/"),

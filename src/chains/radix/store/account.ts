@@ -11,7 +11,6 @@ import {
 } from "@chains/radix/api";
 
 import { radix } from "./domain";
-import { log } from "@utils";
 
 export const $authenticated = radix.createStore<boolean>(false);
 export const authenticate = radix.createEvent<boolean>();

@@ -1,8 +1,6 @@
 import { Mnemonic } from "@radixdlt/application";
 import { SigningKeychain } from "@radixdlt/account";
 
-import { log } from "@utils";
-
 import { loadKeystore } from "@chains/radix/utils";
 
 export * from "./config";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { convertToMainUnit, sliceAddress } from "@chains/radix/utils";
+import { sliceAddress } from "@chains/radix/utils";
 
 import { StakeProps } from "./types";
 

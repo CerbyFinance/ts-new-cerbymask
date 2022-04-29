@@ -1,5 +1,3 @@
-import { UInt256 } from "@radixdlt/uint256";
-
 // WIP type for mocking purposes
 export interface Wallet {
   address: string;

@@ -1,6 +1,5 @@
 import { AxiosInstance } from "axios";
 
-export * from "./tx";
 export * from "./api";
 export * from "./token";
 export * from "./stakes";

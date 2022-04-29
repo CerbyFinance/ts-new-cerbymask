@@ -1,6 +1,6 @@
-import { interval, ReplaySubject } from "rxjs";
+import { interval } from "rxjs";
 import { AccountAddress } from "@radixdlt/account";
-import { Amount, ManualUserConfirmTX } from "@radixdlt/application";
+import { Amount } from "@radixdlt/application";
 import BigNumber from "bignumber.js";
 
 import { log } from "@utils";
