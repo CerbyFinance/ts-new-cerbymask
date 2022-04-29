@@ -1,6 +1,11 @@
 import toast from "react-hot-toast";
+import { ReplaySubject } from "rxjs";
 
-import { Radix as RadixApi, SigningKeychain } from "@radixdlt/application";
+import {
+  ManualUserConfirmTX,
+  Radix as RadixApi,
+  SigningKeychain,
+} from "@radixdlt/application";
 
 import { RadixApiOpts } from "@chains/radix/types";
 import { loadKeystore } from "@chains/radix/utils";
@@ -40,3 +45,11 @@ export const connectToRadixApi = async (opts: RadixApiOpts) => {
     await radixApi.login(password, loadKeystore);
   }
 };
+
+// userConfirmation ReplaySubject
+export const userConfirmation = new ReplaySubject<ManualUserConfirmTX>();
+userConfirmation.subscribe((txToConfirm) => {
+  log("txToConfirm");
+  log(txToConfirm);
+  txToConfirm.confirm();
+});

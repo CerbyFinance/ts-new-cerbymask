@@ -5,14 +5,7 @@ import BigNumber from "bignumber.js";
 
 import { log } from "@utils";
 
-import { radixApi } from ".";
-
-const userConfirmation = new ReplaySubject<ManualUserConfirmTX>();
-userConfirmation.subscribe((txToConfirm) => {
-  log("txToConfirm");
-  log(txToConfirm);
-  txToConfirm.confirm();
-});
+import { radixApi, userConfirmation } from ".";
 
 // onSubmit callback to redirect user on Dashboard when send operation was handled
 export const sendCoins = (payload: any): Promise<void> => {

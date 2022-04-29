@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { sliceAddress } from "@utils";
+import { sliceAddress } from "@chains/radix/utils";
 
 import { WalletAction, WalletButton, WalletProps } from "./types";
 
@@ -19,6 +19,8 @@ export const Wallet = (props: WalletProps) => {
   const [badgeState, setBadgeState] = useState<string>("");
 
   const handleCopyAddress = () => {
+    navigator.clipboard.writeText(address);
+
     const oldBadgeState = badgeState;
     setBadgeState(BADGES.BADGE_ADDRESS_COPIED);
 

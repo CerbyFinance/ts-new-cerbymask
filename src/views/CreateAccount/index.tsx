@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "effector-react";
 
-import { afterAuth } from "@utils";
-
 import { useRouter } from "@router";
 
 import { createWallet } from "@chains/radix/crypto";
 import { $network, $password } from "@chains/radix/store";
+import { afterAuth } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
 import { Button, Checkbox, Paragraph, Title, Warning } from "@components/atoms";

@@ -1,18 +1,21 @@
-import { StakePosition, Validator } from "@radixdlt/application";
+import { forward } from "effector";
+
+import { Validator } from "@radixdlt/application";
 import { AccountAddressT } from "@radixdlt/account";
 
+import { Stakes } from "@chains/radix/types";
 import { fetchValidators, fetchStakes } from "@chains/radix/api";
 
 import { radix } from "./domain";
-import { forward } from "effector";
-import { log } from "@utils";
 
 // Validators
 export const $validators = radix.createStore<Validator[]>([]);
 
 export const getValidators = radix.createEvent();
 const getValidatorsFx = radix.createEffect(async () => {
-  const validators = await fetchValidators();
+  const validators = (await fetchValidators()).filter(
+    (validator: Validator) => validator.isExternalStakeAccepted
+  );
   return validators as Validator[];
 });
 
@@ -24,7 +27,10 @@ forward({
 $validators.on(getValidatorsFx.doneData, (_, validators) => validators);
 
 // Stakes
-export const $stakes = radix.createStore<StakePosition[]>([]);
+export const $stakes = radix.createStore<Stakes>({
+  pendingStakes: [],
+  stakes: [],
+});
 
 export const getStakes = radix.createEvent<{
   activeAddress: AccountAddressT;

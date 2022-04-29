@@ -7,3 +7,4 @@ export * from "./Warning";
 export * from "./Checkbox";
 export * from "./Paragraph";
 export * from "./Badge";
+export * from "./CoinSelect";

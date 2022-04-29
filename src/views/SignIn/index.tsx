@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { useStore } from "effector-react";
 
-import { afterAuth } from "@utils";
-
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
+import { afterAuth } from "@chains/radix/utils";
 import { $network } from "@chains/radix/store";
 
 import { Layout } from "@components/template";
