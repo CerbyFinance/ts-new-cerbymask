@@ -1,20 +1,44 @@
 import React, { useState } from "react";
+import { useStore } from "effector-react";
+import toast from "react-hot-toast";
+
+import { AccountAddressT } from "@radixdlt/account";
+
+import { log } from "@utils";
+
+import { routesNames, useRouter } from "@router";
+import { RouteKey } from "@router/types";
+
+import { Token } from "@chains/radix/types";
+import { stakeCoins } from "@chains/radix/api";
+import {
+  $activeAddress,
+  $userTokens,
+  $validators,
+  getStakes,
+  setUserTokens,
+} from "@chains/radix/store";
 
 import { Layout } from "@components/template";
-import { Button, Input, Title } from "@components/atoms";
+import { Button, Input, Title, Warning, CoinSelect } from "@components/atoms";
 
 import * as S from "./style";
 
 export const AddStake = () => {
+  const router = useRouter();
+
+  const activeAddress = useStore($activeAddress);
+  const userTokens = useStore($userTokens);
+  const validators = useStore($validators);
+
   const [wasProceeded, setProceeded] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
   const [formData, setFormData] = useState({
-    account:
-      "tdx1qsp352e5zhh9qlpm2xvvswzx85mq9al54z4sa2epp8jsnswlggnd4pgx6padw",
-    validator: "",
+    rri: "",
+    validator: validators.length > 0 ? validators[0].address.toString() : "",
     amount: "",
   });
-  const validation = formData.account && formData.validator && formData.amount;
+  const validation = formData.amount;
 
   const handleProceed = () => {
     if (validation) {
@@ -23,6 +47,23 @@ export const AddStake = () => {
   };
   const handleFieldChange = (field: string, value: string) => {
     setFormData((formData) => ({ ...formData, [field]: value }));
+  };
+  const handleAddStake = async () => {
+    log(formData);
+    await toast.promise(
+      stakeCoins({
+        ...formData,
+        onSubmit: () => router.redirect(routesNames.DASHBOARD as RouteKey),
+      }),
+      {
+        loading: "Transaction is in progress...",
+        success: "Transaction was submitted!",
+        error: "Transaction error!",
+      }
+    );
+
+    getStakes({ activeAddress: activeAddress as AccountAddressT });
+    setUserTokens({ activeAddress: activeAddress as AccountAddressT });
   };
 
   const footer = (
@@ -35,12 +76,9 @@ export const AddStake = () => {
       />
       <Button
         style={{ marginTop: "1.5rem" }}
-        onClick={() =>
-          chrome.runtime.sendMessage({
-            title: "debug-log",
-            data: "click",
-          })
-        }
+        onClick={() => {
+          handleAddStake();
+        }}
         disabled={!password}
       >
         Confirm transaction
@@ -50,9 +88,12 @@ export const AddStake = () => {
   return (
     <Layout footer={wasProceeded ? footer : null}>
       <Title>Add stake</Title>
+      <Warning style={{ margin: "1rem 0" }}>
+        You must stake at least 90 XRD for transaction to success!
+      </Warning>
       <Input
         label="Staking account"
-        value={formData.account}
+        value={activeAddress.toString()}
         disabled
         style={{ margin: ".625rem 0" }}
         useTextarea
@@ -61,14 +102,23 @@ export const AddStake = () => {
         label="Validator"
         value={formData.validator}
         onChange={(v) => handleFieldChange("validator", v)}
+        disabled
+        useTextarea
       />
-      <Input
-        label="Amount"
-        value={formData.amount}
-        onChange={(v) => handleFieldChange("amount", v)}
-        style={{ margin: ".625rem 0" }}
+      <CoinSelect
+        tokens={userTokens || []}
+        onChange={(token: Token) => {
+          handleFieldChange("rri", token.rri);
+        }}
       />
-      <Input label="Gas fee" value="0.000000" transparent />
+      {formData.rri && (
+        <Input
+          label="Amount"
+          value={formData.amount}
+          onChange={(v) => handleFieldChange("amount", v)}
+          style={{ margin: ".625rem 0" }}
+        />
+      )}
       {!wasProceeded && (
         <Button
           disabled={!validation}

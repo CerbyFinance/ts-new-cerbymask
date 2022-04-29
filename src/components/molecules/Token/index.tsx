@@ -1,6 +1,7 @@
 import React from "react";
 
-import { TOKENS } from "@tokens";
+import { convertToMainUnit } from "@chains/radix/utils";
+
 import { TokenProps } from "./types";
 
 import { Text } from "@components/atoms";
@@ -10,36 +11,35 @@ import { COLORS } from "@globalStyle/colors";
 
 export const Token = (props: TokenProps) => {
   const {
-    data: { key, balance, priceChange, currentPrice },
+    data: { icon, ticker, value, dailyChange, price },
     style,
     className,
   } = props;
-  const { name, icon } = TOKENS[key];
 
-  let priceChangeColor = "rgba(255, 255, 255, 0.4)";
-  if (priceChange < 0) {
-    priceChangeColor = COLORS.red;
-  } else if (priceChange > 0) {
-    priceChangeColor = COLORS.green;
+  let dailyChangeColor = "rgba(255, 255, 255, 0.4)";
+  if (dailyChange < 0) {
+    dailyChangeColor = COLORS.red;
+  } else if (dailyChange > 0) {
+    dailyChangeColor = COLORS.green;
   }
 
   return (
     <S.Wrapper style={style} className={className}>
       <S.TokenInfo>
-        {icon}
+        <S.TokenIcon>{icon}</S.TokenIcon>
         <Text
           bold
-          label={name}
+          label={ticker}
           labelStyle={{ fontSize: ".75rem" }}
-          value={balance}
+          value={`${convertToMainUnit(value)}`}
         />
       </S.TokenInfo>
       <S.TokenPrice>
-        <span style={{ color: priceChangeColor }}>
-          {priceChange > 0 ? "+" : null}
-          {priceChange}%
+        <span style={{ color: dailyChangeColor }}>
+          {dailyChange > 0 ? "+" : null}
+          {dailyChange}%
         </span>
-        ${currentPrice}
+        ${price.toLocaleString()}
       </S.TokenPrice>
     </S.Wrapper>
   );

@@ -2,10 +2,10 @@ import styled from "styled-components";
 
 import { COLORS } from "@globalStyle/colors";
 
-export const Wrapper = styled.div<{ coinImg: string }>`
+export const Wrapper = styled.div<{ coinImg?: string }>`
   border-radius: 1.5rem;
   background-color: ${COLORS.blue};
-  background-image: url(${({ coinImg }) => coinImg});
+  background-image: ${({ coinImg }) => (coinImg ? `url(${coinImg})` : "none")};
   background-position: right;
   background-repeat: no-repeat;
   padding: 1.25rem;

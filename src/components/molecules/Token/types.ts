@@ -1,13 +1,7 @@
-import { TOKENS } from "@tokens";
+import { TokenWithIcon } from "@chains/radix/types";
 
-export interface Token {
-  key: keyof typeof TOKENS;
-  balance: string;
-  priceChange: number;
-  currentPrice: number;
-}
 export interface TokenProps {
-  data: Token;
+  data: TokenWithIcon;
   style?: React.CSSProperties;
   className?: string;
 }

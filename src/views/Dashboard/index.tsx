@@ -1,6 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useStore } from "effector-react";
 
-import { Token, WalletButton } from "@components/molecules/types";
+import { log } from "@utils";
+
+import { routesNames, useRouter } from "@router";
+import { RouteKey } from "@router/types";
+
+import { TokenWithIcon } from "@chains/radix/types";
+
+import { $activeAddress, $userTokens } from "@chains/radix/store";
+
+import { NETWORKS_LIST, TOKEN_ICONS } from "@chains/radix/crypto";
+
+import { WalletButton } from "@components/molecules/types";
 
 import { Layout } from "@components/template";
 import { Title } from "@components/atoms";
@@ -11,42 +23,66 @@ import { ICONS } from "@globalStyle/icons";
 import WalletIcon from "@assets/svg/wallet.svg";
 
 export const Dashboard = () => {
-  const tokensMock: Token[] = [
-    {
-      key: "bitcoin",
-      balance: "50 BTC",
-      priceChange: 69,
-      currentPrice: 46394,
-    },
-    {
-      key: "ethereum",
-      balance: "156 ETH",
-      priceChange: 42,
-      currentPrice: 3850,
-    },
-  ];
+  const router = useRouter();
+
+  const activeAddress = useStore($activeAddress);
+  const userTokens = useStore($userTokens);
+
+  const [usdBalance, setUsdBalance] = useState<number>(0);
+  const [tokensList, setTokensList] = useState<TokenWithIcon[]>([]);
 
   const walletMock = {
-    address: "0x2C0D2C991EC23D21d982A8F62f7AbB69ce1fa9a1",
-    usdBalance: 2852.49,
+    address: activeAddress.toString(),
+    usdBalance,
   };
   const walletButtons: WalletButton[] = [
     {
       name: "Stake",
-      onClick: () => {},
+      onClick: () => {
+        router.push(routesNames.STAKES as RouteKey);
+      },
       icon: <ICONS.Stake />,
     },
     {
       name: "Receive",
-      onClick: () => {},
+      onClick: () => {
+        router.push(routesNames.RECEIVE_COINS as RouteKey);
+      },
       icon: <ICONS.ArrowDown />,
     },
     {
       name: "Send",
-      onClick: () => {},
+      onClick: () => {
+        router.push(routesNames.SEND_COINS as RouteKey);
+      },
       icon: <ICONS.ArrowUp />,
     },
   ];
+
+  useEffect(() => {
+    if (userTokens) {
+      log(`Address - ${activeAddress.toString()}`);
+
+      const xrdToken = userTokens.find(
+        (token) => token.rri === NETWORKS_LIST.stokenet.xrd_rri
+      );
+      if (xrdToken) {
+        setUsdBalance(xrdToken.usdBalance);
+      }
+
+      setTokensList(
+        userTokens.map((token) => {
+          const { rri } = token;
+
+          const icon = TOKEN_ICONS[rri];
+          return {
+            ...token,
+            icon,
+          };
+        })
+      );
+    }
+  }, [userTokens]);
 
   return (
     <Layout>
@@ -55,7 +91,7 @@ export const Dashboard = () => {
       <Wallet data={walletMock} buttons={walletButtons} />
       <TokensList
         header="My tokens"
-        tokens={tokensMock}
+        tokens={tokensList}
         style={{ marginTop: "1rem" }}
       />
     </Layout>

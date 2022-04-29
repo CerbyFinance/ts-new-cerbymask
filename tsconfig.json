@@ -33,6 +33,10 @@
         "@views": ["views/index"],
         "@chains/*": ["chains/*"],
         "@globalStyle/*": ["globalStyle/*"],
+        "@router": ["router/index"],
+        "@router/*": ["router/*"],
+        "@store": ["store/index"],
+        "@store/*": ["store/*"],
         "@tokens": ["tokens"]
       }
     },

@@ -28,7 +28,11 @@ export const Text = (props: TextProps) => {
   };
   return (
     <div
-      style={{ cursor: onClick ? "pointer" : "default", ...style }}
+      style={{
+        cursor: onClick ? "pointer" : "default",
+        width: "100%",
+        ...style,
+      }}
       className={className}
       onClick={onClick}
     >

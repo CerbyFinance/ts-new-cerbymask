@@ -1,3 +1,5 @@
+import { UInt256 } from "@radixdlt/uint256";
+
 // WIP type for mocking purposes
 export interface Wallet {
   address: string;
@@ -7,9 +9,10 @@ export interface Wallet {
 
 export interface Stake {
   address: string;
-  name: string;
   ticker: string;
-  amount: number;
+  amount: string;
   usdEquivalent: number;
-  coinImg: string;
+  coinImg?: string;
+  validator: string;
+  rri: string;
 }

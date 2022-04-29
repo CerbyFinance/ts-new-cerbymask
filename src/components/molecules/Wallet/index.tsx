@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { sliceAddress } from "@utils";
+import { sliceAddress } from "@chains/radix/utils";
 
 import { WalletAction, WalletButton, WalletProps } from "./types";
 
@@ -19,6 +19,8 @@ export const Wallet = (props: WalletProps) => {
   const [badgeState, setBadgeState] = useState<string>("");
 
   const handleCopyAddress = () => {
+    navigator.clipboard.writeText(address);
+
     const oldBadgeState = badgeState;
     setBadgeState(BADGES.BADGE_ADDRESS_COPIED);
 
@@ -64,12 +66,12 @@ export const Wallet = (props: WalletProps) => {
         )}
       </S.Header>
       <S.Balance>
-        <span>USD</span> {usdBalance}
+        <span>USD</span> {usdBalance.toLocaleString()}
       </S.Balance>
       {buttons && buttons.length > 0 && (
         <S.Footer>
           {buttons.map(({ name, icon, onClick }: WalletButton) => (
-            <S.FooterAction onClick={() => onClick(data)}>
+            <S.FooterAction key={name} onClick={() => onClick(data)}>
               {icon}
               {name}
             </S.FooterAction>

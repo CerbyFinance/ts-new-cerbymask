@@ -1,79 +1,49 @@
-import { NetworkApi } from "@chains/radix";
+import { interval, ReplaySubject } from "rxjs";
+import { AccountAddress } from "@radixdlt/account";
+import { Amount, ManualUserConfirmTX } from "@radixdlt/application";
+import BigNumber from "bignumber.js";
 
-export const buildTx = async (network: NetworkApi, options: any) => {
-  const { api, name } = network;
-  const {
-    transaction: { from, rri, amount },
-    type,
-  } = options;
+import { log } from "@utils";
 
-  const body = {
-    actions: [
-      {
-        type,
-        from_account: {
-          address: from,
-        },
-        amount: {
-          token_identifier: {
-            rri,
-          },
-          value: amount,
-        },
-      },
-    ],
-    fee_payer: {
-      address: from,
-    },
-    network_identifier: {
-      network: name,
-    },
-    disable_token_mint_and_burn: true,
-  };
-  /* TypeScript error
-  body.actions[0][type === "TransferTokens" ? "to_account" : "to_validator"] = {
-    address: to,
-  };
-  */
+import { radixApi, userConfirmation } from ".";
 
-  try {
-    const response = await api.post("transaction/build", { body });
-    chrome.runtime.sendMessage({
-      title: "debug-log",
-      data: ["buildTx", response],
+// onSubmit callback to redirect user on Dashboard when send operation was handled
+export const sendCoins = (payload: any): Promise<void> => {
+  const { to, amount, rri, onSubmit } = payload;
+
+  return new Promise((resolve, reject) => {
+    const recipientResult = AccountAddress.fromUnsafe(to);
+    if (recipientResult.isErr()) {
+      return reject("Invalid address");
+    }
+
+    const amountResult = Amount.fromUnsafe(
+      new BigNumber(+amount).shiftedBy(18).toFixed()
+    );
+    if (amountResult.isErr()) {
+      return reject("Amount is wrong");
+    }
+
+    const transferInput = {
+      to_account: recipientResult.value,
+      amount: amountResult.value,
+      tokenIdentifier: rri,
+    };
+    log("transferInput");
+    log(transferInput);
+    const { events, completion } = radixApi.transferTokens({
+      transferInput,
+      userConfirmation,
+      pollTXStatusTrigger: interval(1000),
     });
-  } catch (e) {
-    throw new Error("buildTx failed");
-  }
-};
-
-export const finalizeTx = async (network: NetworkApi, options: any) => {
-  const { api, name } = network;
-  const {
-    transaction: { unsigned_transaction, bytes, pubKey },
-  } = options;
-
-  const body = {
-    network_identifier: {
-      network: name,
-    },
-    unsigned_transaction,
-    signature: {
-      bytes,
-      public_key: {
-        hex: pubKey,
-      },
-    },
-    submit: true,
-  };
-
-  try {
-    const response = await api.post("transaction/finalize", { body });
-    chrome.runtime.sendMessage({
-      title: "debug-log",
-      data: ["getTokensInfo", response],
+    onSubmit();
+    events.subscribe((txState) => {
+      log("txState");
+      log(txState);
     });
-  } catch (e) {
-    throw new Error("finalizeTx failed");
-  }
+    completion.subscribe(() => {
+      log("tx completed");
+      resolve();
+    });
+  });
 };

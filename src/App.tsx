@@ -1,68 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useStore } from "effector-react";
+import { Toaster } from "react-hot-toast";
+
+import {
+  $activeAddress,
+  $authenticated,
+  setUserTokens,
+} from "@chains/radix/store";
+
+import { Router, RouterView } from "@router";
 
 import { GlobalStyle } from "./globalStyle";
 
-import { useRadixApi, useNetwork } from "@chains/radix";
-import {
-  AddStake,
-  CreateAccount,
-  Dashboard,
-  ImportWallet,
-  MyWallets,
-  ReceiveCoins,
-  SecureAccount,
-  SendCoins,
-  SignIn,
-  SignUp,
-  Stakes,
-  Tokens,
-} from "@views";
-
-const views = {
-  AddStake: <AddStake />,
-  CreateAccount: <CreateAccount />,
-  Dashboard: <Dashboard />,
-  ImportWallet: <ImportWallet />,
-  MyWallets: <MyWallets />,
-  ReceiveCoins: <ReceiveCoins />,
-  SecureAccount: <SecureAccount />,
-  SendCoins: <SendCoins />,
-  SignIn: <SignIn />,
-  SignUp: <SignUp />,
-  Stakes: <Stakes />,
-  Tokens: <Tokens />,
-};
-
 export const App = () => {
-  const [view, setView] = useState<keyof typeof views>("AddStake");
-  const [network, changeNetwork] = useNetwork();
-  const radixApi = useRadixApi(network);
+  const activeAddress = useStore($activeAddress);
+  const authenticated = useStore($authenticated);
 
   useEffect(() => {
-    // test if the right network was chosen
-    // should be mainnet in devtools
-    chrome.runtime.sendMessage({
-      title: "debug-log",
-      data: radixApi.tokens.getTokensInfo(),
-    });
-  }, [radixApi]);
+    if (authenticated && activeAddress) {
+      setUserTokens({ activeAddress });
+    }
+  }, [authenticated, activeAddress]);
+
   return (
     <>
+      <Toaster />
       <GlobalStyle />
-      {views[view]}
-
-      {/* for test purposes */}
-      <select
-        value={view}
-        onChange={(e) => setView(e.target.value as keyof typeof views)}
-        style={{ color: "black" }}
-      >
-        {Object.keys(views).map((view) => (
-          <option key={view} value={view}>
-            {view}
-          </option>
-        ))}
-      </select>
+      <Router>
+        <RouterView authenticated={authenticated} />
+      </Router>
     </>
   );
 };

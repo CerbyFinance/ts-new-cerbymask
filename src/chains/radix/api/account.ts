@@ -1,42 +1,26 @@
-import { NetworkApi } from "@chains/radix";
+import { AccountAddressT } from "@radixdlt/account";
+import { AccountBalancesEndpoint } from "@radixdlt/application/dist/api/open-api/_types";
 
-export const getWalletFunds = async (network: NetworkApi, options: any) => {
-  const { name, api } = network;
-  const { address } = options;
+import { radixApi } from ".";
 
-  const params = {
-    network_identifier: {
-      network: name,
-    },
-    account_identifier: {
-      address,
-    },
-  };
-
-  try {
-    const response = await api.get("account/balances", { params });
-    chrome.runtime.sendMessage({
-      title: "debug-log",
-      data: ["getWalletFunds", response],
+export const fetchActiveAddress = (): Promise<AccountAddressT> => {
+  return new Promise((resolve, reject) => {
+    radixApi.activeAddress.subscribe((address: AccountAddressT) => {
+      resolve(address);
     });
-  } catch (e) {
-    throw new Error("getWalletFunds failed");
-  }
+  });
 };
 
-export const getStakePositions = async (network: NetworkApi, options: any) => {
-  const { api } = network;
-  const { address } = options;
-
-  try {
-    const response = await api.get("account.get_stake_positions", {
-      params: { address },
-    });
-    chrome.runtime.sendMessage({
-      title: "debug-log",
-      data: ["getStakePositions", response],
-    });
-  } catch (e) {
-    throw new Error("getStakePositions failed");
-  }
+// TypeScript TODO - optional generic
+export const fetchTokenBalances = (payload: {
+  activeAddress: AccountAddressT;
+}): Promise<AccountBalancesEndpoint.DecodedResponse> => {
+  const { activeAddress } = payload;
+  return new Promise((resolve, reject) => {
+    radixApi.ledger
+      .tokenBalancesForAddress(activeAddress)
+      .subscribe((balances: AccountBalancesEndpoint.DecodedResponse) => {
+        resolve(balances);
+      });
+  });
 };

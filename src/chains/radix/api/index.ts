@@ -1,59 +1,55 @@
-import axios from "axios";
+import toast from "react-hot-toast";
+import { ReplaySubject } from "rxjs";
 
-import { NETWORKS_LIST, NetworkApi, Network } from "@chains/radix";
+import {
+  ManualUserConfirmTX,
+  Radix as RadixApi,
+  SigningKeychain,
+} from "@radixdlt/application";
 
-import * as tokens from "./tokens";
-import * as account from "./account";
-import * as validators from "./validators";
-import * as tx from "./tx";
+import { RadixApiOpts } from "@chains/radix/types";
+import { loadKeystore } from "@chains/radix/utils";
+import { NETWORKS_LIST } from "@chains/radix/crypto";
 
-const commonHeaders = {
-  "X-Radixdlt-Target-Gw-Api": "1.1.0",
-  "Content-Type": "application/json",
+import { log } from "@utils";
+
+export * from "./account";
+export * from "./token";
+export * from "./tx";
+export * from "./stakes";
+
+const { byLoadingAndDecryptingKeystore } = SigningKeychain;
+
+export const radixApi = RadixApi.create();
+
+export const connectToRadixApi = async (opts: RadixApiOpts) => {
+  const { url = NETWORKS_LIST.mainnet.url, password } = opts;
+
+  await radixApi.connect(url);
+
+  const result = await byLoadingAndDecryptingKeystore({
+    password,
+    load: loadKeystore,
+  });
+  if (result.isErr()) {
+    log("Failed to connect to the API. Invalid credentials");
+    toast.error("Invalid password", {
+      style: {
+        background: "#333",
+        color: "white",
+        borderRadius: ".5rem",
+      },
+    });
+    throw new Error();
+  } else {
+    await radixApi.login(password, loadKeystore);
+  }
 };
 
-export const mainnet = axios.create({
-  baseURL: NETWORKS_LIST.mainnet.url,
-  headers: {
-    ...commonHeaders,
-  },
+// userConfirmation ReplaySubject
+export const userConfirmation = new ReplaySubject<ManualUserConfirmTX>();
+userConfirmation.subscribe((txToConfirm) => {
+  log("txToConfirm");
+  log(txToConfirm);
+  txToConfirm.confirm();
 });
-export const stokenet = axios.create({
-  baseURL: NETWORKS_LIST.stokenet.url,
-  headers: {
-    ...commonHeaders,
-  },
-});
-
-export const useRadixApi = (network: Network) => {
-  const { name } = network;
-
-  const networkApi: NetworkApi = {
-    name,
-    api: name === NETWORKS_LIST.mainnet.name ? mainnet : stokenet,
-  };
-
-  const domains = Object.fromEntries(
-    Object.entries({
-      tokens,
-      account,
-      validators,
-      tx,
-    }).map((domain: any) => {
-      const [name, api] = domain;
-      return [
-        name,
-        Object.fromEntries(
-          Object.entries(api).map((fnEntry: any) => {
-            const [fnName, fn] = fnEntry;
-            return [fnName, fn.bind(null, networkApi)];
-          })
-        ),
-      ];
-    })
-  );
-
-  return {
-    ...domains,
-  };
-};

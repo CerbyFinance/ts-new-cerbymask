@@ -1,6 +1,4 @@
-import { Network } from "./types";
-
-export const NETWORKS_LIST: Record<string, Network> = {
+export const NETWORKS_LIST = {
   mainnet: {
     name: "mainnet",
     url: "https://mainnet.radixdlt.com/",

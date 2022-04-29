@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { sliceAddress } from "@utils";
+import { convertToMainUnit, sliceAddress } from "@chains/radix/utils";
 
 import { StakeProps } from "./types";
 
@@ -14,8 +14,8 @@ const BADGE_COPY_TIMEOUT_DURATION = 2500;
 
 // Stake was built from Wallet
 export const Stake = (props: StakeProps) => {
-  const { style, className, data, add, reduce } = props;
-  const { name, address, ticker, amount, usdEquivalent, coinImg } = data;
+  const { style, className, data, onUnstake } = props;
+  const { ticker, address, amount, usdEquivalent } = data;
 
   const [badgeTimeout, setBadgeTimeout] = useState<NodeJS.Timeout>();
   const [badgeState, setBadgeState] = useState<string>("");
@@ -35,29 +35,22 @@ export const Stake = (props: StakeProps) => {
   };
 
   return (
-    <S.Wrapper className={className} style={style} coinImg={coinImg}>
+    <S.Wrapper className={className} style={style}>
       <Badge type={badgeState} />
       <S.Header>
-        <Text
-          label={name}
-          value={sliceAddress(address)}
-          onClick={handleCopyAddress}
-        />
+        <Text value={sliceAddress(address)} onClick={handleCopyAddress} />
       </S.Header>
       <S.Balance>
         <div>
-          <span>{ticker}</span> {amount}
+          <span>{ticker}</span> {amount.toLocaleString()}
         </div>
         <div>
-          <span>USD</span> {usdEquivalent}
+          <span>USD</span> {usdEquivalent.toLocaleString()}
         </div>
       </S.Balance>
       <S.Footer>
-        <S.FooterAction onClick={() => add(data)}>
-          <ICONS.ArrowUp /> Add
-        </S.FooterAction>
-        <S.FooterAction onClick={() => reduce(data)}>
-          <ICONS.ArrowDown /> Reduce
+        <S.FooterAction onClick={() => onUnstake(data)}>
+          <ICONS.ArrowDown /> Unstake
         </S.FooterAction>
       </S.Footer>
     </S.Wrapper>

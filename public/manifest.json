@@ -21,7 +21,7 @@
   "host_permissions": [
     "https://mainnet.radixdlt.com/*",
     "https://stokenet.radixdlt.com/*",
-    "https://api.bitfinex.com/*",
+    "https://api-pub.bitfinex.com/*",
     "file:///*"
   ],
   "background": {

@@ -9,6 +9,13 @@ export const Layout = styled.section`
   min-height: 600px;
   position: relative;
 `;
+export const Header = styled.header`
+  margin-bottom: 1rem;
+
+  svg {
+    cursor: pointer;
+  }
+`;
 export const Footer = styled.footer<{ footerBackground: boolean }>`
   background: ${({ footerBackground }) =>
     footerBackground ? "rgba(255, 255, 255, 15%)" : "transparent"};
