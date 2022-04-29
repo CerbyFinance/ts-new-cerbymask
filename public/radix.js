@@ -1,8 +1,8 @@
-chrome.windows.onCreated.addListener(function () {
+chrome.windows.onCreated.addListener(() => {
   console.log("CerbyMask detected a new browser opening");
 });
 
-chrome.runtime.onInstalled.addListener(function () {
+chrome.runtime.onInstalled.addListener(() => {
   console.log("CerbyMask detected a new installation");
 });
 
