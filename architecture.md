@@ -36,6 +36,10 @@ Each subfolder exports all components that exists in this subfolder (for example
 
 This folder will contain views assembled using atoms, molecules and organisms. View is some kind of page. For example, `Home` view, `Auth` view, etc.
 
+## router/
+
+Routing logic is stored here.
+
 ## chains/
 
 The logic of various networks is stored here. Each network has the following folders:
@@ -46,7 +50,7 @@ The logic of interaction with the server, network, external requests for various
 
 #### crypto/
 
-All provider, network, etc. logic is stored in `crypto/` folder.
+All provider, network, etc. static logic and configs are stored in `crypto/` folder.
 
 #### hooks/
 
@@ -60,6 +64,10 @@ Note: If some function is used throughout the project or by several networks, it
 #### types/
 
 Types or interfaces that are being used by the network in several folders should be stored here.
+
+#### store/
+
+Chain local store is located here. We use Effector.
 
 ## utils/
 

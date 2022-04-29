@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="public/android-chrome-512x512.png" style="width:200px;">
+    <img src="public/android-chrome-512x512.png" style="width:100px;">
     <h1 style="margin-top: -20px;text-align: center;border-bottom: none;">CerbyMask</h1>
     <p style="margin-top: -20px;font-size:10px;text-align: center;border-bottom: none;">A Radix Protocol Lightweight Wallet</p>
 </p>
@@ -18,9 +18,7 @@
 
 # Install
 
-- Download directly from Chrome Web Store
 - Build the extension by following the previous steps
-- Or download directly a build from [Github](https://github.com/x-wf2/cerbymask/releases)
 
 Navigate to `chrome://extensions`
 
@@ -39,7 +37,7 @@ This project has been developed using NodeJS v16.6.
 After cloning the project, navigate to the root folder and run:
 
 ```bash
-$ npm install
+$ yarn install --ignore-engines
 ```
 
 ## Build
@@ -47,15 +45,13 @@ $ npm install
 In order to build the extension, execute:
 
 ```bash
-$ npm run build
+$ yarn build
 ```
 
-## Tests
+## Develop
 
-Unit tests are developed using Jest.
-
-In order to run tests, execute:
+Extension will watch for code changes and re-upload an extension automatically. You'll need to restart (close and open) the extension in Chrome.
 
 ```bash
-$ npm run test
+$ yarn watch
 ```
