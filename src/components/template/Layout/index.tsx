@@ -7,7 +7,6 @@ import BackIcon from "@assets/svg/back.svg";
 interface LayoutProps {
   children: ReactNode;
   footer?: ReactNode;
-  footerBackground?: boolean;
   style?: React.CSSProperties;
   className?: string;
   backButton?: boolean;
@@ -16,7 +15,6 @@ interface LayoutProps {
 export const Layout = ({
   children,
   footer,
-  footerBackground = true,
   style,
   className,
   backButton,
@@ -32,9 +30,7 @@ export const Layout = ({
         )}
         {children}
       </S.Layout>
-      {footer && (
-        <S.Footer footerBackground={footerBackground}>{footer}</S.Footer>
-      )}
+      {footer && <S.Footer>{footer}</S.Footer>}
     </>
   );
 };

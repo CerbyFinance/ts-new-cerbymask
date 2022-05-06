@@ -17,9 +17,9 @@ export const SecureAccount = () => {
 
   const footer = (
     <>
-      <S.Title>Set a new password</S.Title>
       <Input
         type="password"
+        label="Password"
         value={password}
         onChange={(value) => setPassword(value)}
       />
@@ -28,13 +28,13 @@ export const SecureAccount = () => {
         onClick={() => router.push(routesNames.CREATE_ACCOUNT as RouteKey)}
         disabled={!password}
       >
-        Confirm
+        Continue
       </Button>
     </>
   );
   return (
-    <Layout footer={footer}>
-      <Title style={{ marginBottom: ".625rem" }}>Secure your account</Title>
+    <Layout footer={footer} backButton>
+      <Title style={{ marginBottom: "1rem" }}>Secure your wallet</Title>
       <Paragraph>
         Set up your password, that will allow you to easily sign in to the app
         and confirm all the operations you are making. You can’t change it and

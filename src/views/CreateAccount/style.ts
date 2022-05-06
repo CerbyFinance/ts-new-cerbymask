@@ -2,6 +2,10 @@ import styled from "styled-components";
 
 export const Phrases = styled.section`
   display: flex;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
 
   & > div {
     width: 50%;
@@ -9,18 +13,8 @@ export const Phrases = styled.section`
 `;
 
 export const Phrase = styled.div`
-  font-weight: bold;
-  font-size: 1rem;
+  font-size: 0.875rem;
   &:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-`;
-
-export const RecoveryHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  h4 {
-    font-size: 1rem;
+    margin-bottom: 0.25rem;
   }
 `;

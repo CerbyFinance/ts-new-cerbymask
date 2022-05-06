@@ -15,7 +15,6 @@ export const SIGN_UP = "SIGN_UP";
 export const protectedRoutesNames = {
   ADD_STAKE,
   DASHBOARD,
-  IMPORT_WALLET,
   MY_WALLETS,
   RECEIVE_COINS,
   SEND_COINS,
@@ -27,6 +26,7 @@ export const publicRoutesNames = {
   SIGN_UP,
   CREATE_ACCOUNT,
   SECURE_ACCOUNT,
+  IMPORT_WALLET,
 };
 export const routesNames = {
   ...protectedRoutesNames,

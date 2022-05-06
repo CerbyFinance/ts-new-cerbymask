@@ -20,7 +20,6 @@ export const routes = {
   protected: {
     [protectedRoutesNames.ADD_STAKE]: () => <AddStake />,
     [protectedRoutesNames.DASHBOARD]: () => <Dashboard />,
-    [protectedRoutesNames.IMPORT_WALLET]: () => <ImportWallet />,
     [protectedRoutesNames.MY_WALLETS]: () => <MyWallets />,
     [protectedRoutesNames.RECEIVE_COINS]: () => <ReceiveCoins />,
     [protectedRoutesNames.SEND_COINS]: () => <SendCoins />,
@@ -32,5 +31,6 @@ export const routes = {
     [publicRoutesNames.SIGN_UP]: () => <SignUp />,
     [publicRoutesNames.CREATE_ACCOUNT]: () => <CreateAccount />,
     [publicRoutesNames.SECURE_ACCOUNT]: () => <SecureAccount />,
+    [publicRoutesNames.IMPORT_WALLET]: () => <ImportWallet />,
   },
 };

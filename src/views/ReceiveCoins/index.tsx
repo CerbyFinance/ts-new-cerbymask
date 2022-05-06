@@ -26,7 +26,6 @@ export const ReceiveCoins = () => {
         label="Wallet address"
         value={address}
         disabled
-        useTextarea
         style={{ margin: ".625rem 0" }}
       />
       <Button

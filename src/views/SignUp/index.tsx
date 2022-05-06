@@ -17,10 +17,10 @@ export const SignUp = () => {
       <Button
         onClick={() => router.push(routesNames.SECURE_ACCOUNT as RouteKey)}
       >
-        Create new account
+        Create new wallet
       </Button>
       <Button
-        style={{ marginTop: ".625rem", backgroundColor: COLORS.darkblue }}
+        style={{ marginTop: "1rem", background: "rgba(255, 255, 255, 0.1)" }}
         onClick={() =>
           chrome.runtime.sendMessage({
             title: "debug-log",
@@ -38,7 +38,7 @@ export const SignUp = () => {
     </>
   );
   return (
-    <Layout footer={footer} footerBackground={false}>
+    <Layout footer={footer}>
       <Logo />
     </Layout>
   );

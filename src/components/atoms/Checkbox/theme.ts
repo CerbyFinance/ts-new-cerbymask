@@ -2,10 +2,10 @@ import { COLORS } from "@globalStyle/colors";
 
 export const theme = {
   default: {
-    checkboxColor: "#506eec",
+    checkboxColor: COLORS.button,
     labelColor: "#ffffff",
     markColor: "#ffffff",
-    borderColor: "#9098a9",
+    borderColor: "#ffffff",
   },
   alert: {
     checkboxColor: COLORS.red,

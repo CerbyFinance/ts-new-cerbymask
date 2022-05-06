@@ -57,7 +57,7 @@ export const Label = styled.label<CheckboxSC>`
     }
     &:last-child {
       color: ${({ theme: { labelColor } }) => labelColor};
-      margin-left: 0.5rem;
+      margin-left: 0.75rem;
       font-size: 0.825rem;
     }
   }

@@ -10,6 +10,7 @@ import { $network } from "@chains/radix/store";
 import { Layout } from "@components/template";
 import { Logo, Input, Button } from "@components/atoms";
 
+import { COLORS } from "@globalStyle/colors";
 import * as S from "./style";
 
 export const SignIn = () => {
@@ -20,9 +21,9 @@ export const SignIn = () => {
 
   const footer = (
     <>
-      <S.Title>Enter password</S.Title>
       <Input
         type="password"
+        label="Password"
         value={password}
         onChange={(value) => setPassword(value)}
       />
@@ -31,13 +32,19 @@ export const SignIn = () => {
         onClick={() => afterAuth({ password, url: network.url }, router)}
         disabled={!password}
       >
-        Sign in to your account
+        Log in
       </Button>
-      <S.ForgotPassword
-        onClick={() => router.redirect(routesNames.SIGN_UP as RouteKey)}
+      <S.Action
+        onClick={() => router.redirect(routesNames.IMPORT_WALLET as RouteKey)}
       >
-        Forgot password?
-      </S.ForgotPassword>
+        Import using Secret Recovery Phrase
+      </S.Action>
+      <S.Action
+        onClick={() => router.redirect(routesNames.SIGN_UP as RouteKey)}
+        style={{ color: COLORS.red }}
+      >
+        Reset wallet
+      </S.Action>
     </>
   );
 

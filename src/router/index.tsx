@@ -26,7 +26,7 @@ export const Router = ({ children }: { children: React.ReactNode }) => {
     (async () => {
       const { route } = await chrome.storage.local.get("route");
       if (route) {
-        setCurrent(route);
+        setCurrent(routesNames.SECURE_ACCOUNT as RouteKey);
       }
     })();
   }, []);
