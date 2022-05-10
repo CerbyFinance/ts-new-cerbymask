@@ -10,7 +10,6 @@ import { afterAuth } from "@chains/radix/utils";
 import { Layout } from "@components/template";
 import { Button, Checkbox, Paragraph, Title, Warning } from "@components/atoms";
 
-import { theme as checkboxTheme } from "@components/atoms/Checkbox/theme";
 import * as S from "./style";
 
 export const CreateAccount = () => {
@@ -28,7 +27,10 @@ export const CreateAccount = () => {
 
   const footer = (
     <>
-      <Button onClick={() => afterAuth({ password, url: network.url }, router)}>
+      <Button
+        disabled={!memorized}
+        onClick={() => afterAuth({ password, url: network.url }, router)}
+      >
         Create my first wallet
       </Button>
     </>
