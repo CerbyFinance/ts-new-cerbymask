@@ -35,7 +35,7 @@ export const SignIn = () => {
         Log in
       </Button>
       <S.Action
-        onClick={() => router.redirect(routesNames.IMPORT_WALLET as RouteKey)}
+        onClick={() => router.push(routesNames.IMPORT_WALLET as RouteKey)}
       >
         Import using Secret Recovery Phrase
       </S.Action>
