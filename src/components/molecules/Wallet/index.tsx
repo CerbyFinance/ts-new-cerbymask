@@ -8,6 +8,7 @@ import { Badge, Text } from "@components/atoms";
 import * as BADGES from "@components/atoms/Badge/kinds";
 
 import * as S from "./style";
+import CopyIcon from "@assets/svg/copy.svg";
 
 const BADGE_COPY_TIMEOUT_DURATION = 2500;
 
@@ -41,20 +42,15 @@ export const Wallet = (props: WalletProps) => {
   }, [isActive]);
 
   return (
-    <S.Wrapper
-      className={className}
-      style={{
-        minHeight: buttons && buttons.length > 0 ? "12rem" : "auto",
-        ...style,
-      }}
-    >
-      <Badge type={badgeState} />
+    <S.Wrapper className={className} style={style}>
+      {/*<Badge type={badgeState} />*/}
       <S.Header>
-        <Text
-          label="My wallet"
-          value={sliceAddress(address)}
-          onClick={handleCopyAddress}
-        />
+        <S.HeaderAccount>
+          Account #1
+          <div />
+          <span>{sliceAddress(address)}</span>
+          <CopyIcon onClick={() => handleCopyAddress()} />
+        </S.HeaderAccount>
 
         {actions && actions.length > 0 && !badgeState && (
           <S.HeaderActions>
@@ -65,9 +61,7 @@ export const Wallet = (props: WalletProps) => {
           </S.HeaderActions>
         )}
       </S.Header>
-      <S.Balance>
-        <span>USD</span> {usdBalance.toLocaleString()}
-      </S.Balance>
+      <S.Balance>{usdBalance.toLocaleString()} USD</S.Balance>
       {buttons && buttons.length > 0 && (
         <S.Footer>
           {buttons.map(({ name, icon, onClick }: WalletButton) => (

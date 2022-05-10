@@ -2,14 +2,9 @@ import styled from "styled-components";
 
 import { COLORS } from "@globalStyle/colors";
 
-import WolfTransparent from "@assets/img/wolfTransparent.png";
-
 export const Wrapper = styled.div`
-  border-radius: 1.5rem;
-  background-color: ${COLORS.blue};
-  background-image: url(${WolfTransparent});
-  background-position: right;
-  background-repeat: no-repeat;
+  border-radius: 0.5rem;
+  background: ${COLORS.button};
   padding: 1.25rem;
   position: relative;
 `;
@@ -17,6 +12,29 @@ export const Wrapper = styled.div`
 export const Header = styled.header`
   display: flex;
   justify-content: space-between;
+`;
+export const HeaderAccount = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 0.825rem;
+
+  & > div {
+    width: 0.25rem;
+    height: 0.25rem;
+    background: rgba(255, 255, 255, 0.5);
+    margin: 0 0.5rem;
+    border-radius: 50%;
+  }
+
+  & > span,
+  & > svg {
+    opacity: 0.5;
+  }
+
+  & > svg {
+    margin-left: 0.5rem;
+    cursor: pointer;
+  }
 `;
 export const HeaderActions = styled.div`
   display: flex;
@@ -33,19 +51,18 @@ export const HeaderActions = styled.div`
 `;
 
 export const Balance = styled.div`
-  font-size: 2.25rem;
-  margin-top: 0.625rem;
-
-  span {
-    color: rgba(255, 255, 255, 0.3);
-  }
+  font-size: 1.75rem;
+  margin-top: 1rem;
+  font-family: Mulish;
+  font-weight: 800;
 `;
 
 export const Footer = styled.footer`
-  position: absolute;
-  left: 1.25rem;
-  bottom: 1.25rem;
-  font-size: 0.875rem;
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  font-family: Mulish;
+  font-weight: 800;
+  text-transform: uppercase;
 
   display: flex;
 `;
@@ -53,6 +70,7 @@ export const FooterAction = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
+  letter-spacing: 1px;
 
   &:not(:last-child) {
     margin-right: 1.5rem;
@@ -60,9 +78,5 @@ export const FooterAction = styled.div`
 
   svg {
     margin-right: 0.375rem;
-
-    path {
-      fill: rgba(255, 255, 255, 0.3);
-    }
   }
 `;
