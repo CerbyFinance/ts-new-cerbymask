@@ -3,6 +3,7 @@ import { AxiosInstance } from "axios";
 export * from "./api";
 export * from "./token";
 export * from "./stakes";
+export * from "./tx";
 
 export interface NetworkApi {
   api: AxiosInstance;
