@@ -1,30 +1,39 @@
 import styled from "styled-components";
 
+import { COLORS } from "@globalStyle/colors";
+
 export const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.625rem;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
 `;
 export const TokenInfo = styled.div`
   display: flex;
   align-items: center;
 
   svg {
-    margin-right: 0.625rem;
+    margin-right: 0.75rem;
   }
 `;
-export const TokenPrice = styled.div`
+export const TokenTicker = styled.div`
+  color: ${COLORS.extralight};
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.675rem;
+`;
+export const TokenBalance = styled.div`
+  font-family: Mulish;
+  font-weight: 800;
   font-size: 0.875rem;
-  font-weight: 700;
+`;
+export const TokenPrice = styled.div`
+  font-size: 1rem;
   text-align: right;
-  color: rgba(255, 255, 255, 0.4);
-
-  span {
-    display: block;
-  }
+  color: white;
 `;
 
 export const TokenIcon = styled.div`
