@@ -51,8 +51,8 @@ export const buildTokenData = (
   usdBalance: convertToUsd(token.value, exchangeData.price),
 });
 
-export const sliceAddress = (address: string) =>
-  `${address.slice(0, 16)}...${address.slice(-4)}`;
+export const sliceAddress = (address: string, end?: number) =>
+  `${address.slice(0, end || 12)}...${address.slice(-4)}`;
 
 export const afterAuth = async (
   opts: RadixApiOpts,
