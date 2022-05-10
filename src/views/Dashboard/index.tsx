@@ -148,7 +148,10 @@ export const Dashboard = () => {
               <ChevronDownIcon style={{ marginLeft: ".5rem" }} />
             </S.NetworkSelect>
           )}
-          <MenuIcon style={{ cursor: "pointer" }} />
+          <MenuIcon
+            style={{ cursor: "pointer" }}
+            onClick={() => setMenuVisibility(true)}
+          />
         </S.Header>
         <Wallet data={walletData} buttons={walletButtons} />
       </div>

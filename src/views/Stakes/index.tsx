@@ -9,8 +9,6 @@ import { RouteKey } from "@router/types";
 
 import { Stake as StakeType } from "@types";
 
-import { log } from "@utils";
-
 import { formatXrdStakes } from "@chains/radix/utils";
 import { unstakeCoins } from "@chains/radix/api";
 import {
@@ -24,10 +22,9 @@ import {
 } from "@chains/radix/store";
 
 import { Layout } from "@components/template";
-import { Title } from "@components/atoms";
+import { Tabs } from "@components/atoms";
 
-import * as S from "./style";
-import PlusIcon from "@assets/svg/plus.svg";
+import { StakeForm, MyStakes, Validators } from "./tabs";
 
 export const Stakes = () => {
   const router = useRouter();
@@ -65,10 +62,6 @@ export const Stakes = () => {
       })();
     }
   }, []);
-  useEffect(() => {
-    log("stakes");
-    log(stakes);
-  }, [stakes]);
 
   const xrdToken = userTokens?.find((token) => token.ticker === "XRD");
   const userStakes = formatXrdStakes(
@@ -79,30 +72,28 @@ export const Stakes = () => {
     xrdToken?.price || 0,
     network
   );
+
+  const tabs = [
+    {
+      label: "Stake",
+      content: <StakeForm />,
+    },
+    {
+      label: "Unstake",
+      content: <StakeForm isUnstaking />,
+    },
+    {
+      label: "My stakes",
+      content: <MyStakes userStakes={[]} />,
+    },
+    {
+      label: "Validators",
+      content: <Validators validators={[]} />,
+    },
+  ];
   return (
-    <Layout>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Title style={{ marginBottom: ".75rem" }}>Stakes</Title>
-        <PlusIcon
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            router.push(routesNames.ADD_STAKE as RouteKey);
-          }}
-        />
-      </div>
-      <div>
-        {userStakes.length === 0
-          ? "You have no stakes"
-          : userStakes.map((stake: StakeType, i: number) => {
-              return <S.Stake data={stake} key={i} onUnstake={handleUnstake} />;
-            })}
-      </div>
+    <Layout backButton>
+      <Tabs tabs={tabs} />
     </Layout>
   );
 };

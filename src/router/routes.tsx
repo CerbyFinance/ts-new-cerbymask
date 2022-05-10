@@ -11,7 +11,6 @@ import {
   SignIn,
   SignUp,
   Stakes,
-  Tokens,
 } from "@views";
 
 import { protectedRoutesNames, publicRoutesNames } from "./routesNames";
@@ -24,7 +23,6 @@ export const routes = {
     [protectedRoutesNames.RECEIVE_COINS]: () => <ReceiveCoins />,
     [protectedRoutesNames.SEND_COINS]: () => <SendCoins />,
     [protectedRoutesNames.STAKES]: () => <Stakes />,
-    [protectedRoutesNames.TOKENS]: () => <Tokens />,
   },
   public: {
     [publicRoutesNames.SIGN_IN]: () => <SignIn />,
