@@ -96,14 +96,12 @@ export const AddStake = () => {
         value={activeAddress.toString()}
         disabled
         style={{ margin: ".625rem 0" }}
-        useTextarea
       />
       <Input
         label="Validator"
         value={formData.validator}
         onChange={(v) => handleFieldChange("validator", v)}
         disabled
-        useTextarea
       />
       <CoinSelect
         tokens={userTokens || []}
