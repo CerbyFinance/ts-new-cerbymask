@@ -3,14 +3,10 @@ import styled from "styled-components";
 import { COLORS } from "@globalStyle/colors";
 
 export const Wrapper = styled.div<{ coinImg?: string }>`
-  border-radius: 1.5rem;
-  background-color: ${COLORS.blue};
-  background-image: ${({ coinImg }) => (coinImg ? `url(${coinImg})` : "none")};
-  background-position: right;
-  background-repeat: no-repeat;
+  border-radius: 0.5rem;
+  background: ${COLORS.button};
   padding: 1.25rem;
   position: relative;
-  min-height: 12rem;
 `;
 
 export const Header = styled.header`
@@ -19,7 +15,7 @@ export const Header = styled.header`
 `;
 
 export const Balance = styled.div`
-  margin-top: 0.625rem;
+  margin-top: 1rem;
 
   div {
     font-size: 2.25rem;
