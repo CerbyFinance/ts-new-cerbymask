@@ -1,8 +1,9 @@
-import { useRouter } from "@router";
 import React, { ReactNode } from "react";
+import { publicRoutesNames, useRouter } from "@router";
 
 import * as S from "./style";
 import BackIcon from "@assets/svg/back.svg";
+import MiniWolf from "@assets/svg/wolf-mini.svg";
 
 interface LayoutProps {
   children: ReactNode;
@@ -19,13 +20,19 @@ export const Layout = ({
   className,
   backButton,
 }: LayoutProps) => {
-  const { back } = useRouter();
+  const { back, current } = useRouter();
   return (
     <>
       <S.Layout className={className} style={style}>
         {backButton && (
           <S.Header>
-            <BackIcon onClick={() => back()} />
+            <div onClick={() => back()}>
+              <BackIcon />
+              Back
+            </div>
+            {current && publicRoutesNames.hasOwnProperty(current) ? (
+              <MiniWolf />
+            ) : null}
           </S.Header>
         )}
         {children}

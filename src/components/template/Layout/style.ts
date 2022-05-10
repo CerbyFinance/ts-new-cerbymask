@@ -11,9 +11,20 @@ export const Layout = styled.section`
 `;
 export const Header = styled.header`
   margin-bottom: 1rem;
+  font-family: Mulish;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-  svg {
+  & > div {
+    display: flex;
+    align-items: center;
     cursor: pointer;
+
+    & > svg {
+      margin-right: 0.25rem;
+    }
   }
 `;
 export const Footer = styled.footer`
