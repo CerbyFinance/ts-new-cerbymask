@@ -1,6 +1,6 @@
 import React from "react";
 
-export type InputType = "password" | "text";
+export type InputType = "password" | "number" | "text";
 
 export interface TextSC {
   transparent?: boolean;
