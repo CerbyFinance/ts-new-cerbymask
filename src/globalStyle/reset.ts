@@ -5,12 +5,15 @@ export const Reset = createGlobalStyle`
     box-sizing: border-box;
     letter-spacing: .02rem;
     font-family: Jost, sans-serif;
-    color: white;
 }
 
 html, body {
     margin: 0;
     padding: 0;
+}
+
+html, body, input, a {
+    color: white;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -23,7 +26,6 @@ h1, h2, h3, h4, h5, h6, p {
 
 a {
     text-decoration: none;
-    color: black;
 }
 
 input, textarea {
