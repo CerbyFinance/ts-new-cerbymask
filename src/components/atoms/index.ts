@@ -9,3 +9,6 @@ export * from "./Paragraph";
 export * from "./Badge";
 export * from "./CoinSelect";
 export * from "./Textarea";
+export * from "./Tabs";
+export * from "./Popup";
+export * from "./Popover";
