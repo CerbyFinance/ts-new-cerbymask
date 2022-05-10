@@ -9,7 +9,11 @@ export const Button = (props: ButtonProps) => {
   return (
     <S.Wrapper
       disabled={disabled}
-      onClick={onClick}
+      onClick={() => {
+        if (!disabled) {
+          onClick();
+        }
+      }}
       style={style}
       className={className}
     >
