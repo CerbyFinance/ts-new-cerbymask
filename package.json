@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.13.10",
+    "@radix-ui/react-popover": "^0.1.6",
     "@radixdlt/account": "^3.0.8",
     "@radixdlt/application": "^4.0.16",
     "@radixdlt/networking": "^2.1.15",
@@ -38,9 +39,9 @@
     "react-dom": "^17.0.1",
     "react-hook-form": "^7.6.4",
     "react-hot-toast": "^2.2.0",
-    "react-onclickoutside": "^6.10.0",
     "react-qr-code": "^2.0.4",
     "react-select": "^5.3.0",
+    "react-use": "^17.3.2",
     "rxjs": "^7.5.5",
     "stream-browserify": "^3.0.0",
     "styled-components": "^5.2.1"
