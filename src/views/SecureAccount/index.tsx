@@ -1,32 +1,39 @@
-import React from "react";
-import { useStore } from "effector-react";
+import React, { useState } from "react";
+import { sha256 } from "js-sha256";
+
+import { setPassword } from "@store";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { $password, setPassword } from "@chains/radix/store";
-
 import { Layout } from "@components/template";
 import { Input, Button, Title, Paragraph } from "@components/atoms";
 
-import * as S from "./style";
-
 export const SecureAccount = () => {
-  const password = useStore($password);
   const router = useRouter();
+
+  const [tempPassword, setTempPassword] = useState<string>("");
+
+  const handleContinue = async () => {
+    setPassword(tempPassword);
+    await chrome.storage.local.set({
+      password: sha256(tempPassword),
+    });
+    router.push(routesNames.CREATE_ACCOUNT as RouteKey);
+  };
 
   const footer = (
     <>
       <Input
         type="password"
         label="Password"
-        value={password}
-        onChange={(value) => setPassword(value)}
+        value={tempPassword}
+        onChange={setTempPassword}
       />
       <Button
         style={{ marginTop: "1.5rem" }}
-        onClick={() => router.push(routesNames.CREATE_ACCOUNT as RouteKey)}
-        disabled={!password}
+        onClick={handleContinue}
+        disabled={!tempPassword}
       >
         Continue
       </Button>

@@ -13,10 +13,7 @@ import { NETWORKS_LIST } from "@chains/radix/crypto";
 
 import { log } from "@utils";
 
-export * from "./account";
-export * from "./token";
-export * from "./tx";
-export * from "./stakes";
+export * from "./api";
 
 const { byLoadingAndDecryptingKeystore } = SigningKeychain;
 
@@ -32,6 +29,7 @@ export const connectToRadixApi = async (opts: RadixApiOpts) => {
     load: loadKeystore,
   });
   if (result.isErr()) {
+    log(result.error);
     log("Failed to connect to the API. Invalid credentials");
     toast.error("Invalid password", {
       style: {

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { StylesConfig } from "react-select";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 
 export const selectStyles: StylesConfig = {
   menu: (provided) => ({

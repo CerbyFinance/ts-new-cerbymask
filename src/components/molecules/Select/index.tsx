@@ -5,8 +5,7 @@ import { SelectProps } from "./types";
 import { Popup } from "@components/atoms";
 
 import * as S from "./style";
-import { COLORS } from "@globalStyle/colors";
-import ChevronDownIcon from "@assets/svg/chevron-down.svg";
+import { COLORS, ICONS } from "@globalStyle";
 
 export const Select = (props: SelectProps) => {
   const {
@@ -46,7 +45,7 @@ export const Select = (props: SelectProps) => {
             ? renderSelected(currentOption.value, currentOptionIndex)
             : <span style={{ color: COLORS.extralight }}>{placeholder}</span> ||
               ""}
-          <ChevronDownIcon
+          <ICONS.ChevronDown
             style={{ transform: `rotate(${isPopupVisible ? 180 : 0}deg)` }}
           />
         </S.Container>

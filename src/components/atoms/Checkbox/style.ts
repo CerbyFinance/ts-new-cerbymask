@@ -70,7 +70,8 @@ export const Checkbox = styled.input<CheckboxSC>`
     span {
       &:first-child {
         background: ${({ theme: { checkboxColor } }) => checkboxColor};
-        border-color: ${({ theme: { checkboxColor } }) => checkboxColor};
+        border-color: ${({ theme: { checkedBorderColor } }) =>
+          checkedBorderColor};
         animation: ${wave} 0.4s ease;
         svg {
           stroke-dashoffset: 0;

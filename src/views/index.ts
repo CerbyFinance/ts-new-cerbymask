@@ -5,7 +5,6 @@ export * from "./CreateAccount";
 export * from "./SecureAccount";
 export * from "./MyWallets";
 export * from "./Stakes";
-export * from "./AddStake";
-export * from "./ReceiveCoins";
 export * from "./ImportWallet";
 export * from "./SendCoins";
+export * from "./CheckRecoveryPhrase";

@@ -1,8 +1,8 @@
 import { UInt256 } from "@radixdlt/uint256";
 
-export interface BalanceToken {
+export interface TokenAmount {
   rri: string;
-  value: UInt256;
+  balance: UInt256;
   ticker: string;
 }
 
@@ -14,7 +14,7 @@ export interface ExchangeData {
   [key: string]: ExchangeToken;
 }
 
-export interface Token extends BalanceToken, ExchangeToken {
+export interface Token extends TokenAmount, ExchangeToken {
   usdBalance: number;
 }
 

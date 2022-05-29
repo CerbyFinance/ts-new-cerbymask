@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 
 export const Wrapper = styled.div`
   border-radius: 0.5rem;

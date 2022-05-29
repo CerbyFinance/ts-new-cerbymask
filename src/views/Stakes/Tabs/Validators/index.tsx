@@ -1,72 +1,60 @@
 import React from "react";
-
-import { ValidatorsProps } from "./types";
+import { useStore } from "effector-react";
+import BigNumber from "bignumber.js";
 
 import { sliceAddress } from "@chains/radix/utils";
 
+import { $validators } from "@chains/radix/store";
+
+import { ICONS } from "@globalStyle";
 import * as S from "./style";
-import PlusIcon from "@assets/svg/plus.svg";
-import CopyIcon from "@assets/svg/copy.svg";
 
-export const Validators = (props: ValidatorsProps) => {
-  const { validators } = props;
+export const Validators = () => {
+  const validators = useStore($validators);
 
-  const validatorsMock = [
-    {
-      name: "Jazzer",
-      address: "rv1q232900gerioeojbkfjkb40f037gm",
-      amount: 87588142,
-      amountPercentage: 2.94,
-      ownerAmount: 511242,
-      feePercentage: 1,
-      uptimePercentage: 100,
-    },
-    {
-      name: "RadixOz",
-      address: "rv1q232900gerioeojbkfjkb40f037gm",
-      feePercentage: 3,
-      uptimePercentage: 100,
-      amount: 87588142,
-      amountPercentage: 2.94,
-      ownerAmount: 511242,
-    },
-  ];
   return (
     <div style={{ overflow: "scroll-y" }}>
-      {validatorsMock.map((validator, i) => {
+      {validators.map((validator) => {
         const {
           name,
           address,
-          amount,
-          amountPercentage,
-          ownerAmount,
-          feePercentage,
+          totalDelegatedStake,
+          ownerDelegation,
           uptimePercentage,
+          validatorFee,
         } = validator;
 
+        const addressString = address.toString();
         return (
-          <S.Validator key={i}>
+          <S.Validator key={addressString}>
             <header>
               <S.ValidatorInfo>
                 <span>{name}</span>
                 <div />
-                {sliceAddress(address, 4)}
-                <CopyIcon />
+                {sliceAddress(addressString, 4)}
+                <ICONS.Copy />
               </S.ValidatorInfo>
               <div style={{ cursor: "pointer", color: "white" }}>
-                <PlusIcon style={{ marginRight: ".25rem" }} />
+                <ICONS.Plus style={{ marginRight: ".25rem" }} />
                 Add stake
               </div>
             </header>
             <main>
               <div>
                 <div>
-                  Stake: {amount} ({amountPercentage}%)
+                  Stake: {totalDelegatedStake.valueOf().toLocaleString()} (
+                  {new BigNumber(ownerDelegation.toString())
+                    .dividedBy(totalDelegatedStake.toString())
+                    .multipliedBy(100)
+                    .toFixed(2)}
+                  %)
                 </div>
-                <div>Owner stake: {ownerAmount}</div>
+                <div>
+                  Owner stake: {ownerDelegation.valueOf().toLocaleString()}
+                </div>
               </div>
               <div>
-                <div>Fee: {feePercentage}%</div>
+                <div>Fee: {validatorFee}%</div>
                 <div>Uptime: {uptimePercentage}%</div>
               </div>
             </main>

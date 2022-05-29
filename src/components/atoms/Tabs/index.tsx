@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { TabsProps } from "./types";
 
 import * as S from "./style";
 
 export const Tabs = (props: TabsProps) => {
-  const { tabs, style } = props;
+  const { tabs, currentTab, setCurrentTab, style } = props;
 
-  const [currentTab, setCurrentTab] = useState<number>(0);
   return tabs && tabs.length > 0 ? (
     <S.Wrapper style={style}>
       <S.Header>
@@ -17,7 +16,9 @@ export const Tabs = (props: TabsProps) => {
             <S.Tab
               isActive={i === currentTab}
               key={label}
-              onClick={() => setCurrentTab(i)}
+              onClick={() => {
+                setCurrentTab(i);
+              }}
             >
               {label}
             </S.Tab>

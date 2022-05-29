@@ -1,26 +1,23 @@
 import React from "react";
 import {
-  AddStake,
   CreateAccount,
   Dashboard,
   ImportWallet,
   MyWallets,
-  ReceiveCoins,
   SecureAccount,
   SendCoins,
   SignIn,
   SignUp,
   Stakes,
+  CheckRecoveryPhrase,
 } from "@views";
 
 import { protectedRoutesNames, publicRoutesNames } from "./routesNames";
 
 export const routes = {
   protected: {
-    [protectedRoutesNames.ADD_STAKE]: () => <AddStake />,
     [protectedRoutesNames.DASHBOARD]: () => <Dashboard />,
     [protectedRoutesNames.MY_WALLETS]: () => <MyWallets />,
-    [protectedRoutesNames.RECEIVE_COINS]: () => <ReceiveCoins />,
     [protectedRoutesNames.SEND_COINS]: () => <SendCoins />,
     [protectedRoutesNames.STAKES]: () => <Stakes />,
   },
@@ -30,5 +27,6 @@ export const routes = {
     [publicRoutesNames.CREATE_ACCOUNT]: () => <CreateAccount />,
     [publicRoutesNames.SECURE_ACCOUNT]: () => <SecureAccount />,
     [publicRoutesNames.IMPORT_WALLET]: () => <ImportWallet />,
+    [publicRoutesNames.CHECK_RECOVERY_PHRASE]: () => <CheckRecoveryPhrase />,
   },
 };

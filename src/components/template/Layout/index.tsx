@@ -1,17 +1,11 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { publicRoutesNames, useRouter } from "@router";
 
-import * as S from "./style";
-import BackIcon from "@assets/svg/back.svg";
-import MiniWolf from "@assets/svg/wolf-mini.svg";
+import { LayoutProps } from "./types";
 
-interface LayoutProps {
-  children: ReactNode;
-  footer?: ReactNode;
-  style?: React.CSSProperties;
-  className?: string;
-  backButton?: boolean;
-}
+import { ICONS } from "@globalStyle";
+import * as S from "./style";
+import MiniWolf from "@assets/svg/wolf-mini.svg";
 
 export const Layout = ({
   children,
@@ -27,7 +21,7 @@ export const Layout = ({
         {backButton && (
           <S.Header>
             <div onClick={() => back()}>
-              <BackIcon />
+              <ICONS.Back />
               Back
             </div>
             {current && publicRoutesNames.hasOwnProperty(current) ? (

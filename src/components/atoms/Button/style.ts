@@ -1,10 +1,11 @@
 import styled from "styled-components";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 import { ButtonProps } from "./types";
 
-export const Wrapper = styled.div<Pick<ButtonProps, "disabled">>`
-  background: ${COLORS.button};
+export const Wrapper = styled.div<Pick<ButtonProps, "disabled" | "passive">>`
+  background: ${({ passive }) =>
+    passive ? "rgba(255, 255, 255, 0.1)" : COLORS.button};
   border-radius: 0.5rem;
   width: 100%;
   padding: 0.75rem 0;

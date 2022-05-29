@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useStore } from "effector-react";
 import toast from "react-hot-toast";
 
@@ -7,15 +7,9 @@ import { AccountAddressT } from "@radixdlt/account";
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { Stake as StakeType } from "@types";
-
-import { formatXrdStakes } from "@chains/radix/utils";
 import { unstakeCoins } from "@chains/radix/api";
 import {
   $activeAddress,
-  $network,
-  $stakes,
-  $userTokens,
   getStakes,
   getValidators,
   setUserTokens,
@@ -29,12 +23,11 @@ import { StakeForm, MyStakes, Validators } from "./tabs";
 export const Stakes = () => {
   const router = useRouter();
 
-  const network = useStore($network);
-  const userTokens = useStore($userTokens);
   const activeAddress = useStore($activeAddress);
-  const { stakes, pendingStakes } = useStore($stakes);
 
-  const handleUnstake = async (data: StakeType) => {
+  const [currentTab, setCurrentTab] = useState<number>(0);
+
+  const handleUnstake = async (data: any) => {
     const { validator, rri } = data;
 
     await toast.promise(
@@ -50,28 +43,18 @@ export const Stakes = () => {
       }
     );
 
-    getStakes({ activeAddress: activeAddress as AccountAddressT });
-    setUserTokens({ activeAddress: activeAddress as AccountAddressT });
+    getStakes({ address: activeAddress as AccountAddressT });
+    setUserTokens({ address: activeAddress as AccountAddressT });
   };
 
   useEffect(() => {
     if (activeAddress) {
       (async () => {
         await getValidators();
-        await getStakes({ activeAddress });
+        await getStakes({ address: activeAddress });
       })();
     }
   }, []);
-
-  const xrdToken = userTokens?.find((token) => token.ticker === "XRD");
-  const userStakes = formatXrdStakes(
-    stakes.concat(
-      pendingStakes.map((stake) => ({ ...stake, isPending: true }))
-    ),
-    activeAddress.toString(),
-    xrdToken?.price || 0,
-    network
-  );
 
   const tabs = [
     {
@@ -84,16 +67,28 @@ export const Stakes = () => {
     },
     {
       label: "My stakes",
-      content: <MyStakes userStakes={[]} />,
+      content: (
+        <MyStakes
+          options={{
+            addStake: () => {
+              setCurrentTab(1);
+            },
+            reduceStake: () => {
+              setCurrentTab(2);
+            },
+          }}
+        />
+      ),
     },
     {
       label: "Validators",
-      content: <Validators validators={[]} />,
+      content: <Validators />,
     },
   ];
+
   return (
     <Layout backButton>
-      <Tabs tabs={tabs} />
+      <Tabs currentTab={currentTab} setCurrentTab={setCurrentTab} tabs={tabs} />
     </Layout>
   );
 };

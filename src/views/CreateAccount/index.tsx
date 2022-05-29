@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "effector-react";
 
-import { useRouter } from "@router";
+import { log } from "@utils";
+
+import { $password } from "@store";
+
+import { routesNames, useRouter } from "@router";
+import { RouteKey } from "@router/types";
 
 import { createWallet } from "@chains/radix/crypto";
-import { $network, $password } from "@chains/radix/store";
-import { afterAuth } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
-import { Button, Checkbox, Paragraph, Title, Warning } from "@components/atoms";
-
-import * as S from "./style";
+import { Button, Checkbox, Paragraph, Title } from "@components/atoms";
+import { RecoveryPhrase } from "@components/molecules";
 
 export const CreateAccount = () => {
   const router = useRouter();
 
-  const network = useStore($network);
   const password = useStore($password);
 
   const [words, setWords] = useState<string[]>([]);
@@ -29,9 +30,11 @@ export const CreateAccount = () => {
     <>
       <Button
         disabled={!memorized}
-        onClick={() => afterAuth({ password, url: network.url }, router)}
+        onClick={() => {
+          router.push(routesNames.CHECK_RECOVERY_PHRASE as RouteKey);
+        }}
       >
-        Create my first wallet
+        Continue
       </Button>
     </>
   );
@@ -39,7 +42,9 @@ export const CreateAccount = () => {
   useEffect(() => {
     (async () => {
       const mnemonic = await createWallet(password);
-      setWords(mnemonic.toString().split(" "));
+      log("mnemonic");
+      log(mnemonic);
+      setWords(mnemonic);
     })();
   }, []);
 
@@ -50,25 +55,7 @@ export const CreateAccount = () => {
         Write down or copy these words in the right order and save them
         somewhere safe.
       </Paragraph>
-      <Warning style={{ margin: "1rem 0" }}>
-        Never share recovery phrase with anyone, store it securely!
-      </Warning>
-      <S.Phrases>
-        <div>
-          {words.slice(0, words.length / 2).map((word, i) => (
-            <S.Phrase key={word}>
-              {i + 1}. {word}
-            </S.Phrase>
-          ))}
-        </div>
-        <div>
-          {words.slice(words.length / 2, words.length).map((word, i) => (
-            <S.Phrase key={word}>
-              {i + 1 + words.length / 2}. {word}
-            </S.Phrase>
-          ))}
-        </div>
-      </S.Phrases>
+      <RecoveryPhrase words={words} isLoading={words.length === 0} />
       <Checkbox
         id="checkbox-memorized"
         checked={memorized}

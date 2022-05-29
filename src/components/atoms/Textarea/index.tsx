@@ -6,7 +6,6 @@ import * as S from "./style";
 
 export const Textarea = (props: TextareaProps) => {
   const {
-    type,
     label,
     value,
     onChange,

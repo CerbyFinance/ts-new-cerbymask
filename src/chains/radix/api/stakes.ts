@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { interval, mergeMap } from "rxjs";
+import { firstValueFrom, interval, mergeMap } from "rxjs";
 
 import { AccountAddressT, ValidatorAddress } from "@radixdlt/account";
 import { Amount, Validator } from "@radixdlt/application";
@@ -10,27 +10,21 @@ import { log } from "@utils";
 
 import { radixApi, userConfirmation } from ".";
 
-export const fetchValidators = (): Promise<Validator[]> => {
-  return new Promise((resolve, reject) => {
+export const fetchValidators = async (): Promise<Validator[]> => {
+  const data = await firstValueFrom(
     radixApi.ledger
       .networkId()
       .pipe(mergeMap((network) => radixApi.ledger.validators(network)))
-      .subscribe((validatorsRes: any) => {
-        resolve(validatorsRes.validators);
-      });
-  });
+  );
+  return data.validators;
 };
 
-export const fetchStakes = (payload: {
-  activeAddress: AccountAddressT;
-}): Promise<Stakes> => {
-  const { activeAddress } = payload;
-  return new Promise((resolve, reject) => {
-    radixApi.ledger.stakesForAddress(activeAddress).subscribe((response) => {
-      resolve(response);
-    });
-  });
-};
+export const fetchStakes = async ({
+  address,
+}: {
+  address: AccountAddressT;
+}): Promise<Stakes> =>
+  await firstValueFrom(radixApi.ledger.stakesForAddress(address));
 
 export const stakeCoins = (payload: any): Promise<void> => {
   const { validator, amount, rri, onSubmit } = payload;

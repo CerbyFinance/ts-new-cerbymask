@@ -6,7 +6,6 @@ import { RouteKey } from "@router/types";
 import { Layout } from "@components/template";
 import { Logo, Button } from "@components/atoms";
 
-import { COLORS } from "@globalStyle/colors";
 import { HaveAccount } from "./style";
 
 export const SignUp = () => {
@@ -21,12 +20,9 @@ export const SignUp = () => {
       </Button>
       <Button
         style={{ marginTop: "1rem", background: "rgba(255, 255, 255, 0.1)" }}
-        onClick={() =>
-          chrome.runtime.sendMessage({
-            title: "debug-log",
-            data: "click",
-          })
-        }
+        onClick={() => {
+          router.push(routesNames.IMPORT_WALLET as RouteKey);
+        }}
       >
         Recover existing
       </Button>

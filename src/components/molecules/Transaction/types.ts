@@ -1,7 +1,7 @@
-import { TxWithIcon } from "@chains/radix/types";
+import { SimpleExecutedTransaction } from "@radixdlt/application";
 
 export interface TransactionProps {
-  data: TxWithIcon;
+  data: SimpleExecutedTransaction;
   style?: React.CSSProperties;
   className?: string;
 }

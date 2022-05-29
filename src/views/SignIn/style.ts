@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 
 export const Title = styled.h5`
   font-size: 0.75rem;

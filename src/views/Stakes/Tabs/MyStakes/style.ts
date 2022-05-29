@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 
 export const MyStake = styled.div`
   border-radius: 0.5rem;

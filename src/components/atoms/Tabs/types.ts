@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { CSSProperties, Dispatch, SetStateAction } from "react";
 
 export interface Tab {
   label: string;
@@ -7,4 +7,6 @@ export interface Tab {
 export interface TabsProps {
   tabs: Tab[];
   style?: CSSProperties;
+  currentTab: number;
+  setCurrentTab: Dispatch<SetStateAction<number>>;
 }

@@ -1,11 +1,16 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-
-import { log } from "@utils";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { routes } from "./routes";
 
 import { RouteKey, RouterContextValue } from "./types";
 import { routesNames } from "./routesNames";
+import { log, resetAll } from "@utils";
 
 export * from "./routesNames";
 
@@ -18,7 +23,7 @@ const RouterContext = createContext<RouterContextValue>({
 
 export const useRouter = () => useContext(RouterContext);
 
-export const Router = ({ children }: { children: React.ReactNode }) => {
+export const Router = ({ children }: { children: ReactNode }) => {
   const [history, setHistory] = useState<RouteKey[]>([]);
   const [current, setCurrent] = useState<RouteKey | null>(null);
 
@@ -70,8 +75,18 @@ export const RouterView = ({
 }: {
   authenticated?: boolean;
 }) => {
-  const { current, redirect } = useRouter();
-  const views = authenticated ? routes.protected : routes.public;
+  const router = useRouter();
+  const { current, redirect } = router;
+
+  const views = {
+    ...routes.public,
+    ...(authenticated && routes.protected),
+  };
+  /*
+  useEffect(() => {
+    resetAll(router);
+  }, []);
+  */
   useEffect(() => {
     if (current && !views[current]) {
       redirect(

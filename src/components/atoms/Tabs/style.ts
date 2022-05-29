@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS, MIXINS } from "@globalStyle";
 
 export const Wrapper = styled.div``;
 export const Tab = styled.div<{ isActive?: boolean }>`
@@ -10,13 +10,14 @@ export const Tab = styled.div<{ isActive?: boolean }>`
   font-family: Mulish;
   font-size: 0.825rem;
   color: white;
-  opacity: 0.5;
   position: relative;
   border-radius: 0.5rem;
 
   ${({ isActive }) =>
     isActive &&
     `
+    ${MIXINS.textGradient}
+    
     &::before {
         content: "";
         position: absolute;
@@ -31,10 +32,6 @@ export const Tab = styled.div<{ isActive?: boolean }>`
                 mask-composite: exclude;
         pointer-events: none;
     }
-    background: ${COLORS.button};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    opacity: 1;
   `}
 `;
 
@@ -54,4 +51,6 @@ export const Header = styled.header`
 `;
 export const Content = styled.main`
   margin-top: 1rem;
+  overflow-y: scroll;
+  max-height: 29rem;
 `;

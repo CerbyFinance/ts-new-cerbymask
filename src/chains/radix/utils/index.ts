@@ -1,55 +1,20 @@
-import BigNumber from "bignumber.js";
-
-import { UInt256 } from "@radixdlt/uint256";
-import { KeystoreT, StakePosition } from "@radixdlt/application";
-
-import { Stake } from "@types";
+import { sha256 } from "js-sha256";
+import toast from "react-hot-toast";
 
 import { log } from "@utils";
 
 import { routesNames } from "@router";
 import { RouteKey, RouterContextValue } from "@router/types";
 
-import {
-  RadixApiOpts,
-  BalanceToken,
-  ExchangeToken,
-  Token,
-  Network,
-} from "@chains/radix/types";
-import { connectToRadixApi } from "@chains/radix/api";
-import { authenticate, setActiveAddress } from "@chains/radix/store";
+import { authenticate } from "@store";
 
-export const loadKeystore = async () => {
-  const result = await chrome.storage.local.get("keystore");
-  log(`Got keystore: ${JSON.stringify(result.keystore, null, "\t")}`);
-  return result.keystore as KeystoreT;
-};
+import { RadixApiOpts } from "@chains/radix/types";
+import { connectToRadixApi, fetchActiveAddress } from "@chains/radix/api";
+import { setActiveAddress } from "@chains/radix/store";
 
-export const setStorage = async (key: string, value: any) => {
-  const { radix: radixStorage } = await chrome.storage.local.get("radix");
-  await chrome.storage.local.set({ radix: { ...radixStorage, [key]: value } });
-};
-
-export const convertToMainUnit = (balance: UInt256) =>
-  new BigNumber(balance.toString())
-    .dividedBy(10 ** 18)
-    .toFixed()
-    .toString();
-
-export const convertToUsd = (balance: UInt256, price: number) => {
-  const bnValue = new BigNumber(balance.toString()).dividedBy(10 ** 18);
-  return bnValue.toNumber() * price;
-};
-
-export const buildTokenData = (
-  token: BalanceToken,
-  exchangeData: ExchangeToken
-): Token => ({
-  ...token,
-  ...exchangeData,
-  usdBalance: convertToUsd(token.value, exchangeData.price),
-});
+export * from "./convert";
+export * from "./map";
+export * from "./storage";
 
 export const sliceAddress = (address: string, end?: number) =>
   `${address.slice(0, end || 12)}...${address.slice(-4)}`;
@@ -58,25 +23,20 @@ export const afterAuth = async (
   opts: RadixApiOpts,
   router: RouterContextValue
 ) => {
-  await connectToRadixApi(opts);
-  authenticate(true);
-  setActiveAddress();
-  router.redirect(routesNames.DASHBOARD as RouteKey);
-};
+  const { password } = await chrome.storage.local.get("password");
+  const hashedPassword = sha256(opts.password);
+  if (password !== hashedPassword) {
+    toast.error("Invalid password");
+    throw new Error("Invalid password");
+  }
 
-export const formatXrdStakes = (
-  positions: (StakePosition & { isPending?: boolean })[],
-  address: string,
-  price: number,
-  network: Network
-): Stake[] => {
-  return positions.map(({ validator, amount, isPending }) => ({
-    ticker: "XRD",
-    rri: network.xrd_rri,
-    address,
-    usdEquivalent: convertToUsd(amount, price),
-    amount: convertToMainUnit(amount),
-    validator: validator.toString(),
-    isPending,
-  }));
+  try {
+    await connectToRadixApi({ ...opts, password: opts.password });
+    authenticate(true);
+    setActiveAddress();
+    router.redirect(routesNames.DASHBOARD as RouteKey);
+    return await fetchActiveAddress();
+  } catch (err) {
+    log(err);
+  }
 };

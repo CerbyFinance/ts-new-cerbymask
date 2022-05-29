@@ -1,12 +1,16 @@
 import styled from "styled-components";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 
 export const Header = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+
+  & > svg {
+    cursor: pointer;
+  }
 `;
 export const NetworkSelect = styled.div`
   cursor: pointer;
@@ -44,6 +48,8 @@ export const Footer = styled.footer`
 `;
 
 export const ItemsDivider = styled.div`
+  max-height: 15.25rem;
+  overflow-y: scroll;
   & > div:not(:last-child) {
     margin-bottom: 0.5rem;
   }

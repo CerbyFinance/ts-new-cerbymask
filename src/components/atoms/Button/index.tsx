@@ -5,7 +5,7 @@ import { ButtonProps } from "./types";
 import * as S from "./style";
 
 export const Button = (props: ButtonProps) => {
-  const { disabled, children, onClick, style, className } = props;
+  const { disabled, children, onClick, style, className, passive } = props;
   return (
     <S.Wrapper
       disabled={disabled}
@@ -16,6 +16,7 @@ export const Button = (props: ButtonProps) => {
       }}
       style={style}
       className={className}
+      passive={passive}
     >
       {children}
     </S.Wrapper>

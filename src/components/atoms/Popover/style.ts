@@ -1,7 +1,7 @@
 import styled, { keyframes } from "styled-components";
 import { Content as ContentPrimitive } from "@radix-ui/react-popover";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 
 const slideUpAndFade = keyframes`
     from {

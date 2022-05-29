@@ -3,23 +3,23 @@ import ReactSelect, { OptionProps } from "react-select";
 
 import { Token } from "@chains/radix/types";
 import { convertToMainUnit } from "@chains/radix/utils";
-import { TOKEN_ICONS } from "@chains/radix/crypto";
 
 import { CoinSelectProps } from "./types";
 
+import { TOKEN_ICONS } from "@globalStyle";
 import * as S from "./style";
 
 const Option: React.FC<OptionProps> = (props) => {
   const { data, innerRef, innerProps } = props;
-  const { usdBalance, ticker, value, rri } = data as Token;
+  const { usdBalance, ticker, balance, rri } = data as Token;
 
-  const icon = TOKEN_ICONS[rri];
+  const icon = TOKEN_ICONS[ticker];
   return (
     <S.CoinOption ref={innerRef} {...innerProps}>
       <S.CoinBalance>
         ${usdBalance.toFixed(2)}
         <strong>
-          {convertToMainUnit(value)} {ticker}
+          {convertToMainUnit(balance)} {ticker}
         </strong>
       </S.CoinBalance>
       <S.CoinIcon>

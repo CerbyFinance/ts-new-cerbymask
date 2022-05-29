@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useStore } from "effector-react";
 
+import { getAccountsData } from "@utils";
+
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
@@ -10,7 +12,7 @@ import { $network } from "@chains/radix/store";
 import { Layout } from "@components/template";
 import { Logo, Input, Button } from "@components/atoms";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 import * as S from "./style";
 
 export const SignIn = () => {
@@ -25,11 +27,14 @@ export const SignIn = () => {
         type="password"
         label="Password"
         value={password}
-        onChange={(value) => setPassword(value)}
+        onChange={setPassword}
       />
       <Button
         style={{ marginTop: "1.5rem" }}
-        onClick={() => afterAuth({ password, url: network.url }, router)}
+        onClick={async () => {
+          await afterAuth({ password, url: network.url }, router);
+          getAccountsData();
+        }}
         disabled={!password}
       >
         Log in

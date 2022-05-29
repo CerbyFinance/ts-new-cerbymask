@@ -1,4 +1,3 @@
-export const zIndexes = {
-  BLUR: 2, // Popup blur
-  POPUP: 3, // Popup atom
-};
+export const MENU = 2;
+export const BLUR = 3;
+export const POPUP = 4;

@@ -1,6 +1,6 @@
 import { forward } from "effector";
 
-import { Validator } from "@radixdlt/application";
+import { StakePositions, Validator } from "@radixdlt/application";
 import { AccountAddressT } from "@radixdlt/account";
 
 import { Stakes } from "@chains/radix/types";
@@ -27,16 +27,14 @@ forward({
 $validators.on(getValidatorsFx.doneData, (_, validators) => validators);
 
 // Stakes
-export const $stakes = radix.createStore<Stakes>({
-  pendingStakes: [],
-  stakes: [],
-});
+export const $pendingStakes = radix.createStore<StakePositions>([]);
+export const $stakes = radix.createStore<StakePositions>([]);
 
 export const getStakes = radix.createEvent<{
-  activeAddress: AccountAddressT;
+  address: AccountAddressT;
 }>();
 const getStakesFx = radix.createEffect(
-  async (payload: { activeAddress: AccountAddressT }) => {
+  async (payload: { address: AccountAddressT }) => {
     const stakes = await fetchStakes(payload);
     return stakes;
   }
@@ -47,4 +45,8 @@ forward({
   to: getStakesFx,
 });
 
-$stakes.on(getStakesFx.doneData, (_, stakes) => stakes);
+$stakes.on(getStakesFx.doneData, (_, { stakes }) => stakes);
+$pendingStakes.on(
+  getStakesFx.doneData,
+  (_, { pendingStakes }) => pendingStakes
+);

@@ -28,3 +28,6 @@ export const getXrdDataFx = radix.createEffect(async () => {
 });
 
 $xrdData.on(getXrdDataFx.doneData, (_, data) => data);
+
+// dev
+export const XRD_PRICE = 0.09;

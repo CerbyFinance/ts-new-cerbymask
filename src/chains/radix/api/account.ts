@@ -1,25 +1,37 @@
+import { firstValueFrom } from "rxjs";
 import { AccountAddressT } from "@radixdlt/account";
+import {
+  SimpleExecutedTransaction,
+  TransactionHistory,
+} from "@radixdlt/application";
 import { AccountBalancesEndpoint } from "@radixdlt/application/dist/api/open-api/_types";
 
 import { radixApi } from ".";
+import { log } from "@utils";
 
-export const fetchActiveAddress = (): Promise<AccountAddressT> => {
-  return new Promise((resolve, reject) => {
-    radixApi.activeAddress.subscribe((address: AccountAddressT) => {
-      resolve(address);
-    });
-  });
+export const fetchActiveAddress = async (): Promise<AccountAddressT> => {
+  return await firstValueFrom(radixApi.activeAddress);
 };
 
-export const fetchTokenBalances = (payload: {
-  activeAddress: AccountAddressT;
+export const fetchTokenBalances = async ({
+  address,
+}: {
+  address: AccountAddressT;
 }): Promise<AccountBalancesEndpoint.DecodedResponse> => {
-  const { activeAddress } = payload;
-  return new Promise((resolve, reject) => {
-    radixApi.ledger
-      .tokenBalancesForAddress(activeAddress)
-      .subscribe((balances: AccountBalancesEndpoint.DecodedResponse) => {
-        resolve(balances);
-      });
-  });
+  const balances = (await firstValueFrom(
+    radixApi.ledger.tokenBalancesForAddress(address)
+  )) as AccountBalancesEndpoint.DecodedResponse;
+  return balances;
+};
+
+export const getTxHistory = async (payload: {
+  address: AccountAddressT;
+  size: number;
+}): Promise<SimpleExecutedTransaction[]> => {
+  const txs = (await firstValueFrom(
+    radixApi.ledger.transactionHistory(payload)
+  )) as TransactionHistory;
+  log("txs");
+  log(txs);
+  return txs.transactions;
 };

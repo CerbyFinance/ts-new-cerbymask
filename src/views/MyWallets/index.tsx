@@ -5,7 +5,7 @@ import { Wallet as WalletType } from "@types";
 import { Layout } from "@components/template";
 import { Title } from "@components/atoms";
 
-import { WALLETS_PALETTE } from "@globalStyle/colors";
+import { PALETTES } from "@globalStyle";
 import * as S from "./style";
 
 export const MyWallets = () => {
@@ -35,7 +35,7 @@ export const MyWallets = () => {
               data={wallet}
               key={wallet.address}
               style={{
-                backgroundColor: WALLETS_PALETTE[i % WALLETS_PALETTE.length],
+                backgroundColor: PALETTES.wallets[i % PALETTES.wallets.length],
               }}
             />
           );

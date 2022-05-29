@@ -24,6 +24,8 @@ export const Container = styled.div`
 `;
 
 export const Options = styled.div`
+  overflow-y: scroll;
+  max-height: 18.75rem;
   & > div {
     margin-bottom: 0.75rem;
   }

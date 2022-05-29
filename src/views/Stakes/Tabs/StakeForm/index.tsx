@@ -1,20 +1,33 @@
-import React, { useState } from "react";
-import { useStoreMap } from "effector-react";
+import React, { useEffect, useState } from "react";
+import { useStore, useStoreMap } from "effector-react";
+import BigNumber from "bignumber.js";
+
+import { Validator } from "@radixdlt/application";
 
 import { StakeProps } from "./types";
 
 import { sliceAddress } from "@chains/radix/utils";
 
-import { $activeAddress } from "@chains/radix/store";
+import { $activeAddress, $validators } from "@chains/radix/store";
 
-import { Button, Checkbox, Input } from "@components/atoms";
-import { Select } from "@components/molecules";
+import { Button, Input } from "@components/atoms";
+import { SelectItem, Select } from "@components/molecules";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 import * as S from "./style";
 
 export const StakeForm = (props: StakeProps) => {
   const { isUnstaking } = props;
+
+  const validators = useStoreMap($validators, (validators) =>
+    validators.map((validator) => {
+      const addressString = validator.address.toString();
+      return {
+        key: addressString,
+        value: validator,
+      };
+    })
+  );
 
   const activeAddress = useStoreMap($activeAddress, (addr) => addr.toString());
 
@@ -39,20 +52,14 @@ export const StakeForm = (props: StakeProps) => {
       },
     },
   ];
-  const validators = [
-    {
-      key: "rv1q232900gerioeojbkfjkb40f037gm",
-      value: {
-        name: "Jazzer",
-        address: "rv1q232900gerioeojbkfjkb40f037gm",
-        amount: 87588142,
-        amountPercentage: 2.94,
-        ownerAmount: 511242,
-        feePercentage: 1,
-        uptimePercentage: 100,
-      },
-    },
-  ];
+
+  useEffect(() => {
+    setFormData({
+      from: activeAddress,
+      validator: "",
+      amount: "0",
+    });
+  }, [isUnstaking]);
 
   return (
     <div>
@@ -76,20 +83,14 @@ export const StakeForm = (props: StakeProps) => {
         renderOption={(option, i) => {
           const { key, selected, select } = option;
           return (
-            <S.OptionAccount>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Checkbox
-                  id={`${isUnstaking ? "unstake" : "stake"}-account-${i}`}
-                  onChange={() => (selected ? select("") : select(key))}
-                  checked={selected}
-                  style={{ marginRight: ".75rem" }}
-                />
-                Account #{i}
-              </div>
-              <div style={{ color: COLORS.extralight }}>
-                {sliceAddress(key)}
-              </div>
-            </S.OptionAccount>
+            <SelectItem
+              key={key}
+              checkboxId={`${isUnstaking ? "unstake" : "stake"}-account-${i}`}
+              label={`Account #${i}`}
+              value={key}
+              onSelect={(address) => (selected ? select("") : select(address))}
+              selected={selected}
+            />
           );
         }}
       />
@@ -104,9 +105,17 @@ export const StakeForm = (props: StakeProps) => {
           const { address, name } = option as any;
           return (
             <div>
-              {name}{" "}
+              <span
+                style={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {name}
+              </span>{" "}
               <span style={{ color: COLORS.extralight }}>
-                ({sliceAddress(address)})
+                ({sliceAddress(address.toString())})
               </span>
             </div>
           );
@@ -115,12 +124,11 @@ export const StakeForm = (props: StakeProps) => {
           const { key, select, data } = option;
           const {
             name,
-            amount,
-            amountPercentage,
-            ownerAmount,
-            feePercentage,
+            totalDelegatedStake,
+            ownerDelegation,
+            validatorFee,
             uptimePercentage,
-          } = data as any;
+          } = data as Validator;
 
           return (
             <S.OptionValidator onClick={() => select(key)}>
@@ -132,12 +140,19 @@ export const StakeForm = (props: StakeProps) => {
               <main>
                 <div>
                   <div>
-                    Stake: {amount.toLocaleString()} ({amountPercentage}%)
+                    Stake: {totalDelegatedStake.valueOf().toLocaleString()} (
+                    {new BigNumber(ownerDelegation.toString())
+                      .dividedBy(totalDelegatedStake.toString())
+                      .multipliedBy(100)
+                      .toFixed(2)}
+                    %)
                   </div>
-                  <div>Owner stake: {ownerAmount.toLocaleString()}</div>
+                  <div>
+                    Owner stake: {ownerDelegation.valueOf().toLocaleString()}
+                  </div>
                 </div>
                 <div>
-                  <div>Fee: {feePercentage}%</div>
+                  <div>Fee: {validatorFee}%</div>
                   <div>Uptime: {uptimePercentage}%</div>
                 </div>
               </main>

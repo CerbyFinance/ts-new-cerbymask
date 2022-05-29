@@ -1,9 +1,21 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { useStore } from "effector-react";
+import { sha256 } from "js-sha256";
+
+import { useRouter } from "@router";
+
+import { afterAuth } from "@chains/radix/utils";
+import { $network } from "@chains/radix/store";
+import { createWallet } from "@chains/radix/crypto";
 
 import { Layout } from "@components/template";
 import { Button, Input, Textarea, Paragraph, Title } from "@components/atoms";
 
 export const ImportWallet = () => {
+  const router = useRouter();
+
+  const network = useStore($network);
   const [formData, setFormData] = useState({
     password: "",
     phrase: "",
@@ -14,9 +26,20 @@ export const ImportWallet = () => {
     setFormData((formData) => ({ ...formData, [field]: value }));
   };
 
+  const handleImport = async () => {
+    const { password, phrase } = formData;
+    try {
+      await createWallet(password, phrase);
+      await chrome.storage.local.set({ password: sha256(password) });
+      await afterAuth({ password, url: network.url }, router);
+    } catch {
+      toast.error("Invalid phrase");
+    }
+  };
+
   const footer = (
     <>
-      <Button disabled={!validation} onClick={() => {}}>
+      <Button disabled={!validation} onClick={handleImport}>
         Import wallet
       </Button>
     </>
@@ -31,7 +54,9 @@ export const ImportWallet = () => {
       <Textarea
         label="Security phrase"
         value={formData.phrase}
-        onChange={(v) => handleFieldChange("phrase", v)}
+        onChange={(v) => {
+          handleFieldChange("phrase", v);
+        }}
         style={{ margin: ".625rem 0" }}
         textareaStyle={{ minHeight: "8.25rem" }}
       />
@@ -39,7 +64,9 @@ export const ImportWallet = () => {
         label="New password"
         type="password"
         value={formData.password}
-        onChange={(v) => handleFieldChange("password", v)}
+        onChange={(v) => {
+          handleFieldChange("password", v);
+        }}
         style={{ minHeight: "100px", marginBottom: ".625rem" }}
       />
     </Layout>

@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "effector-react";
 
+import { TokenWithIcon } from "@chains/radix/types";
+
 import { log } from "@utils";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { TokenWithIcon, TxWithIcon } from "@chains/radix/types";
+import { setAccounts, toggleMenu } from "@store";
+import { $activeAddress, $txHistory, $userTokens } from "@chains/radix/store";
 
-import { $activeAddress, $userTokens } from "@chains/radix/store";
-
-import { NETWORKS_LIST, TOKEN_ICONS } from "@chains/radix/crypto";
+import { NETWORKS_LIST } from "@chains/radix/crypto";
 
 import { WalletButton } from "@components/molecules/types";
 
@@ -19,22 +20,21 @@ import { Checkbox, Popup, Tabs } from "@components/atoms";
 import { Token, Transaction, Wallet } from "@components/molecules";
 
 import * as S from "./style";
-import { ICONS } from "@globalStyle/icons";
-import MenuIcon from "@assets/svg/menu.svg";
-import ChevronDownIcon from "@assets/svg/chevron-down.svg";
+import { ICONS } from "@globalStyle";
 
 export const Dashboard = () => {
   const router = useRouter();
 
   const activeAddress = useStore($activeAddress);
   const userTokens = useStore($userTokens);
+  const txHistory = useStore($txHistory);
 
+  const [currentTab, setCurrentTab] = useState<number>(0);
   const [isPopupVisible, setPopupVisible] = useState<boolean>(false);
   const [selectedNetwork, setSelectedNetwork] =
     useState<string>("radix-mainnet");
   const [usdBalance, setUsdBalance] = useState<number>(0);
   const [tokensList, setTokensList] = useState<TokenWithIcon[]>([]);
-  const [txHistory, setTxHistory] = useState<TxWithIcon[]>([]);
 
   const walletData = {
     address: activeAddress.toString(),
@@ -68,17 +68,7 @@ export const Dashboard = () => {
         setUsdBalance(xrdToken.usdBalance);
       }
 
-      setTokensList(
-        userTokens.map((token) => {
-          const { rri } = token;
-
-          const icon = TOKEN_ICONS[rri];
-          return {
-            ...token,
-            icon,
-          };
-        })
-      );
+      setTokensList(userTokens);
     }
   }, [userTokens]);
 
@@ -117,7 +107,7 @@ export const Dashboard = () => {
         txHistory.length > 0 ? (
           <S.ItemsDivider>
             {txHistory.map((tx) => (
-              <Transaction key={tx.date} data={tx} />
+              <Transaction key={tx.txID.toString()} data={tx} />
             ))}
           </S.ItemsDivider>
         ) : (
@@ -145,18 +135,23 @@ export const Dashboard = () => {
               {currentNetwork.name}
               <div />
               {currentNetwork.subnet}
-              <ChevronDownIcon style={{ marginLeft: ".5rem" }} />
+              <ICONS.ChevronDown style={{ marginLeft: ".5rem" }} />
             </S.NetworkSelect>
           )}
-          <MenuIcon
-            style={{ cursor: "pointer" }}
-            onClick={() => setMenuVisibility(true)}
+          <ICONS.Menu
+            onClick={() => {
+              toggleMenu(true);
+            }}
           />
         </S.Header>
         <Wallet data={walletData} buttons={walletButtons} />
       </div>
       <S.Footer>
-        <Tabs tabs={tabs} />
+        <Tabs
+          tabs={tabs}
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
+        />
       </S.Footer>
       <Popup
         title="Choose network"

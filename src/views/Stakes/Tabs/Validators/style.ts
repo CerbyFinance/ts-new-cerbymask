@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 
 export const Validator = styled.div`
   border-radius: 0.5rem;
@@ -54,6 +54,10 @@ export const ValidatorInfo = styled.div`
     font-family: Mulish;
     font-weight: 800;
     font-size: 0.875rem;
+    max-width: 10ch;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   & > div {

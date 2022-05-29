@@ -1,14 +1,11 @@
 import React, { useState } from "react";
-import { useStore, useStoreMap } from "effector-react";
+import { useStoreMap } from "effector-react";
 import toast from "react-hot-toast";
-import { AccountAddressT } from "@radixdlt/account";
-
-import { log } from "@utils";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { convertToMainUnit, sliceAddress } from "@chains/radix/utils";
+import { sliceAddress } from "@chains/radix/utils";
 import { Token } from "@chains/radix/types";
 import {
   $activeAddress,
@@ -19,10 +16,11 @@ import { sendCoins } from "@chains/radix/api";
 
 import { Layout } from "@components/template";
 import { Button, Checkbox, Input, Title } from "@components/atoms";
-import { Select } from "@components/molecules";
+import { SelectItem, Select } from "@components/molecules";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 import * as S from "./style";
+import { AccountAddress } from "@radixdlt/account";
 
 export const SendCoins = () => {
   const activeAddress = useStoreMap($activeAddress, (address) =>
@@ -38,7 +36,6 @@ export const SendCoins = () => {
   );
   const router = useRouter();
 
-  const [selectedToken, setSelectedToken] = useState<Token>();
   const [formData, setFormData] = useState({
     from: activeAddress,
     amount: "0",
@@ -61,11 +58,12 @@ export const SendCoins = () => {
     setFormData((formData) => ({ ...formData, [field]: value }));
   };
   const handleSendCoins = async () => {
-    log(formData);
     await toast.promise(
       sendCoins({
         ...formData,
-        onSubmit: () => router.redirect(routesNames.DASHBOARD as RouteKey),
+        onSubmit: () => {
+          router.redirect(routesNames.DASHBOARD as RouteKey);
+        },
       }),
       {
         loading: "Transaction is in progress...",
@@ -73,8 +71,10 @@ export const SendCoins = () => {
         error: "Transaction error!",
       }
     );
-
-    // setUserTokens({ activeAddress });
+    const addrRes = AccountAddress.fromUnsafe(activeAddress);
+    if (addrRes.isOk()) {
+      setUserTokens({ address: addrRes.value });
+    }
   };
 
   const { from, amount, to, rri, message, encrypt } = formData;
@@ -91,7 +91,7 @@ export const SendCoins = () => {
           const { address } = option;
           return (
             <div>
-              Account #{index}{" "}
+              Account #{index + 1}{" "}
               <span style={{ color: COLORS.extralight }}>
                 ({sliceAddress(address)})
               </span>
@@ -101,20 +101,14 @@ export const SendCoins = () => {
         renderOption={(option, i) => {
           const { key, selected, select } = option;
           return (
-            <S.OptionAccount>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Checkbox
-                  id={`send-account-${i}`}
-                  onChange={() => (selected ? select("") : select(key))}
-                  checked={selected}
-                  style={{ marginRight: ".75rem" }}
-                />
-                Account #{i}
-              </div>
-              <div style={{ color: COLORS.extralight }}>
-                {sliceAddress(key)}
-              </div>
-            </S.OptionAccount>
+            <SelectItem
+              key={key}
+              checkboxId={`send-account-${i}`}
+              label={`Account #${i + 1}`}
+              value={key}
+              onSelect={(address) => (selected ? select("") : select(address))}
+              selected={selected}
+            />
           );
         }}
       />
@@ -130,22 +124,16 @@ export const SendCoins = () => {
           return <div>{ticker}</div>;
         }}
         renderOption={(option, i) => {
-          const { key, selected, select } = option;
+          const { key, data, selected, select } = option;
           return (
-            <S.OptionAccount>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Checkbox
-                  id={`send-account-${i}`}
-                  onChange={() => (selected ? select("") : select(key))}
-                  checked={selected}
-                  style={{ marginRight: ".75rem" }}
-                />
-                Account #{i}
-              </div>
-              <div style={{ color: COLORS.extralight }}>
-                {sliceAddress(key)}
-              </div>
-            </S.OptionAccount>
+            <SelectItem
+              key={key}
+              checkboxId={`send-token-${i}`}
+              label={(data as Token).ticker}
+              value={key}
+              onSelect={(address) => (selected ? select("") : select(address))}
+              selected={selected}
+            />
           );
         }}
       />

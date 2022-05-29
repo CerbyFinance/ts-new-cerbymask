@@ -5,4 +5,5 @@ export interface PopupProps {
   visible?: boolean;
   children: ReactNode;
   close: () => void;
+  back?: () => void;
 }

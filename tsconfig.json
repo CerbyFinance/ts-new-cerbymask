@@ -32,6 +32,7 @@
         "@utils/*": ["utils/*"],
         "@views": ["views/index"],
         "@chains/*": ["chains/*"],
+        "@globalStyle": ["globalStyle/index"],
         "@globalStyle/*": ["globalStyle/*"],
         "@router": ["router/index"],
         "@router/*": ["router/*"],
