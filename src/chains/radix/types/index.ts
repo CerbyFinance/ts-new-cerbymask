@@ -1,3 +1,4 @@
+import { KeystoreT } from "@radixdlt/application";
 import { AxiosInstance } from "axios";
 
 export * from "./api";
@@ -13,4 +14,10 @@ export interface Network {
   name: string;
   url: string;
   xrd_rri: string;
+}
+
+export interface WalletCreationData {
+  password: string;
+  mnemonic: string[];
+  keystore: KeystoreT | null;
 }

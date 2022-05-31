@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { sha256 } from "js-sha256";
-
-import { setPassword } from "@store";
+import React from "react";
+import { useStore } from "effector-react";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
+
+import { $walletCreationData, setPassword } from "@chains/radix/store";
+import { createWallet } from "@chains/radix/crypto";
 
 import { Layout } from "@components/template";
 import { Input, Button, Title, Paragraph } from "@components/atoms";
@@ -12,13 +13,10 @@ import { Input, Button, Title, Paragraph } from "@components/atoms";
 export const SecureAccount = () => {
   const router = useRouter();
 
-  const [tempPassword, setTempPassword] = useState<string>("");
+  const { password } = useStore($walletCreationData);
 
   const handleContinue = async () => {
-    setPassword(tempPassword);
-    await chrome.storage.local.set({
-      password: sha256(tempPassword),
-    });
+    await createWallet(password);
     router.push(routesNames.CREATE_ACCOUNT as RouteKey);
   };
 
@@ -27,13 +25,13 @@ export const SecureAccount = () => {
       <Input
         type="password"
         label="Password"
-        value={tempPassword}
-        onChange={setTempPassword}
+        value={password}
+        onChange={setPassword}
       />
       <Button
         style={{ marginTop: "1.5rem" }}
         onClick={handleContinue}
-        disabled={!tempPassword}
+        disabled={!password}
       >
         Continue
       </Button>

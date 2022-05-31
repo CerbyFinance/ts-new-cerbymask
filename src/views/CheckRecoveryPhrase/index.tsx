@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useStore } from "effector-react";
-
-import { log } from "@utils";
+import { KeystoreT } from "@radixdlt/application";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { $password, addAccount } from "@store";
-
-import { $network } from "@chains/radix/store";
-import { afterAuth } from "@chains/radix/utils";
+import { $walletCreationData } from "@chains/radix/store";
+import { storeAccount } from "@chains/radix/utils";
 
 import { Layout, Status } from "@components/template";
 import { Button, Input, Paragraph, Title } from "@components/atoms";
@@ -20,10 +17,7 @@ import * as S from "./style";
 export const CheckRecoveryPhrase = () => {
   const router = useRouter();
 
-  const network = useStore($network);
-  const password = useStore($password);
-
-  const [words, setWords] = useState<string[]>([]);
+  const { mnemonic, keystore } = useStore($walletCreationData);
 
   // Indexes start from zero so second word in an array is a third word in a mnemonic
   const [checker, setChecker] = useState({
@@ -39,13 +33,11 @@ export const CheckRecoveryPhrase = () => {
   const handleContinue = async () => {
     setAuthError(false);
     try {
-      const address = await afterAuth({ password, url: network.url }, router);
-      if (address) {
-        addAccount({
-          address: address.toString(),
-          mnemonic: words,
-        });
-      }
+      await storeAccount({
+        mnemonic,
+        keystore: keystore as KeystoreT,
+      });
+      router.redirect(routesNames.DASHBOARD as RouteKey);
     } catch {
       setAuthError(true);
     } finally {
@@ -59,20 +51,11 @@ export const CheckRecoveryPhrase = () => {
     }));
   };
 
-  useEffect(() => {
-    (async () => {
-      const { mnemonic } = await chrome.storage.local.get("mnemonic");
-      log("mnemonic");
-      log(mnemonic);
-      setWords(mnemonic);
-    })();
-  }, []);
-
   const isCheckerValid =
-    checker[2] === words[2] &&
-    checker[4] === words[4] &&
-    checker[6] === words[6] &&
-    checker[8] === words[8];
+    checker[2] === mnemonic[2] &&
+    checker[4] === mnemonic[4] &&
+    checker[6] === mnemonic[6] &&
+    checker[8] === mnemonic[8];
   const footer = (
     <>
       <Button disabled={!isCheckerValid} onClick={handleContinue}>

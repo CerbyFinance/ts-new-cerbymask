@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useStore } from "effector-react";
-import { sha256 } from "js-sha256";
+import { KeystoreT } from "@radixdlt/application";
 
-import { useRouter } from "@router";
+import { routesNames, useRouter } from "@router";
+import { RouteKey } from "@router/types";
 
-import { afterAuth } from "@chains/radix/utils";
-import { $network } from "@chains/radix/store";
+import { storeAccount } from "@chains/radix/utils";
+import { $walletCreationData } from "@chains/radix/store";
 import { createWallet } from "@chains/radix/crypto";
 
 import { Layout } from "@components/template";
@@ -15,7 +16,8 @@ import { Button, Input, Textarea, Paragraph, Title } from "@components/atoms";
 export const ImportWallet = () => {
   const router = useRouter();
 
-  const network = useStore($network);
+  const { mnemonic, keystore } = useStore($walletCreationData);
+
   const [formData, setFormData] = useState({
     password: "",
     phrase: "",
@@ -30,8 +32,11 @@ export const ImportWallet = () => {
     const { password, phrase } = formData;
     try {
       await createWallet(password, phrase);
-      await chrome.storage.local.set({ password: sha256(password) });
-      await afterAuth({ password, url: network.url }, router);
+      await storeAccount({
+        mnemonic,
+        keystore: keystore as KeystoreT,
+      });
+      router.redirect(routesNames.DASHBOARD as RouteKey);
     } catch {
       toast.error("Invalid phrase");
     }

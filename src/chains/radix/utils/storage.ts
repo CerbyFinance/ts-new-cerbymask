@@ -2,10 +2,10 @@ import { KeystoreT } from "@radixdlt/application";
 
 import { log } from "@utils";
 
-export const loadKeystore = async () => {
-  const result = await chrome.storage.local.get("keystore");
-  log(`Got keystore: ${JSON.stringify(result.keystore, null, "\t")}`);
-  return result.keystore as KeystoreT;
+export const getAccountKeystore = async () => {
+  const { selectedAccount } = await chrome.storage.local.get("selectedAccount");
+  log(`Got keystore: ${JSON.stringify(selectedAccount.keystore, null, "\t")}`);
+  return selectedAccount.keystore as KeystoreT;
 };
 
 export const setStorage = async (key: string, value: any) => {

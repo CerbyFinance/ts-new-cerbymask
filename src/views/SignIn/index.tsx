@@ -6,8 +6,8 @@ import { getAccountsData } from "@utils";
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { afterAuth } from "@chains/radix/utils";
 import { $network } from "@chains/radix/store";
+import { connectToRadixApi } from "@chains/radix/api";
 
 import { Layout } from "@components/template";
 import { Logo, Input, Button } from "@components/atoms";
@@ -16,7 +16,6 @@ import { COLORS } from "@globalStyle";
 import * as S from "./style";
 
 export const SignIn = () => {
-  const network = useStore($network);
   const router = useRouter();
 
   const [password, setPassword] = useState<string>("");
@@ -32,8 +31,9 @@ export const SignIn = () => {
       <Button
         style={{ marginTop: "1.5rem" }}
         onClick={async () => {
-          await afterAuth({ password, url: network.url }, router);
-          getAccountsData();
+          await connectToRadixApi();
+          await getAccountsData();
+          router.redirect(routesNames.DASHBOARD as RouteKey);
         }}
         disabled={!password}
       >

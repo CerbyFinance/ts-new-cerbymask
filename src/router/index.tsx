@@ -10,7 +10,7 @@ import { routes } from "./routes";
 
 import { RouteKey, RouterContextValue } from "./types";
 import { routesNames } from "./routesNames";
-import { log, resetAll } from "@utils";
+import { resetAll } from "@utils";
 
 export * from "./routesNames";
 

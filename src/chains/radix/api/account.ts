@@ -35,3 +35,10 @@ export const getTxHistory = async (payload: {
   log(txs);
   return txs.transactions;
 };
+
+export const deriveNextAccount = async () => {
+  await radixApi.deriveNextAccount({ alsoSwitchTo: true });
+  log("new account");
+  const newAccount = await firstValueFrom(radixApi.activeAccount);
+  log(newAccount.address.toString());
+};

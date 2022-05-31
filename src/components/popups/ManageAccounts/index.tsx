@@ -14,6 +14,8 @@ import { SelectItem } from "@components/molecules";
 import { COLORS, ICONS } from "@globalStyle";
 import * as S from "./style";
 import { log } from "@utils";
+import { createWallet } from "@chains/radix/crypto";
+import { deriveNextAccount } from "@chains/radix/api";
 
 export const ManageAccountsPopup = ({
   close,
@@ -26,8 +28,20 @@ export const ManageAccountsPopup = ({
   const [isCreatingAccount, setCreatingAccount] = useState(false);
   const accounts = useStore($accounts);
   const selectedAccount = useStore($selectedAccount);
-  log("selected account");
-  log(selectedAccount);
+
+  const handleCreateAccount = async () => {
+    deriveNextAccount();
+    /*
+    close();
+    toggleMenu(false);
+
+    const { masterPassword } = await chrome.storage.local.get("masterPassword");
+    await createWallet(masterPassword);
+
+    router.redirect(routesNames.CREATE_ACCOUNT as RouteKey);
+    */
+  };
+
   return (
     <Popup
       visible={visible}
@@ -58,15 +72,7 @@ export const ManageAccountsPopup = ({
             >
               Cancel
             </Button>
-            <Button
-              onClick={() => {
-                close();
-                toggleMenu(false);
-                router.redirect(routesNames.CREATE_ACCOUNT as RouteKey);
-              }}
-            >
-              Create
-            </Button>
+            <Button onClick={handleCreateAccount}>Create</Button>
           </div>
         </div>
       ) : (

@@ -1,8 +1,9 @@
+import { sha256 } from "js-sha256";
 import { Mnemonic } from "@radixdlt/application";
 import { SigningKeychain } from "@radixdlt/account";
 
-import { loadKeystore } from "@chains/radix/utils";
-import { log } from "@utils";
+import { getAccountKeystore } from "@chains/radix/utils";
+import { setKeystore, setMnemonic } from "@chains/radix/store";
 
 export * from "./config";
 
@@ -27,21 +28,23 @@ export const createWallet = async (
     mnemonic = Mnemonic.generateNew();
   }
 
+  const masterPassword = sha256(password);
+  await chrome.storage.local.set({ masterPassword });
   await byEncryptingMnemonicAndSavingKeystore({
     mnemonic,
-    password,
-    save: (keystore) => chrome.storage.local.set({ keystore }),
+    password: masterPassword,
+    save: async (keystore) => {
+      setKeystore(keystore);
+      return Promise.resolve();
+    },
   });
   const mnemonicArr = mnemonic.toString().split(" ");
-  await chrome.storage.local.set({
-    mnemonic: mnemonicArr,
-  });
-  return mnemonicArr;
+  setMnemonic(mnemonicArr);
 };
 export const retrieveWallet = async (password: string) => {
   const wallet = await byLoadingAndDecryptingKeystore({
     password,
-    load: loadKeystore,
+    load: getAccountKeystore,
   });
   return wallet;
 };

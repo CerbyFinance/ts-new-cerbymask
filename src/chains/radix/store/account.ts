@@ -1,10 +1,14 @@
 import { forward } from "effector";
 
 import { AccountAddressT } from "@radixdlt/account";
-import { SimpleExecutedTransaction } from "@radixdlt/application";
+import { KeystoreT, SimpleExecutedTransaction } from "@radixdlt/application";
 
 import { mapTokenBalances, mapTokenAmounts } from "@chains/radix/utils";
-import { TokenAmount, TokenWithIcon } from "@chains/radix/types";
+import {
+  TokenAmount,
+  TokenWithIcon,
+  WalletCreationData,
+} from "@chains/radix/types";
 import {
   fetchPairs,
   fetchActiveAddress,
@@ -79,4 +83,34 @@ $txHistory.on(setTxHistoryFx.doneData, (_, history) => history);
 forward({
   from: setTxHistory,
   to: setTxHistoryFx,
+});
+
+// Temporary password storage (for wallet creation)
+export const $walletCreationData = radix.createStore<WalletCreationData>({
+  password: "",
+  mnemonic: [],
+  keystore: null,
+});
+export const setPassword = radix.createEvent<string>();
+export const setMnemonic = radix.createEvent<string[]>();
+export const setKeystore = radix.createEvent<KeystoreT | null>();
+export const resetWalletCreationData = radix.createEvent();
+$walletCreationData
+  .on(setPassword, (data, password) => ({
+    ...data,
+    password,
+  }))
+  .on(setMnemonic, (data, mnemonic) => ({
+    ...data,
+    mnemonic,
+  }))
+  .on(setKeystore, (data, keystore) => ({
+    ...data,
+    keystore,
+  }))
+  .reset(resetWalletCreationData);
+
+$walletCreationData.watch((data) => {
+  log("wallet creation data");
+  log(data);
 });

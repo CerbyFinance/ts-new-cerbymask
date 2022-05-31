@@ -2,14 +2,13 @@ import toast from "react-hot-toast";
 import { ReplaySubject } from "rxjs";
 
 import {
+  KeystoreT,
   ManualUserConfirmTX,
   Radix as RadixApi,
   SigningKeychain,
 } from "@radixdlt/application";
 
-import { RadixApiOpts } from "@chains/radix/types";
-import { loadKeystore } from "@chains/radix/utils";
-import { NETWORKS_LIST } from "@chains/radix/crypto";
+import { getAccountKeystore } from "@chains/radix/utils";
 
 import { log } from "@utils";
 
@@ -19,13 +18,17 @@ const { byLoadingAndDecryptingKeystore } = SigningKeychain;
 
 export const radixApi = RadixApi.create();
 
-export const connectToRadixApi = async (opts: RadixApiOpts) => {
-  const { url = NETWORKS_LIST.mainnet.url, password } = opts;
+export const connectToRadixApi = async (keystore?: KeystoreT) => {
+  const loadKeystore = keystore ? async () => keystore : getAccountKeystore;
 
-  await radixApi.connect(url);
+  const { masterPassword, network } = await chrome.storage.local.get([
+    "masterPassword",
+    "network",
+  ]);
+  await radixApi.connect(network.url);
 
   const result = await byLoadingAndDecryptingKeystore({
-    password,
+    password: masterPassword,
     load: loadKeystore,
   });
   if (result.isErr()) {
@@ -40,7 +43,7 @@ export const connectToRadixApi = async (opts: RadixApiOpts) => {
     });
     throw new Error();
   } else {
-    await radixApi.login(password, loadKeystore);
+    await radixApi.login(masterPassword, loadKeystore);
   }
 };
 
