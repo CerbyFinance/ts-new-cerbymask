@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { useStore } from "effector-react";
-
-import { getAccountsData } from "@utils";
+import { sha256 } from "js-sha256";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { $network } from "@chains/radix/store";
-import { connectToRadixApi } from "@chains/radix/api";
+import { login } from "@chains/radix/api";
+import { initWallet, setStorage } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
 import { Logo, Input, Button } from "@components/atoms";
@@ -20,19 +18,26 @@ export const SignIn = () => {
 
   const [password, setPassword] = useState<string>("");
 
+  const handleSetPassword = (password: string) => {
+    setPassword(password);
+    setStorage({
+      masterPassword: sha256(password),
+    });
+  };
+
   const footer = (
     <>
       <Input
         type="password"
         label="Password"
         value={password}
-        onChange={setPassword}
+        onChange={handleSetPassword}
       />
       <Button
         style={{ marginTop: "1.5rem" }}
         onClick={async () => {
-          await connectToRadixApi();
-          await getAccountsData();
+          await login();
+          await initWallet();
           router.redirect(routesNames.DASHBOARD as RouteKey);
         }}
         disabled={!password}

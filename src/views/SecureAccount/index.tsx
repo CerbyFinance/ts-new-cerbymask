@@ -1,11 +1,11 @@
-import React from "react";
-import { useStore } from "effector-react";
+import React, { useState } from "react";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { $walletCreationData, setPassword } from "@chains/radix/store";
-import { createWallet } from "@chains/radix/crypto";
+import { createWallet, DEFAULT_NETWORK } from "@chains/radix/crypto";
+import { setWallet } from "@chains/radix/store";
+import { activateSession, setAccountsIndex } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
 import { Input, Button, Title, Paragraph } from "@components/atoms";
@@ -13,10 +13,14 @@ import { Input, Button, Title, Paragraph } from "@components/atoms";
 export const SecureAccount = () => {
   const router = useRouter();
 
-  const { password } = useStore($walletCreationData);
+  const [password, setPassword] = useState("");
 
   const handleContinue = async () => {
-    await createWallet(password);
+    const wallet = await createWallet(password, DEFAULT_NETWORK);
+    await activateSession(password);
+    setWallet(wallet);
+    setAccountsIndex(0, DEFAULT_NETWORK);
+
     router.push(routesNames.CREATE_ACCOUNT as RouteKey);
   };
 

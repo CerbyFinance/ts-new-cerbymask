@@ -1,4 +1,3 @@
-export * from "./account";
-export * from "./token";
-export * from "./tx";
-export * from "./stakes";
+import { Radix } from "@radixdlt/application";
+
+export const api = Radix.create();

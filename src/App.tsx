@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
 import { useStore } from "effector-react";
 import { Toaster } from "react-hot-toast";
+import { interval } from "rxjs";
 
-import * as api from "@chains/radix/api";
+import { log } from "@utils";
+import { getStorage } from "@chains/radix/utils";
 
-import { $authenticated, fetchUsdTo } from "@store";
+import { $authenticated } from "@store";
 import {
   $activeAddress,
   setTxHistory,
@@ -22,14 +24,15 @@ export const App = () => {
   const authenticated = useStore($authenticated);
 
   useEffect(() => {
-    fetchUsdTo();
+    const sub = interval(10000).subscribe(async () => {
+      log("current storage");
+      log(await getStorage());
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
   }, []);
-  useEffect(() => {
-    if (authenticated && activeAddress) {
-      setUserTokens({ address: activeAddress });
-      setTxHistory({ address: activeAddress, size: 30 });
-    }
-  }, [authenticated, activeAddress]);
 
   return (
     <>

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useStore } from "effector-react";
 
-import { $walletCreationData } from "@chains/radix/store";
+import { $wallet } from "@chains/radix/store";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
@@ -13,13 +13,20 @@ import { RecoveryPhrase } from "@components/molecules";
 export const CreateAccount = () => {
   const router = useRouter();
 
-  const { mnemonic } = useStore($walletCreationData);
+  const wallet = useStore($wallet);
 
+  const [mnemonic, setMnemonic] = useState<string[]>([]);
   const [memorized, setMemorized] = useState<boolean>(false);
 
   const handleMemorize = (checked: boolean) => {
     setMemorized(checked);
   };
+
+  useEffect(() => {
+    if (wallet) {
+      setMnemonic(wallet.revealMnemonic().words);
+    }
+  }, [wallet]);
 
   const footer = (
     <>

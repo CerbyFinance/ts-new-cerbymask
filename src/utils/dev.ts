@@ -1,10 +1,7 @@
 import { routesNames } from "@router";
 import { RouteKey, RouterContextValue } from "@router/types";
 
-import { setAccounts } from "@store";
-
-import { setNetwork } from "@chains/radix/store";
-import { NETWORKS_LIST } from "@chains/radix/crypto";
+import { setStorage } from "@chains/radix/utils";
 
 export const log = (message: any) =>
   chrome.runtime.sendMessage({
@@ -13,10 +10,13 @@ export const log = (message: any) =>
   });
 
 export const resetAll = async (router: RouterContextValue) => {
-  setAccounts([]);
-  setNetwork(NETWORKS_LIST.stokenet);
-  await chrome.storage.local.set({
+  await setStorage({
     masterPassword: "",
+    accountIndexes: {},
+    sessionUntil: null,
+    nodes: {},
+    selectedNode: null,
+    keystore: null,
   });
   router.redirect(routesNames.SIGN_UP as RouteKey);
 };

@@ -5,7 +5,8 @@ import BigNumber from "bignumber.js";
 
 import { log } from "@utils";
 
-import { radixApi, userConfirmation } from ".";
+import { userConfirmation } from ".";
+import { api } from "./api";
 
 // onSubmit callback to redirect user on Dashboard when send operation was handled
 export const sendCoins = (payload: any): Promise<void> => {
@@ -31,7 +32,7 @@ export const sendCoins = (payload: any): Promise<void> => {
     };
     log("transferInput");
     log(transferInput);
-    const { events, completion } = radixApi.transferTokens({
+    const { events, completion } = api.transferTokens({
       transferInput,
       userConfirmation,
       pollTXStatusTrigger: interval(1000),

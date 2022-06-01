@@ -1,22 +1,14 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { useStore } from "effector-react";
-import { KeystoreT } from "@radixdlt/application";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
-
-import { storeAccount } from "@chains/radix/utils";
-import { $walletCreationData } from "@chains/radix/store";
-import { createWallet } from "@chains/radix/crypto";
 
 import { Layout } from "@components/template";
 import { Button, Input, Textarea, Paragraph, Title } from "@components/atoms";
 
 export const ImportWallet = () => {
   const router = useRouter();
-
-  const { mnemonic, keystore } = useStore($walletCreationData);
 
   const [formData, setFormData] = useState({
     password: "",
@@ -31,12 +23,14 @@ export const ImportWallet = () => {
   const handleImport = async () => {
     const { password, phrase } = formData;
     try {
+      /*
       await createWallet(password, phrase);
       await storeAccount({
         mnemonic,
         keystore: keystore as KeystoreT,
       });
       router.redirect(routesNames.DASHBOARD as RouteKey);
+      */
     } catch {
       toast.error("Invalid phrase");
     }

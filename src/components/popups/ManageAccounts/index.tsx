@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useStore } from "effector-react";
 
-import { Account } from "@types";
-
-import { $accounts, $selectedAccount, selectAccount, toggleMenu } from "@store";
+import { toggleMenu } from "@store";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
@@ -13,9 +11,8 @@ import { SelectItem } from "@components/molecules";
 
 import { COLORS, ICONS } from "@globalStyle";
 import * as S from "./style";
-import { log } from "@utils";
-import { createWallet } from "@chains/radix/crypto";
 import { deriveNextAccount } from "@chains/radix/api";
+import { $accounts, $activeAddress, selectAccount } from "@chains/radix/store";
 
 export const ManageAccountsPopup = ({
   close,
@@ -26,8 +23,9 @@ export const ManageAccountsPopup = ({
 }) => {
   const router = useRouter();
   const [isCreatingAccount, setCreatingAccount] = useState(false);
+
   const accounts = useStore($accounts);
-  const selectedAccount = useStore($selectedAccount);
+  const activeAddress = useStore($activeAddress);
 
   const handleCreateAccount = async () => {
     deriveNextAccount();
@@ -82,14 +80,14 @@ export const ManageAccountsPopup = ({
               const { address } = account;
               return (
                 <SelectItem
-                  key={address}
+                  key={address.toString()}
                   checkboxId={`manage-account-${address}`}
                   label={`Account #${i + 1}`}
                   value={account}
-                  onSelect={(account: Account) => {
+                  onSelect={(account) => {
                     selectAccount(account);
                   }}
-                  selected={address === selectedAccount?.address}
+                  selected={address === activeAddress}
                 />
               );
             })}

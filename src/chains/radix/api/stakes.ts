@@ -8,13 +8,14 @@ import { Stakes } from "@chains/radix/types";
 
 import { log } from "@utils";
 
-import { radixApi, userConfirmation } from ".";
+import { userConfirmation } from ".";
+import { api } from "./api";
 
 export const fetchValidators = async (): Promise<Validator[]> => {
   const data = await firstValueFrom(
-    radixApi.ledger
+    api.ledger
       .networkId()
-      .pipe(mergeMap((network) => radixApi.ledger.validators(network)))
+      .pipe(mergeMap((network) => api.ledger.validators(network)))
   );
   return data.validators;
 };
@@ -24,7 +25,7 @@ export const fetchStakes = async ({
 }: {
   address: AccountAddressT;
 }): Promise<Stakes> =>
-  await firstValueFrom(radixApi.ledger.stakesForAddress(address));
+  await firstValueFrom(api.ledger.stakesForAddress(address));
 
 export const stakeCoins = (payload: any): Promise<void> => {
   const { validator, amount, rri, onSubmit } = payload;
@@ -47,7 +48,7 @@ export const stakeCoins = (payload: any): Promise<void> => {
       amount: amountResult.value,
       tokenIdentifier: rri,
     };
-    const { events, completion } = await radixApi.stakeTokens({
+    const { events, completion } = await api.stakeTokens({
       stakeInput,
       userConfirmation,
       pollTXStatusTrigger: interval(1000),
@@ -85,7 +86,7 @@ export const unstakeCoins = (payload: any): Promise<void> => {
       unstake_percentage: safeOneHundredPercent.value,
       tokenIdentifier: rri,
     };
-    const { events, completion } = await radixApi.unstakeTokens({
+    const { events, completion } = await api.unstakeTokens({
       unstakeInput,
       userConfirmation,
       pollTXStatusTrigger: interval(1000),

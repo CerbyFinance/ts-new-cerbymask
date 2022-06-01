@@ -1,16 +1,17 @@
 import { forward } from "effector";
+import { Network } from "@radixdlt/application";
 
-import { Network } from "@chains/radix/types";
-import { NETWORKS_LIST } from "@chains/radix/crypto";
+import { DEFAULT_NETWORK } from "@chains/radix/crypto";
+import { setStorage } from "@chains/radix/utils";
 
 import { radix } from "./domain";
 
-export const $network = radix.createStore<Network>(NETWORKS_LIST.stokenet, {
+export const $network = radix.createStore<Network>(DEFAULT_NETWORK, {
   name: "$radixSettings",
 });
 export const setNetwork = radix.createEvent<Network>("setRadixNetwork");
 const setNetworkFx = radix.createEffect(async (network: Network) => {
-  await chrome.storage.local.set({ network });
+  await setStorage({ network });
   return network;
 });
 $network.on(setNetwork, (_, network) => network);

@@ -1,9 +1,9 @@
 import { sha256 } from "js-sha256";
-import { Mnemonic } from "@radixdlt/application";
+import { Mnemonic, Network, Wallet } from "@radixdlt/application";
 import { SigningKeychain } from "@radixdlt/account";
 
-import { getAccountKeystore } from "@chains/radix/utils";
-import { setKeystore, setMnemonic } from "@chains/radix/store";
+import { getAccountKeystore, setStorage } from "@chains/radix/utils";
+import { log } from "@utils";
 
 export * from "./config";
 
@@ -12,34 +12,27 @@ const {
   byLoadingAndDecryptingKeystore,
 } = SigningKeychain;
 
-export const createWallet = async (
-  password: string,
-  defaultMnemonic?: string
-) => {
-  let mnemonic;
-  if (defaultMnemonic) {
-    const mnemonicResult = Mnemonic.fromEnglishPhrase(defaultMnemonic);
-    if (mnemonicResult.isOk()) {
-      mnemonic = mnemonicResult.value;
-    } else {
-      throw new Error("Invalid mnemonic phrase");
-    }
-  } else {
-    mnemonic = Mnemonic.generateNew();
-  }
+export const createWallet = async (password: string, network: Network) => {
+  const mnemonic = Mnemonic.generateNew();
 
   const masterPassword = sha256(password);
-  await chrome.storage.local.set({ masterPassword });
-  await byEncryptingMnemonicAndSavingKeystore({
+  const walletResult = await byEncryptingMnemonicAndSavingKeystore({
     mnemonic,
     password: masterPassword,
-    save: async (keystore) => {
-      setKeystore(keystore);
-      return Promise.resolve();
+    save: (keystore): Promise<void> => {
+      return setStorage({ keystore });
     },
   });
-  const mnemonicArr = mnemonic.toString().split(" ");
-  setMnemonic(mnemonicArr);
+
+  if (walletResult.isErr()) {
+    throw walletResult.error;
+  }
+
+  const signingKeychain = walletResult.value;
+  return Wallet.create({
+    signingKeychain,
+    network,
+  });
 };
 export const retrieveWallet = async (password: string) => {
   const wallet = await byLoadingAndDecryptingKeystore({

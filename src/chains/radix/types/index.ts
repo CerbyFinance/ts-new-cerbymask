@@ -10,14 +10,7 @@ export interface NetworkApi {
   name: string;
 }
 
-export interface Network {
-  name: string;
+export interface Node {
   url: string;
-  xrd_rri: string;
-}
-
-export interface WalletCreationData {
-  password: string;
-  mnemonic: string[];
-  keystore: KeystoreT | null;
+  hash: string;
 }

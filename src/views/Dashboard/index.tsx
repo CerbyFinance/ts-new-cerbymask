@@ -32,7 +32,7 @@ export const Dashboard = () => {
   const [currentTab, setCurrentTab] = useState<number>(0);
   const [isPopupVisible, setPopupVisible] = useState<boolean>(false);
   const [selectedNetwork, setSelectedNetwork] =
-    useState<string>("radix-mainnet");
+    useState<string>("radix-stokenet");
   const [usdBalance, setUsdBalance] = useState<number>(0);
   const [tokensList, setTokensList] = useState<TokenWithIcon[]>([]);
 

@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useStore } from "effector-react";
-import { KeystoreT } from "@radixdlt/application";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { $walletCreationData } from "@chains/radix/store";
-import { storeAccount } from "@chains/radix/utils";
+import { $wallet } from "@chains/radix/store";
+import { login } from "@chains/radix/api";
+import { initWallet } from "@chains/radix/utils";
 
 import { Layout, Status } from "@components/template";
 import { Button, Input, Paragraph, Title } from "@components/atoms";
@@ -17,8 +17,9 @@ import * as S from "./style";
 export const CheckRecoveryPhrase = () => {
   const router = useRouter();
 
-  const { mnemonic, keystore } = useStore($walletCreationData);
+  const wallet = useStore($wallet);
 
+  const [mnemonic, setMnemonic] = useState<string[]>([]);
   // Indexes start from zero so second word in an array is a third word in a mnemonic
   const [checker, setChecker] = useState({
     2: "",
@@ -33,10 +34,8 @@ export const CheckRecoveryPhrase = () => {
   const handleContinue = async () => {
     setAuthError(false);
     try {
-      await storeAccount({
-        mnemonic,
-        keystore: keystore as KeystoreT,
-      });
+      await login();
+      await initWallet();
       router.redirect(routesNames.DASHBOARD as RouteKey);
     } catch {
       setAuthError(true);
@@ -50,6 +49,12 @@ export const CheckRecoveryPhrase = () => {
       [wordNumber]: phrase,
     }));
   };
+
+  useEffect(() => {
+    if (wallet) {
+      setMnemonic(wallet.revealMnemonic().words);
+    }
+  }, [wallet]);
 
   const isCheckerValid =
     checker[2] === mnemonic[2] &&
