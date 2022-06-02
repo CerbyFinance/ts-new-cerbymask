@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useStore } from "effector-react";
+import { useStore, useStoreMap } from "effector-react";
 
 import { $currentCurrency, $usdTo } from "@store";
 import { $accounts } from "@chains/radix/store";
@@ -13,7 +13,6 @@ import * as BADGES from "@components/atoms/Badge/kinds";
 
 import { ICONS } from "@globalStyle";
 import * as S from "./style";
-import { log } from "@utils";
 
 const BADGE_COPY_TIMEOUT_DURATION = 2500;
 
@@ -21,7 +20,9 @@ export const Wallet = (props: WalletProps) => {
   const { style, className, data, actions, buttons } = props;
   const { address, usdBalance, isActive } = data;
 
-  const accounts = useStore($accounts);
+  const accounts = useStoreMap($accounts, (accounts) =>
+    accounts ? accounts.all : []
+  );
   const currentCurrency = useStore($currentCurrency);
   const usdTo = useStore($usdTo);
 
@@ -53,10 +54,6 @@ export const Wallet = (props: WalletProps) => {
   const accountIndex = accounts.findIndex(
     (account) => account.address.toString() === address
   );
-  log("index");
-  log(accountIndex);
-  log("accounts");
-  log(accounts);
   return (
     <S.Wrapper className={className} style={style}>
       {/*<Badge type={badgeState} />*/}

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { SigningKeychain } from "@radixdlt/account";
+import { sha256 } from "js-sha256";
 
 import { getAccountKeystore } from "@chains/radix/utils";
 
@@ -8,7 +10,6 @@ import { RecoveryPhraseProps } from "./types";
 import { Button, Input, Loader, Warning } from "@components/atoms";
 
 import * as S from "./style";
-import { SigningKeychain } from "@radixdlt/account";
 
 export const RecoveryPhrase = (props: RecoveryPhraseProps) => {
   const { words, isProtected, isLoading } = props;
@@ -19,7 +20,7 @@ export const RecoveryPhrase = (props: RecoveryPhraseProps) => {
   const handleAuth = async () => {
     const result = await SigningKeychain.byLoadingAndDecryptingKeystore({
       load: getAccountKeystore,
-      password,
+      password: sha256(password),
     });
 
     if (result.isOk()) {

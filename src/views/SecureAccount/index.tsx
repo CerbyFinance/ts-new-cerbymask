@@ -1,27 +1,37 @@
 import React, { useState } from "react";
+import { useStore } from "effector-react";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { createWallet, DEFAULT_NETWORK } from "@chains/radix/crypto";
-import { setWallet } from "@chains/radix/store";
+import { createWallet } from "@chains/radix/crypto";
+import { $selectedNetwork, setWallet } from "@chains/radix/store";
 import { activateSession, setAccountsIndex } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
-import { Input, Button, Title, Paragraph } from "@components/atoms";
+import { Input, Button, Title, Paragraph, Loader } from "@components/atoms";
 
 export const SecureAccount = () => {
   const router = useRouter();
 
+  const selectedNetwork = useStore($selectedNetwork);
+
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [password, setPassword] = useState("");
 
   const handleContinue = async () => {
-    const wallet = await createWallet(password, DEFAULT_NETWORK);
-    await activateSession(password);
-    setWallet(wallet);
-    setAccountsIndex(0, DEFAULT_NETWORK);
+    setLoading(true);
 
-    router.push(routesNames.CREATE_ACCOUNT as RouteKey);
+    try {
+      const wallet = await createWallet(password, selectedNetwork);
+      await activateSession(password);
+      setWallet(wallet);
+      setAccountsIndex(0, selectedNetwork);
+
+      router.push(routesNames.CREATE_ACCOUNT as RouteKey);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const footer = (
@@ -35,9 +45,9 @@ export const SecureAccount = () => {
       <Button
         style={{ marginTop: "1.5rem" }}
         onClick={handleContinue}
-        disabled={!password}
+        disabled={!password || isLoading}
       >
-        Continue
+        {isLoading ? <Loader button /> : "Continue"}
       </Button>
     </>
   );

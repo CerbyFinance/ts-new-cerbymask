@@ -1,6 +1,10 @@
 import { HRP, Network } from "@radixdlt/application";
 
-export const NETWORKS_LIST = {
+import { ConfigNetwork } from "@chains/radix/types";
+
+export const NETWORKS_LIST: {
+  [key in Network.MAINNET | Network.STOKENET]: ConfigNetwork;
+} = {
   [Network.MAINNET]: {
     url: "https://mainnet.radixdlt.com/",
     xrd_rri: "xrd_rr1qy5wfsfh",

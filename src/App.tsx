@@ -7,11 +7,6 @@ import { log } from "@utils";
 import { getStorage } from "@chains/radix/utils";
 
 import { $authenticated } from "@store";
-import {
-  $activeAddress,
-  setTxHistory,
-  setUserTokens,
-} from "@chains/radix/store";
 
 import { Router, RouterView } from "@router";
 
@@ -20,7 +15,6 @@ import { Menu } from "@components/organisms";
 import { GlobalStyle } from "./globalStyle";
 
 export const App = () => {
-  const activeAddress = useStore($activeAddress);
   const authenticated = useStore($authenticated);
 
   useEffect(() => {

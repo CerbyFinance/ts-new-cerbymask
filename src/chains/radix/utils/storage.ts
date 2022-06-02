@@ -8,11 +8,10 @@ import { firstValueFrom } from "rxjs";
 import { sha256 } from "js-sha256";
 
 import { log } from "@utils";
+import { DEFAULT_LOCK_TIMEOUT } from "@store";
 
 import { Node } from "@chains/radix/types";
 import { DEFAULT_NETWORK, NETWORKS_LIST } from "@chains/radix/crypto";
-
-const SESSION_TIME = 15 * 60 * 1000;
 
 export const getStorage = async (
   keys?: string[]
@@ -57,11 +56,24 @@ export const getAccountKeystore = async () => {
   return keystore as KeystoreT;
 };
 
-export const activateSession = async (password: string) => {
-  await setStorage({
-    masterPassword: sha256(password),
-    sessionUntil: Date.now() + SESSION_TIME,
-  });
+export const activateSession = async (password?: string) => {
+  const { autoLockTimeout } = await getStorage(["autoLockTimeout"]);
+
+  const defaultOptions = {
+    ...(password && { masterPassword: sha256(password) }),
+  };
+  if (!autoLockTimeout) {
+    await setStorage({
+      ...defaultOptions,
+      autoLockTimeout: DEFAULT_LOCK_TIMEOUT,
+      sessionUntil: Date.now() + DEFAULT_LOCK_TIMEOUT.value,
+    });
+  } else {
+    await setStorage({
+      ...defaultOptions,
+      sessionUntil: Date.now() + autoLockTimeout.value,
+    });
+  }
 };
 export const checkIfSessionExpired = async () => {
   const { sessionUntil } = await getStorage(["sessionUntil"]);

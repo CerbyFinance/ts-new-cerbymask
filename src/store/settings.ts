@@ -1,6 +1,7 @@
-import { createDomain } from "effector";
+import { createDomain, forward } from "effector";
 
 import { Currency, LockTimeout } from "@types";
+import { activateSession, setStorage } from "@chains/radix/utils";
 
 const settings = createDomain();
 
@@ -15,4 +16,16 @@ export const DEFAULT_LOCK_TIMEOUT = {
 export const $lockTimeout =
   settings.createStore<LockTimeout>(DEFAULT_LOCK_TIMEOUT);
 export const setLockTimeout = settings.createEvent<LockTimeout>();
+export const setLockTimeoutFx = settings.createEffect(
+  async (timeout: LockTimeout) => {
+    await setStorage({ autoLockTimeout: timeout });
+    await activateSession();
+    return timeout;
+  }
+);
 $lockTimeout.on(setLockTimeout, (_, timeout) => timeout);
+
+forward({
+  from: setLockTimeout,
+  to: setLockTimeoutFx,
+});

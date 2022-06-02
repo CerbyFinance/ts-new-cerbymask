@@ -1,18 +1,22 @@
 import React, { useState } from "react";
-import { useStore } from "effector-react";
-
-import { toggleMenu } from "@store";
+import { useStoreMap } from "effector-react";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { Button, Popup } from "@components/atoms";
+import { deriveNextAccount, fetchAccounts } from "@chains/radix/api";
+import {
+  $accounts,
+  $selectedAccount,
+  selectAccount,
+} from "@chains/radix/store";
+
+import { Button, Loader, Popup } from "@components/atoms";
 import { SelectItem } from "@components/molecules";
 
 import { COLORS, ICONS } from "@globalStyle";
 import * as S from "./style";
-import { deriveNextAccount } from "@chains/radix/api";
-import { $accounts, $activeAddress, selectAccount } from "@chains/radix/store";
+import { log } from "@utils";
 
 export const ManageAccountsPopup = ({
   close,
@@ -23,29 +27,103 @@ export const ManageAccountsPopup = ({
 }) => {
   const router = useRouter();
   const [isCreatingAccount, setCreatingAccount] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
-  const accounts = useStore($accounts);
-  const activeAddress = useStore($activeAddress);
+  const accounts = useStoreMap($accounts, (accounts) =>
+    accounts ? accounts.all : []
+  );
+  const selectedAccountAddress = useStoreMap($selectedAccount, (account) =>
+    account ? account.address.toString() : null
+  );
+
+  log("accounts");
+  log(accounts);
 
   const handleCreateAccount = async () => {
-    deriveNextAccount();
-    /*
-    close();
-    toggleMenu(false);
-
-    const { masterPassword } = await chrome.storage.local.get("masterPassword");
-    await createWallet(masterPassword);
-
-    router.redirect(routesNames.CREATE_ACCOUNT as RouteKey);
-    */
+    try {
+      setLoading(true);
+      await deriveNextAccount();
+    } finally {
+      setCreatingAccount(false);
+      setLoading(false);
+    }
   };
 
+  let popupTitle, popupContent;
+  if (isLoading) {
+    popupContent = <Loader />;
+  } else if (isCreatingAccount) {
+    popupTitle = "Create new account";
+    popupContent = (
+      <div>
+        <p style={{ color: COLORS.extralight, fontSize: ".825rem" }}>
+          Are you really want to create new account?
+        </p>
+        <div
+          style={{ display: "flex", alignItems: "center", marginTop: "1rem" }}
+        >
+          <Button
+            onClick={() => {
+              setCreatingAccount(false);
+            }}
+            passive
+            style={{ marginRight: "1rem" }}
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleCreateAccount}>Create</Button>
+        </div>
+      </div>
+    );
+  } else {
+    popupTitle = "Manage accounts";
+    popupContent = (
+      <>
+        <div>
+          {accounts.map((account, i) => {
+            const { address } = account;
+            const addressString = address.toString();
+            return (
+              <SelectItem
+                key={addressString}
+                checkboxId={`manage-account-${address}`}
+                label={`Account #${i + 1}`}
+                value={account}
+                onSelect={(account) => {
+                  selectAccount(account.address.toString());
+                }}
+                selected={addressString === selectedAccountAddress}
+              />
+            );
+          })}
+        </div>
+        <div style={{ marginTop: "1.5rem" }}>
+          <S.Button
+            onClick={() => {
+              setCreatingAccount(true);
+            }}
+          >
+            <ICONS.Add />
+            Create new account
+          </S.Button>
+          <S.Button
+            onClick={() => {
+              router.redirect(routesNames.IMPORT_WALLET as RouteKey);
+            }}
+          >
+            <ICONS.ArrowLeftDown />
+            Import new wallet
+          </S.Button>
+        </div>
+      </>
+    );
+  }
   return (
     <Popup
       visible={visible}
-      title={isCreatingAccount ? "Create new account" : "Manage accounts"}
+      title={popupTitle}
       back={
-        isCreatingAccount
+        isCreatingAccount && !isLoading
           ? () => {
               setCreatingAccount(false);
             }
@@ -53,65 +131,7 @@ export const ManageAccountsPopup = ({
       }
       close={close}
     >
-      {isCreatingAccount ? (
-        <div>
-          <p style={{ color: COLORS.extralight, fontSize: ".825rem" }}>
-            Are you really want to create new account?
-          </p>
-          <div
-            style={{ display: "flex", alignItems: "center", marginTop: "1rem" }}
-          >
-            <Button
-              onClick={() => {
-                setCreatingAccount(false);
-              }}
-              passive
-              style={{ marginRight: "1rem" }}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleCreateAccount}>Create</Button>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div>
-            {accounts.map((account, i) => {
-              const { address } = account;
-              return (
-                <SelectItem
-                  key={address.toString()}
-                  checkboxId={`manage-account-${address}`}
-                  label={`Account #${i + 1}`}
-                  value={account}
-                  onSelect={(account) => {
-                    selectAccount(account);
-                  }}
-                  selected={address === activeAddress}
-                />
-              );
-            })}
-          </div>
-          <div style={{ marginTop: "1.5rem" }}>
-            <S.Button
-              onClick={() => {
-                setCreatingAccount(true);
-              }}
-            >
-              <ICONS.Add />
-              Create new account
-            </S.Button>
-            <S.Button
-              onClick={() => {
-                router.redirect(routesNames.IMPORT_WALLET as RouteKey);
-              }}
-            >
-              <ICONS.ArrowLeftDown />
-              Import new wallet
-            </S.Button>
-          </div>
-        </>
-      )}
+      {popupContent}
     </Popup>
   );
 };

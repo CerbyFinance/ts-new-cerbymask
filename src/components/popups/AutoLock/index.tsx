@@ -3,11 +3,10 @@ import { useStore } from "effector-react";
 
 import { LockTimeout } from "@types";
 
-import { $lockTimeout, DEFAULT_LOCK_TIMEOUT, setLockTimeout } from "@store";
+import { $lockTimeout, setLockTimeout, toggleMenu } from "@store";
 
 import { Popup } from "@components/atoms";
 import { SelectItem } from "@components/molecules";
-import { log } from "@utils";
 
 export const AutoLockPopup = ({
   close,
@@ -48,6 +47,8 @@ export const AutoLockPopup = ({
             value={timeout}
             onSelect={(selectedTimeout: LockTimeout) => {
               setLockTimeout(selectedTimeout);
+              close();
+              toggleMenu(false);
             }}
             selected={lockTimeout.value === value}
           />

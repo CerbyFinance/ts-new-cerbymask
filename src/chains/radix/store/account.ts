@@ -1,8 +1,10 @@
-import { forward, restore } from "effector";
+import { forward, restore, sample } from "effector";
 
 import { AccountAddressT } from "@radixdlt/account";
 import {
+  AccountsT,
   AccountT,
+  Network,
   SimpleExecutedTransaction,
   WalletT,
 } from "@radixdlt/application";
@@ -10,7 +12,7 @@ import {
 import {
   mapTokenBalances,
   mapTokenAmounts,
-  getAccountsIndex,
+  setStorage,
 } from "@chains/radix/utils";
 import { TokenAmount, TokenWithIcon } from "@chains/radix/types";
 import {
@@ -19,13 +21,14 @@ import {
   fetchTokenBalances,
   getTxHistory,
   fetchActiveAccount,
+  fetchAccounts,
+  restoreLocalHDAccountsToIndex,
+  switchAccount,
   fetchNetworkId,
-  fetchAccountsForNetwork,
 } from "@chains/radix/api";
 
 import { radix } from "./domain";
 import { log } from "@utils";
-import { firstValueFrom } from "rxjs";
 
 export const setWallet = radix.createEvent<WalletT | null>();
 export const $wallet = restore(setWallet, null);
@@ -107,22 +110,74 @@ forward({
   to: setTxHistoryFx,
 });
 
-export const $accounts = radix.createStore<AccountT[]>([]);
+export const $accounts = radix.createStore<AccountsT | null>(null);
 export const setAccounts = radix.createEvent();
 export const setAccountsFx = radix.createEffect(async () => {
-  const network = await fetchNetworkId();
-  const accounts: any = await fetchAccountsForNetwork(network);
+  const accounts = await fetchAccounts();
   if (accounts) {
-    return accounts.all;
+    return accounts;
   }
-  return [];
+  return null;
 });
-$accounts.on(setAccountsFx.doneData, (_, accounts) => accounts);
+export const restoreAccounts = radix.createEvent();
+export const restoreAccountsFx = radix.createEffect(async () => {
+  const network = await fetchNetworkId();
+  const accounts = await restoreLocalHDAccountsToIndex(network);
+  log("restored accounts");
+  log(accounts);
+  return accounts;
+});
+$accounts.on(
+  [setAccountsFx.doneData, restoreAccountsFx.doneData],
+  (_, accounts) => accounts
+);
 
 forward({
   from: setAccounts,
   to: setAccountsFx,
 });
+forward({
+  from: restoreAccounts,
+  to: restoreAccountsFx,
+});
 
-export const selectAccount = radix.createEvent<AccountT | null>();
-export const $selectedAccount = restore(selectAccount, null);
+export const $selectedAccount = radix.createStore<AccountT | null>(null);
+export const selectAccount = radix.createEvent<string>();
+export const selectAccountFx = radix.createEffect(
+  async ({
+    accounts,
+    address,
+  }: {
+    accounts: AccountsT | null;
+    address: string;
+  }) => {
+    if (accounts) {
+      const activeAddress = await fetchActiveAddress();
+      const newAccount = accounts.all.find(
+        (account) => account.address.toString() === address
+      );
+
+      if (newAccount) {
+        if (activeAddress.toString() !== address) {
+          await switchAccount(newAccount);
+        }
+
+        await setStorage({ selectedAddress: address });
+        return newAccount;
+      }
+
+      return null;
+    }
+
+    return null;
+  }
+);
+
+$selectedAccount.on(selectAccountFx.doneData, (_, account) => account);
+
+sample({
+  source: $accounts,
+  clock: selectAccount,
+  target: selectAccountFx,
+  fn: (accounts, address) => ({ accounts, address }),
+});

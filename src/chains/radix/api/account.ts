@@ -7,10 +7,10 @@ import {
   SimpleExecutedTransaction,
   TransactionHistory,
   SigningKeychain,
+  AccountsT,
+  MnemomicT,
 } from "@radixdlt/application";
 import { AccountBalancesEndpoint } from "@radixdlt/application/dist/api/open-api/_types";
-
-import { authenticate } from "@store";
 
 import { log } from "@utils";
 import {
@@ -19,14 +19,21 @@ import {
   getStorage,
   getAccountsIndex,
   setAccountsIndex,
+  initWallet,
+  fetchAllData,
+  setStorage,
 } from "@chains/radix/utils";
+import { selectAccount, setAccountsFx } from "@chains/radix/store";
 
 import { api } from "./api";
 
 const { byLoadingAndDecryptingKeystore } = SigningKeychain;
 
 export const login = async () => {
-  const { masterPassword } = await getStorage(["masterPassword"]);
+  const { masterPassword, selectedAddress } = await getStorage([
+    "masterPassword",
+    "selectedAddress",
+  ]);
 
   const signingKeychainResult = await byLoadingAndDecryptingKeystore({
     password: masterPassword,
@@ -49,9 +56,14 @@ export const login = async () => {
     signingKeychainResult._unsafeUnwrap()
   );
   await api.connect(selectedNode.url);
-  authenticate(true);
-
   await api.login(masterPassword, getAccountKeystore);
+
+  if (!selectedAddress) {
+    const activeAddress: AccountAddressT = await firstValueFrom(
+      api.activeAddress
+    );
+    await setStorage({ selectedAddress: activeAddress.toString() });
+  }
 };
 
 const dataLoadedObservable = zip(api.activeAccount, api.accounts);
@@ -94,13 +106,37 @@ export const getTxHistory = async (payload: {
 };
 
 export const deriveNextAccount = async () => {
+  const network = await fetchNetworkId();
+  const index = await getAccountsIndex(network);
+  await setAccountsIndex(index + 1, network);
   await api.deriveNextAccount({ alsoSwitchTo: true });
-  log("new account");
-  const newAccount = await firstValueFrom(api.activeAccount);
-  log(newAccount.address.toString());
+  await setAccountsFx();
+  const address = await fetchActiveAddress();
+  await selectAccount(address.toString());
+  await initWallet();
 };
 
-export const fetchAccountsForNetwork = async (network: Network) => {
+export const fetchAccounts = async (): Promise<AccountsT> => {
+  const accounts: AccountsT = await firstValueFrom(api.accounts);
+  log("first value from accs");
+  log(accounts);
+  return accounts;
+};
+
+export const restoreLocalHDAccountsToIndex = async (
+  network: Network
+): Promise<AccountsT> => {
   const index = await getAccountsIndex(network);
-  return await firstValueFrom(api.restoreLocalHDAccountsToIndex(index + 2));
+  return await firstValueFrom(api.restoreLocalHDAccountsToIndex(index + 1));
+};
+
+export const switchAccount = async (account: AccountT): Promise<AccountT> => {
+  await api.switchAccount({ toAccount: account });
+  await fetchAllData();
+  return account;
+};
+
+export const revealMnemonic = async (): Promise<MnemomicT> => {
+  const mnemonic: MnemomicT = await firstValueFrom(api.revealMnemonic());
+  return mnemonic;
 };

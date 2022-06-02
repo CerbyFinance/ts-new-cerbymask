@@ -24,7 +24,7 @@ export const Layout = ({
               <ICONS.Back />
               Back
             </div>
-            {current && publicRoutesNames.hasOwnProperty(current) ? (
+            {current && publicRoutesNames.hasOwnProperty(current.key) ? (
               <MiniWolf />
             ) : null}
           </S.Header>

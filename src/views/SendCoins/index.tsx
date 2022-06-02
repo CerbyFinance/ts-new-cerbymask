@@ -73,7 +73,7 @@ export const SendCoins = () => {
     );
     const addrRes = AccountAddress.fromUnsafe(activeAddress);
     if (addrRes.isOk()) {
-      setUserTokens({ address: addrRes.value });
+      setUserTokens();
     }
   };
 

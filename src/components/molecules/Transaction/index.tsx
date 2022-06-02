@@ -1,5 +1,5 @@
 import React from "react";
-import { useStore } from "effector-react";
+import { useStore, useStoreMap } from "effector-react";
 import { ActionType } from "@radixdlt/application";
 
 import { CURRENCIES_SYMBOLS } from "@utils";
@@ -22,7 +22,7 @@ export const Transaction = (props: TransactionProps) => {
     className,
   } = props;
 
-  const activeAddress = useStore($activeAddress);
+  const activeAddress = useStoreMap($activeAddress, (addr) => addr.toString());
   const currentCurrency = useStore($currentCurrency);
   const usdTo = useStore($usdTo);
 
@@ -36,7 +36,7 @@ export const Transaction = (props: TransactionProps) => {
   const { rri, amount, to_account } = action;
   const ticker = rri.name.toUpperCase();
   const usdAmount = convertToUsd(amount, XRD_PRICE);
-  const isRecipient = to_account.toString() === activeAddress.toString();
+  const isRecipient = to_account.toString() === activeAddress;
   // rendering only transfers
   return (
     <S.Wrapper style={style} className={className}>

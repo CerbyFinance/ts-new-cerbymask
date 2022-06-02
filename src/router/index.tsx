@@ -10,7 +10,11 @@ import { routes } from "./routes";
 
 import { CurrentRoute, RouteKey, RouterContextValue } from "./types";
 import { routesNames } from "./routesNames";
-import { resetAll } from "@utils";
+
+import { autologin } from "@chains/radix/utils";
+
+import { Layout } from "@components/template";
+import { Loader } from "@components/atoms";
 
 export * from "./routesNames";
 
@@ -28,12 +32,11 @@ export const Router = ({ children }: { children: ReactNode }) => {
   const [current, setCurrent] = useState<CurrentRoute | null>(null);
 
   useEffect(() => {
-    (async () => {
-      const { route } = await chrome.storage.local.get("route");
+    chrome.storage.local.get("route").then(({ route }) => {
       if (route) {
         setCurrent(route);
       }
-    })();
+    });
   }, []);
 
   const setRoute = async (route: CurrentRoute) => {
@@ -79,15 +82,22 @@ export const RouterView = ({
   const router = useRouter();
   const { current, redirect } = router;
 
+  const [isLoading, setLoading] = useState<boolean>(false);
+
   const views = {
     ...routes.public,
     ...(authenticated && routes.protected),
   };
-  /*
+
   useEffect(() => {
-    resetAll(router);
+    // resetAll(router);
+    /*
+    setLoading(true);
+    autologin(router).finally(() => {
+      setLoading(false);
+    });
+    */
   }, []);
-  */
   useEffect(() => {
     if (current && !views[current.key]) {
       redirect(
@@ -98,9 +108,17 @@ export const RouterView = ({
     }
   }, [current, authenticated]);
 
-  return current && views[current.key] ? (
+  return current && views[current.key] && !isLoading ? (
     views[current.key]()
   ) : (
-    <div>Loading...</div>
+    <Layout
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Loader />
+    </Layout>
   );
 };

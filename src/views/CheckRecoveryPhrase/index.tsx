@@ -4,12 +4,12 @@ import { useStore } from "effector-react";
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { $wallet } from "@chains/radix/store";
+import { $wallet, setAccountsFx } from "@chains/radix/store";
 import { login } from "@chains/radix/api";
 import { initWallet } from "@chains/radix/utils";
 
 import { Layout, Status } from "@components/template";
-import { Button, Input, Paragraph, Title } from "@components/atoms";
+import { Button, Input, Loader, Paragraph, Title } from "@components/atoms";
 
 import { ICONS } from "@globalStyle";
 import * as S from "./style";
@@ -28,19 +28,23 @@ export const CheckRecoveryPhrase = () => {
     8: "",
   });
 
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [showStatus, setShowStatus] = useState<boolean>(false);
   const [isAuthError, setAuthError] = useState<boolean>(false);
 
   const handleContinue = async () => {
     setAuthError(false);
+    setLoading(true);
     try {
       await login();
+      await setAccountsFx();
       await initWallet();
       router.redirect(routesNames.DASHBOARD as RouteKey);
     } catch {
       setAuthError(true);
     } finally {
       setShowStatus(true);
+      setLoading(false);
     }
   };
   const handleSetChecker = (wordNumber: string, phrase: string) => {
@@ -63,8 +67,8 @@ export const CheckRecoveryPhrase = () => {
     checker[8] === mnemonic[8];
   const footer = (
     <>
-      <Button disabled={!isCheckerValid} onClick={handleContinue}>
-        Continue
+      <Button disabled={!isCheckerValid || isLoading} onClick={handleContinue}>
+        {isLoading ? <Loader button /> : "Continue"}
       </Button>
     </>
   );

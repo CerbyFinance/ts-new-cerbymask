@@ -8,14 +8,18 @@ import { login } from "@chains/radix/api";
 import { initWallet, setStorage } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
-import { Logo, Input, Button } from "@components/atoms";
+import { Logo, Input, Button, Loader } from "@components/atoms";
 
 import { COLORS } from "@globalStyle";
 import * as S from "./style";
+import { restoreAccountsFx } from "@chains/radix/store";
+import toast from "react-hot-toast";
+import { log } from "@utils";
 
 export const SignIn = () => {
   const router = useRouter();
 
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
 
   const handleSetPassword = (password: string) => {
@@ -23,6 +27,17 @@ export const SignIn = () => {
     setStorage({
       masterPassword: sha256(password),
     });
+  };
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      await login();
+      await restoreAccountsFx();
+      await initWallet();
+      router.redirect(routesNames.DASHBOARD as RouteKey);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const footer = (
@@ -35,14 +50,10 @@ export const SignIn = () => {
       />
       <Button
         style={{ marginTop: "1.5rem" }}
-        onClick={async () => {
-          await login();
-          await initWallet();
-          router.redirect(routesNames.DASHBOARD as RouteKey);
-        }}
-        disabled={!password}
+        onClick={handleLogin}
+        disabled={!password || isLoading}
       >
-        Log in
+        {isLoading ? <Loader button /> : "Log in"}
       </Button>
       <S.Action
         onClick={() => router.push(routesNames.IMPORT_WALLET as RouteKey)}

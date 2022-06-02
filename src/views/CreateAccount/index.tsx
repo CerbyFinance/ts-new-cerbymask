@@ -9,6 +9,7 @@ import { RouteKey } from "@router/types";
 import { Layout } from "@components/template";
 import { Button, Checkbox, Paragraph, Title } from "@components/atoms";
 import { RecoveryPhrase } from "@components/molecules";
+import { log } from "@utils";
 
 export const CreateAccount = () => {
   const router = useRouter();
@@ -25,6 +26,8 @@ export const CreateAccount = () => {
   useEffect(() => {
     if (wallet) {
       setMnemonic(wallet.revealMnemonic().words);
+      log("mnemonic");
+      log(wallet.revealMnemonic().words);
     }
   }, [wallet]);
 

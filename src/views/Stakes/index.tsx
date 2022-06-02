@@ -1,19 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useStore } from "effector-react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
-
-import { AccountAddressT } from "@radixdlt/account";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
 import { unstakeCoins } from "@chains/radix/api";
-import {
-  $activeAddress,
-  getStakes,
-  getValidators,
-  setUserTokens,
-} from "@chains/radix/store";
+import { getStakes, setUserTokens } from "@chains/radix/store";
 
 import { Layout } from "@components/template";
 import { Tabs } from "@components/atoms";
@@ -22,8 +14,6 @@ import { StakeForm, MyStakes, Validators } from "./tabs";
 
 export const Stakes = () => {
   const router = useRouter();
-
-  const activeAddress = useStore($activeAddress);
 
   const [currentTab, setCurrentTab] = useState<number>(0);
 
@@ -43,18 +33,9 @@ export const Stakes = () => {
       }
     );
 
-    getStakes({ address: activeAddress as AccountAddressT });
-    setUserTokens({ address: activeAddress as AccountAddressT });
+    getStakes();
+    setUserTokens();
   };
-
-  useEffect(() => {
-    if (activeAddress) {
-      (async () => {
-        await getValidators();
-        await getStakes({ address: activeAddress });
-      })();
-    }
-  }, []);
 
   const tabs = [
     {

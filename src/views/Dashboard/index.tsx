@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useStore } from "effector-react";
+import { useStore, useStoreMap } from "effector-react";
+import { Network } from "@radixdlt/application";
 
 import { TokenWithIcon } from "@chains/radix/types";
 
@@ -8,8 +9,14 @@ import { log } from "@utils";
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { setAccounts, toggleMenu } from "@store";
-import { $activeAddress, $txHistory, $userTokens } from "@chains/radix/store";
+import { authenticate, toggleMenu } from "@store";
+import {
+  $activeAddress,
+  $selectedNetwork,
+  $txHistory,
+  $userTokens,
+  setNetwork,
+} from "@chains/radix/store";
 
 import { NETWORKS_LIST } from "@chains/radix/crypto";
 
@@ -25,19 +32,18 @@ import { ICONS } from "@globalStyle";
 export const Dashboard = () => {
   const router = useRouter();
 
-  const activeAddress = useStore($activeAddress);
+  const activeAddress = useStoreMap($activeAddress, (addr) => addr.toString());
   const userTokens = useStore($userTokens);
   const txHistory = useStore($txHistory);
+  const selectedNetwork = useStore($selectedNetwork);
 
   const [currentTab, setCurrentTab] = useState<number>(0);
   const [isPopupVisible, setPopupVisible] = useState<boolean>(false);
-  const [selectedNetwork, setSelectedNetwork] =
-    useState<string>("radix-stokenet");
   const [usdBalance, setUsdBalance] = useState<number>(0);
   const [tokensList, setTokensList] = useState<TokenWithIcon[]>([]);
 
   const walletData = {
-    address: activeAddress.toString(),
+    address: activeAddress,
     usdBalance,
   };
   const walletButtons: WalletButton[] = [
@@ -59,7 +65,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (userTokens) {
-      log(`Address - ${activeAddress.toString()}`);
+      log(`Address - ${activeAddress}`);
 
       const xrdToken = userTokens.find(
         (token) => token.rri === NETWORKS_LIST.stokenet.xrd_rri
@@ -72,18 +78,7 @@ export const Dashboard = () => {
     }
   }, [userTokens]);
 
-  const networksMock = [
-    {
-      key: "radix-mainnet",
-      name: "Radix DLT",
-      subnet: "Mainnet",
-    },
-    {
-      key: "radix-stokenet",
-      name: "Radix DLT",
-      subnet: "Stokenet",
-    },
-  ];
+  const networks = Object.entries(NETWORKS_LIST);
 
   const tabs = [
     {
@@ -118,23 +113,23 @@ export const Dashboard = () => {
     },
   ];
 
-  const currentNetwork = networksMock.find(
-    (network) => network.key === selectedNetwork
-  );
   return (
     <Layout style={{ padding: 0 }}>
       <div style={{ padding: "1.5rem 1.5rem 0 1.5rem" }}>
         <S.Header>
-          {currentNetwork && (
+          {selectedNetwork && (
             <S.NetworkSelect
               onClick={() => {
                 setPopupVisible(true);
               }}
             >
               <div />
-              {currentNetwork.name}
+              Radix DLT
               <div />
-              {currentNetwork.subnet}
+              {`${selectedNetwork[0].toUpperCase()}${selectedNetwork.slice(
+                1,
+                selectedNetwork.length
+              )}`}
               <ICONS.ChevronDown style={{ marginLeft: ".5rem" }} />
             </S.NetworkSelect>
           )}
@@ -158,17 +153,22 @@ export const Dashboard = () => {
         visible={isPopupVisible}
         close={() => setPopupVisible(false)}
       >
-        {networksMock.map((network) => {
-          const { key, name, subnet } = network;
+        {networks.map((network) => {
+          const [name, data] = network;
           return (
-            <S.OptionNetwork key={key}>
+            <S.OptionNetwork key={name}>
               <Checkbox
-                id={`${key}-network`}
-                onChange={() => setSelectedNetwork(key)}
-                checked={selectedNetwork === key}
+                id={`${name}-network`}
+                onChange={() => {
+                  setNetwork(name as Network);
+                  authenticate(false);
+                  router.redirect(routesNames.SIGN_IN as RouteKey);
+                }}
+                checked={selectedNetwork === name}
                 style={{ marginRight: ".75rem" }}
               />
-              {name} {subnet}
+              Radix DLT{" "}
+              {`${name[0].toUpperCase()}${name.slice(1, name.length)}`}
             </S.OptionNetwork>
           );
         })}

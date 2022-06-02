@@ -4,6 +4,7 @@ import { Popup } from "@components/atoms";
 
 import { COLORS } from "@globalStyle";
 import { RecoveryPhrase } from "@components/molecules";
+import { revealMnemonic } from "@chains/radix/api";
 
 export const RecoveryPhrasePopup = ({
   close,
@@ -12,15 +13,12 @@ export const RecoveryPhrasePopup = ({
   close: () => void;
   visible: boolean;
 }) => {
-  const [words, setWords] = useState([]);
+  const [words, setWords] = useState<string[]>([]);
 
   useEffect(() => {
-    (async () => {
-      const { mnemonic } = await chrome.storage.local.get("mnemonic");
-      if (mnemonic) {
-        setWords(mnemonic);
-      }
-    })();
+    revealMnemonic().then((mnemonic) => {
+      setWords(mnemonic.words);
+    });
   }, []);
   return (
     <Popup visible={visible} title="View recovery phrase" close={close}>
