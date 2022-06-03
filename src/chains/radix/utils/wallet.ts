@@ -66,11 +66,7 @@ export const autologin = async (router: RouterContextValue) => {
     await initWallet();
     authenticate(true);
     router.redirect(routesNames.DASHBOARD as RouteKey);
-  } else if (
-    sessionUntil !== null &&
-    Date.now() >= sessionUntil &&
-    !showedExpired
-  ) {
+  } else if (sessionUntil && Date.now() >= sessionUntil && !showedExpired) {
     authenticate(false);
     toast.error("Session expired");
     router.redirect(routesNames.SIGN_IN as RouteKey);
