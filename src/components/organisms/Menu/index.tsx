@@ -14,6 +14,8 @@ import {
   toggleMenu,
 } from "@store";
 
+import { setStorage } from "@chains/radix/utils";
+
 import {
   ManageAccountsPopup,
   RecoveryPhrasePopup,
@@ -146,6 +148,10 @@ export const Menu = () => {
             onClick={() => {
               toggleMenu(false);
               authenticate(false);
+              setStorage({
+                sessionUntil: Date.now(),
+                showedExpired: true,
+              });
               router.redirect(routesNames.SIGN_IN as RouteKey);
             }}
           >

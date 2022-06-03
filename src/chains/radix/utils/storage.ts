@@ -89,7 +89,7 @@ export const saveNodeUrl = async (
   const signedHash = await firstValueFrom(signed);
   const der = signedHash.toDER();
 
-  const nodes = await getStorage(["nodes"]);
+  const { nodes } = await getStorage(["nodes"]);
   await setStorage({
     nodes: {
       ...nodes,

@@ -2,8 +2,11 @@ import { sha256 } from "js-sha256";
 import { Mnemonic, Network, Wallet } from "@radixdlt/application";
 import { SigningKeychain } from "@radixdlt/account";
 
-import { getAccountKeystore, setStorage } from "@chains/radix/utils";
-import { log } from "@utils";
+import {
+  getAccountKeystore,
+  getStorage,
+  setStorage,
+} from "@chains/radix/utils";
 
 export * from "./config";
 
@@ -34,9 +37,10 @@ export const createWallet = async (password: string, network: Network) => {
     network,
   });
 };
-export const retrieveWallet = async (password: string) => {
+export const retrieveWallet = async () => {
+  const { masterPassword } = await getStorage(["masterPassword"]);
   const wallet = await byLoadingAndDecryptingKeystore({
-    password,
+    password: masterPassword,
     load: getAccountKeystore,
   });
   return wallet;

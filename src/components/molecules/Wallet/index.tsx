@@ -13,6 +13,7 @@ import * as BADGES from "@components/atoms/Badge/kinds";
 
 import { ICONS } from "@globalStyle";
 import * as S from "./style";
+import { log } from "@utils";
 
 const BADGE_COPY_TIMEOUT_DURATION = 2500;
 
@@ -54,6 +55,10 @@ export const Wallet = (props: WalletProps) => {
   const accountIndex = accounts.findIndex(
     (account) => account.address.toString() === address
   );
+  log("accounts");
+  log(accounts.map((account) => account.address.toString()));
+  log("addr");
+  log(address);
   return (
     <S.Wrapper className={className} style={style}>
       {/*<Badge type={badgeState} />*/}

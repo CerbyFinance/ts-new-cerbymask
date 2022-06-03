@@ -4,19 +4,29 @@ import { routesNames } from "@router";
 import { RouteKey, RouterContextValue } from "@router/types";
 
 import { authenticate, fetchUsdTo, setLockTimeout } from "@store";
-import { login, waitUntilDataLoaded } from "@chains/radix/api";
+import { fetchNetworkId, login, waitUntilDataLoaded } from "@chains/radix/api";
 import {
   getStakesFx,
   getValidatorsFx,
   restoreAccountsFx,
   selectAccount,
+  setAccountsFx,
   setActiveAccountFx,
   setActiveAddressFx,
+  setNetwork,
   setTxHistoryFx,
   setUserTokensFx,
 } from "@chains/radix/store";
 
-import { getStorage } from "./storage";
+import { getStorage, setStorage } from "./storage";
+
+export const fetchAccounts = async () => {
+  try {
+    await restoreAccountsFx();
+  } catch {
+    await setAccountsFx();
+  }
+};
 
 export const fetchAllData = async () => {
   await setActiveAccountFx();
@@ -31,6 +41,9 @@ export const fetchAllData = async () => {
 export const initWallet = async () => {
   await fetchUsdTo();
 
+  const network = await fetchNetworkId();
+  setNetwork(network);
+
   const { selectedAddress, autoLockTimeout } = await getStorage([
     "selectedAddress",
     "autoLockTimeout",
@@ -43,16 +56,26 @@ export const initWallet = async () => {
 };
 
 export const autologin = async (router: RouterContextValue) => {
-  const { sessionUntil } = await getStorage(["sessionUntil"]);
+  const { sessionUntil, showedExpired } = await getStorage([
+    "sessionUntil",
+    "showedExpired",
+  ]);
   if (Date.now() < sessionUntil) {
     await login();
-    await restoreAccountsFx();
+    await fetchAccounts();
     await initWallet();
     authenticate(true);
     router.redirect(routesNames.DASHBOARD as RouteKey);
-  } else if (sessionUntil !== null && Date.now() >= sessionUntil) {
+  } else if (
+    sessionUntil !== null &&
+    Date.now() >= sessionUntil &&
+    !showedExpired
+  ) {
     authenticate(false);
     toast.error("Session expired");
     router.redirect(routesNames.SIGN_IN as RouteKey);
+    setStorage({
+      showedExpired: true,
+    });
   }
 };

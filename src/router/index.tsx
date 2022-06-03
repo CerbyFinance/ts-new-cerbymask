@@ -91,12 +91,11 @@ export const RouterView = ({
 
   useEffect(() => {
     // resetAll(router);
-    /*
+
     setLoading(true);
     autologin(router).finally(() => {
       setLoading(false);
     });
-    */
   }, []);
   useEffect(() => {
     if (current && !views[current.key]) {

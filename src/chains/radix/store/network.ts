@@ -12,7 +12,6 @@ export const $selectedNetwork = radix.createStore<Network>(DEFAULT_NETWORK, {
 export const setNetwork = radix.createEvent<Network>("setRadixNetwork");
 const setNetworkFx = radix.createEffect(async (network: Network) => {
   await setStorage({ network });
-  return network;
 });
 $selectedNetwork.on(setNetwork, (_, network) => network);
 

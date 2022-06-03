@@ -9,7 +9,7 @@ import { $selectedNetwork, setWallet } from "@chains/radix/store";
 import { activateSession, setAccountsIndex } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
-import { Input, Button, Title, Paragraph, Loader } from "@components/atoms";
+import { Input, Button, Title, Paragraph } from "@components/atoms";
 
 export const SecureAccount = () => {
   const router = useRouter();
@@ -45,9 +45,10 @@ export const SecureAccount = () => {
       <Button
         style={{ marginTop: "1.5rem" }}
         onClick={handleContinue}
-        disabled={!password || isLoading}
+        disabled={!password}
+        loading={isLoading}
       >
-        {isLoading ? <Loader button /> : "Continue"}
+        Continue
       </Button>
     </>
   );

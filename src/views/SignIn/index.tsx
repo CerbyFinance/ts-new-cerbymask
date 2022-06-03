@@ -5,16 +5,13 @@ import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
 import { login } from "@chains/radix/api";
-import { initWallet, setStorage } from "@chains/radix/utils";
+import { fetchAccounts, initWallet, setStorage } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
-import { Logo, Input, Button, Loader } from "@components/atoms";
+import { Logo, Input, Button } from "@components/atoms";
 
 import { COLORS } from "@globalStyle";
 import * as S from "./style";
-import { restoreAccountsFx } from "@chains/radix/store";
-import toast from "react-hot-toast";
-import { log } from "@utils";
 
 export const SignIn = () => {
   const router = useRouter();
@@ -32,7 +29,7 @@ export const SignIn = () => {
     try {
       setLoading(true);
       await login();
-      await restoreAccountsFx();
+      await fetchAccounts();
       await initWallet();
       router.redirect(routesNames.DASHBOARD as RouteKey);
     } finally {
@@ -51,9 +48,10 @@ export const SignIn = () => {
       <Button
         style={{ marginTop: "1.5rem" }}
         onClick={handleLogin}
-        disabled={!password || isLoading}
+        disabled={!password}
+        loading={isLoading}
       >
-        {isLoading ? <Loader button /> : "Log in"}
+        Log in
       </Button>
       <S.Action
         onClick={() => router.push(routesNames.IMPORT_WALLET as RouteKey)}

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useStore, useStoreMap } from "effector-react";
-import { Network } from "@radixdlt/application";
 
-import { TokenWithIcon } from "@chains/radix/types";
+import { ConfigNetwork, TokenWithIcon } from "@chains/radix/types";
 
 import { log } from "@utils";
 
@@ -15,15 +14,15 @@ import {
   $selectedNetwork,
   $txHistory,
   $userTokens,
-  setNetwork,
 } from "@chains/radix/store";
 
-import { NETWORKS_LIST } from "@chains/radix/crypto";
+import { saveNodeUrl, selectNode, setStorage } from "@chains/radix/utils";
+import { NETWORKS_LIST, retrieveWallet } from "@chains/radix/crypto";
 
 import { WalletButton } from "@components/molecules/types";
 
 import { Layout } from "@components/template";
-import { Checkbox, Popup, Tabs } from "@components/atoms";
+import { Checkbox, Loader, Popup, Tabs } from "@components/atoms";
 import { Token, Transaction, Wallet } from "@components/molecules";
 
 import * as S from "./style";
@@ -39,8 +38,23 @@ export const Dashboard = () => {
 
   const [currentTab, setCurrentTab] = useState<number>(0);
   const [isPopupVisible, setPopupVisible] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [usdBalance, setUsdBalance] = useState<number>(0);
   const [tokensList, setTokensList] = useState<TokenWithIcon[]>([]);
+
+  const handleChangeNetwork = async (data: ConfigNetwork) => {
+    setLoading(true);
+    try {
+      const signingKeychain = await retrieveWallet();
+      const node = await saveNodeUrl(data.url, signingKeychain._unsafeUnwrap());
+      await selectNode(node);
+      await setStorage({ selectedAddress: "" });
+      authenticate(false);
+      router.redirect(routesNames.SIGN_IN as RouteKey);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const walletData = {
     address: activeAddress,
@@ -149,29 +163,31 @@ export const Dashboard = () => {
         />
       </S.Footer>
       <Popup
-        title="Choose network"
+        title={isLoading ? "" : "Choose network"}
         visible={isPopupVisible}
         close={() => setPopupVisible(false)}
       >
-        {networks.map((network) => {
-          const [name, data] = network;
-          return (
-            <S.OptionNetwork key={name}>
-              <Checkbox
-                id={`${name}-network`}
-                onChange={() => {
-                  setNetwork(name as Network);
-                  authenticate(false);
-                  router.redirect(routesNames.SIGN_IN as RouteKey);
-                }}
-                checked={selectedNetwork === name}
-                style={{ marginRight: ".75rem" }}
-              />
-              Radix DLT{" "}
-              {`${name[0].toUpperCase()}${name.slice(1, name.length)}`}
-            </S.OptionNetwork>
-          );
-        })}
+        {isLoading ? (
+          <Loader />
+        ) : (
+          networks.map((network) => {
+            const [name, data] = network;
+            return (
+              <S.OptionNetwork key={name}>
+                <Checkbox
+                  id={`${name}-network`}
+                  onChange={() => {
+                    handleChangeNetwork(data);
+                  }}
+                  checked={selectedNetwork === name}
+                  style={{ marginRight: ".75rem" }}
+                />
+                Radix DLT{" "}
+                {`${name[0].toUpperCase()}${name.slice(1, name.length)}`}
+              </S.OptionNetwork>
+            );
+          })
+        )}
       </Popup>
     </Layout>
   );

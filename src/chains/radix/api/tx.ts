@@ -10,7 +10,7 @@ import { api } from "./api";
 
 // onSubmit callback to redirect user on Dashboard when send operation was handled
 export const sendCoins = (payload: any): Promise<void> => {
-  const { to, amount, rri, onSubmit } = payload;
+  const { to, amount, rri, message, onSubmit } = payload;
 
   return new Promise((resolve, reject) => {
     const recipientResult = AccountAddress.fromUnsafe(to);
@@ -29,6 +29,7 @@ export const sendCoins = (payload: any): Promise<void> => {
       to_account: recipientResult.value,
       amount: amountResult.value,
       tokenIdentifier: rri,
+      message,
     };
     log("transferInput");
     log(transferInput);

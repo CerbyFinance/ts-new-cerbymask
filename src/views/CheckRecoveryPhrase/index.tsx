@@ -67,8 +67,12 @@ export const CheckRecoveryPhrase = () => {
     checker[8] === mnemonic[8];
   const footer = (
     <>
-      <Button disabled={!isCheckerValid || isLoading} onClick={handleContinue}>
-        {isLoading ? <Loader button /> : "Continue"}
+      <Button
+        disabled={!isCheckerValid}
+        onClick={handleContinue}
+        loading={isLoading}
+      >
+        Continue
       </Button>
     </>
   );

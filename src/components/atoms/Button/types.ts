@@ -7,4 +7,5 @@ export interface ButtonProps {
   style?: CSSProperties;
   className?: string;
   passive?: boolean;
+  loading?: boolean;
 }

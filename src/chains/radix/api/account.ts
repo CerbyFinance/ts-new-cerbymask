@@ -34,7 +34,6 @@ export const login = async () => {
     "masterPassword",
     "selectedAddress",
   ]);
-
   const signingKeychainResult = await byLoadingAndDecryptingKeystore({
     password: masterPassword,
     load: getAccountKeystore,
@@ -62,8 +61,14 @@ export const login = async () => {
     const activeAddress: AccountAddressT = await firstValueFrom(
       api.activeAddress
     );
+    log("active addr");
+    log(activeAddress);
     await setStorage({ selectedAddress: activeAddress.toString() });
   }
+
+  await setStorage({
+    showedExpired: false,
+  });
 };
 
 const dataLoadedObservable = zip(api.activeAccount, api.accounts);

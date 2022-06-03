@@ -14,19 +14,25 @@ import * as S from "./style";
 export const RecoveryPhrase = (props: RecoveryPhraseProps) => {
   const { words, isProtected, isLoading } = props;
 
-  const [password, setPassword] = useState("");
-  const [isAuthenticated, setAuthenticated] = useState(false);
+  const [password, setPassword] = useState<string>("");
+  const [isAuthLoading, setAuthLoading] = useState<boolean>(false);
+  const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
 
   const handleAuth = async () => {
-    const result = await SigningKeychain.byLoadingAndDecryptingKeystore({
-      load: getAccountKeystore,
-      password: sha256(password),
-    });
+    setAuthLoading(true);
+    try {
+      const result = await SigningKeychain.byLoadingAndDecryptingKeystore({
+        load: getAccountKeystore,
+        password: sha256(password),
+      });
 
-    if (result.isOk()) {
-      setAuthenticated(true);
-    } else {
-      toast.error("Invalid password");
+      if (result.isOk()) {
+        setAuthenticated(true);
+      } else {
+        toast.error("Invalid password");
+      }
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -67,6 +73,7 @@ export const RecoveryPhrase = (props: RecoveryPhraseProps) => {
           <Button
             onClick={handleAuth}
             style={{ width: "100%", marginTop: "1.5rem" }}
+            loading={isAuthLoading}
           >
             Continue
           </Button>
