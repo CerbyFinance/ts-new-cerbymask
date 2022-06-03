@@ -11,7 +11,7 @@ import { routes } from "./routes";
 import { CurrentRoute, RouteKey, RouterContextValue } from "./types";
 import { routesNames } from "./routesNames";
 
-import { autologin } from "@chains/radix/utils";
+import { autologin, setDefaultStorage } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
 import { Loader } from "@components/atoms";
@@ -89,13 +89,18 @@ export const RouterView = ({
     ...(authenticated && routes.protected),
   };
 
-  useEffect(() => {
-    // resetAll(router);
-
+  const setup = async () => {
     setLoading(true);
-    autologin(router).finally(() => {
+    try {
+      await setDefaultStorage();
+      await autologin(router);
+    } finally {
       setLoading(false);
-    });
+    }
+  };
+
+  useEffect(() => {
+    setup();
   }, []);
   useEffect(() => {
     if (current && !views[current.key]) {

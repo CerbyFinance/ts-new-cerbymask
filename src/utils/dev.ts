@@ -1,9 +1,7 @@
-import { routesNames } from "@router";
-import { RouteKey, RouterContextValue } from "@router/types";
-
 import { DEFAULT_LOCK_TIMEOUT } from "@store";
 
 import { setStorage } from "@chains/radix/utils";
+import { DEFAULT_NETWORK } from "@chains/radix/crypto";
 
 export const log = (message: any) =>
   chrome.runtime.sendMessage({
@@ -11,7 +9,7 @@ export const log = (message: any) =>
     data: message,
   });
 
-export const resetAll = async (router: RouterContextValue) => {
+export const resetAll = async () => {
   await setStorage({
     masterPassword: "",
     accountIndexes: {},
@@ -21,6 +19,6 @@ export const resetAll = async (router: RouterContextValue) => {
     selectedNode: null,
     keystore: null,
     selectedAddress: null,
+    network: DEFAULT_NETWORK,
   });
-  router.redirect(routesNames.SIGN_UP as RouteKey);
 };

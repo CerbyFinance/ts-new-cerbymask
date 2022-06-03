@@ -7,7 +7,7 @@ import {
 import { firstValueFrom } from "rxjs";
 import { sha256 } from "js-sha256";
 
-import { log } from "@utils";
+import { log, resetAll } from "@utils";
 import { DEFAULT_LOCK_TIMEOUT } from "@store";
 
 import { Node } from "@chains/radix/types";
@@ -116,4 +116,11 @@ export const getSelectedNode = async (signingKeychain: SigningKeychainT) => {
     return node;
   }
   return selectedNode;
+};
+
+export const setDefaultStorage = async () => {
+  const radixStorage = await getStorage();
+  if (!radixStorage) {
+    await resetAll();
+  }
 };

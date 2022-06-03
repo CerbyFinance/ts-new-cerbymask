@@ -19,6 +19,7 @@ import {
 } from "@chains/radix/store";
 
 import { getStorage, setStorage } from "./storage";
+import { log } from "@utils";
 
 export const fetchAccounts = async () => {
   try {
