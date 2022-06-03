@@ -105,6 +105,8 @@ export const RouterView = ({
   useEffect(() => {
     log("setup");
     setup();
+
+    /* dev
     const sub = interval(5000).subscribe(async () => {
       const radixStorage = await getStorage();
       log("current storage");
@@ -113,6 +115,7 @@ export const RouterView = ({
     return () => {
       sub.unsubscribe();
     };
+    */
   }, []);
   useEffect(() => {
     if (current && !views[current.key]) {
