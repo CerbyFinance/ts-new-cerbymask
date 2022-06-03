@@ -1,3 +1,4 @@
+import { KeystoreT, Network } from "@radixdlt/application";
 import { AxiosInstance } from "axios";
 
 export * from "./api";
@@ -9,8 +10,13 @@ export interface NetworkApi {
   name: string;
 }
 
-export interface Network {
-  name: string;
+export interface Node {
+  url: string;
+  hash: string;
+}
+
+export interface ConfigNetwork {
   url: string;
   xrd_rri: string;
+  preamble: string;
 }

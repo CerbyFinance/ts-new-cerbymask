@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { interval, mergeMap } from "rxjs";
+import { firstValueFrom, interval, mergeMap } from "rxjs";
 
 import { AccountAddressT, ValidatorAddress } from "@radixdlt/account";
 import { Amount, Validator } from "@radixdlt/application";
@@ -8,29 +8,24 @@ import { Stakes } from "@chains/radix/types";
 
 import { log } from "@utils";
 
-import { radixApi, userConfirmation } from ".";
+import { userConfirmation } from ".";
+import { api } from "./api";
 
-export const fetchValidators = (): Promise<Validator[]> => {
-  return new Promise((resolve, reject) => {
-    radixApi.ledger
+export const fetchValidators = async (): Promise<Validator[]> => {
+  const data = await firstValueFrom(
+    api.ledger
       .networkId()
-      .pipe(mergeMap((network) => radixApi.ledger.validators(network)))
-      .subscribe((validatorsRes: any) => {
-        resolve(validatorsRes.validators);
-      });
-  });
+      .pipe(mergeMap((network) => api.ledger.validators(network)))
+  );
+  return data.validators;
 };
 
-export const fetchStakes = (payload: {
-  activeAddress: AccountAddressT;
-}): Promise<Stakes> => {
-  const { activeAddress } = payload;
-  return new Promise((resolve, reject) => {
-    radixApi.ledger.stakesForAddress(activeAddress).subscribe((response) => {
-      resolve(response);
-    });
-  });
-};
+export const fetchStakes = async ({
+  address,
+}: {
+  address: AccountAddressT;
+}): Promise<Stakes> =>
+  await firstValueFrom(api.ledger.stakesForAddress(address));
 
 export const stakeCoins = (payload: any): Promise<void> => {
   const { validator, amount, rri, onSubmit } = payload;
@@ -53,7 +48,7 @@ export const stakeCoins = (payload: any): Promise<void> => {
       amount: amountResult.value,
       tokenIdentifier: rri,
     };
-    const { events, completion } = await radixApi.stakeTokens({
+    const { events, completion } = await api.stakeTokens({
       stakeInput,
       userConfirmation,
       pollTXStatusTrigger: interval(1000),
@@ -91,7 +86,7 @@ export const unstakeCoins = (payload: any): Promise<void> => {
       unstake_percentage: safeOneHundredPercent.value,
       tokenIdentifier: rri,
     };
-    const { events, completion } = await radixApi.unstakeTokens({
+    const { events, completion } = await api.unstakeTokens({
       unstakeInput,
       userConfirmation,
       pollTXStatusTrigger: interval(1000),

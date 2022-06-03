@@ -1,14 +1,20 @@
-export const NETWORKS_LIST = {
-  mainnet: {
-    name: "mainnet",
+import { HRP, Network } from "@radixdlt/application";
+
+import { ConfigNetwork } from "@chains/radix/types";
+
+export const NETWORKS_LIST: {
+  [key in Network.MAINNET | Network.STOKENET]: ConfigNetwork;
+} = {
+  [Network.MAINNET]: {
     url: "https://mainnet.radixdlt.com/",
     xrd_rri: "xrd_rr1qy5wfsfh",
+    preamble: HRP[Network.MAINNET].account,
   },
-  stokenet: {
-    name: "stokenet",
+  [Network.STOKENET]: {
     url: "https://stokenet.radixdlt.com/",
     xrd_rri: "xrd_tr1qyf0x76s",
+    preamble: HRP[Network.STOKENET].account,
   },
 };
 
-export const XRD_RRI = ["xrd_rr1qy5wfsfh", "xrd_tr1qyf0x76s"];
+export const DEFAULT_NETWORK = Network.STOKENET;

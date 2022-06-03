@@ -1,43 +1,23 @@
-import React, { useEffect } from "react";
-import { useStore } from "effector-react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
-
-import { AccountAddressT } from "@radixdlt/account";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { Stake as StakeType } from "@types";
-
-import { log } from "@utils";
-
-import { formatXrdStakes } from "@chains/radix/utils";
 import { unstakeCoins } from "@chains/radix/api";
-import {
-  $activeAddress,
-  $network,
-  $stakes,
-  $userTokens,
-  getStakes,
-  getValidators,
-  setUserTokens,
-} from "@chains/radix/store";
+import { getStakes, setUserTokens } from "@chains/radix/store";
 
 import { Layout } from "@components/template";
-import { Title } from "@components/atoms";
+import { Tabs } from "@components/atoms";
 
-import * as S from "./style";
-import PlusIcon from "@assets/svg/plus.svg";
+import { StakeForm, MyStakes, Validators } from "./tabs";
 
 export const Stakes = () => {
   const router = useRouter();
 
-  const network = useStore($network);
-  const userTokens = useStore($userTokens);
-  const activeAddress = useStore($activeAddress);
-  const { stakes, pendingStakes } = useStore($stakes);
+  const [currentTab, setCurrentTab] = useState<number>(0);
 
-  const handleUnstake = async (data: StakeType) => {
+  const handleUnstake = async (data: any) => {
     const { validator, rri } = data;
 
     await toast.promise(
@@ -53,56 +33,43 @@ export const Stakes = () => {
       }
     );
 
-    getStakes({ activeAddress: activeAddress as AccountAddressT });
-    setUserTokens({ activeAddress: activeAddress as AccountAddressT });
+    getStakes();
+    setUserTokens();
   };
 
-  useEffect(() => {
-    if (activeAddress) {
-      (async () => {
-        await getValidators();
-        await getStakes({ activeAddress });
-      })();
-    }
-  }, []);
-  useEffect(() => {
-    log("stakes");
-    log(stakes);
-  }, [stakes]);
-
-  const xrdToken = userTokens?.find((token) => token.ticker === "XRD");
-  const userStakes = formatXrdStakes(
-    stakes.concat(
-      pendingStakes.map((stake) => ({ ...stake, isPending: true }))
-    ),
-    activeAddress.toString(),
-    xrdToken?.price || 0,
-    network
-  );
-  return (
-    <Layout>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Title style={{ marginBottom: ".75rem" }}>Stakes</Title>
-        <PlusIcon
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            router.push(routesNames.ADD_STAKE as RouteKey);
+  const tabs = [
+    {
+      label: "Stake",
+      content: <StakeForm />,
+    },
+    {
+      label: "Unstake",
+      content: <StakeForm isUnstaking />,
+    },
+    {
+      label: "My stakes",
+      content: (
+        <MyStakes
+          options={{
+            addStake: () => {
+              setCurrentTab(1);
+            },
+            reduceStake: () => {
+              setCurrentTab(2);
+            },
           }}
         />
-      </div>
-      <div>
-        {userStakes.length === 0
-          ? "You have no stakes"
-          : userStakes.map((stake: StakeType, i: number) => {
-              return <S.Stake data={stake} key={i} onUnstake={handleUnstake} />;
-            })}
-      </div>
+      ),
+    },
+    {
+      label: "Validators",
+      content: <Validators />,
+    },
+  ];
+
+  return (
+    <Layout backButton>
+      <Tabs currentTab={currentTab} setCurrentTab={setCurrentTab} tabs={tabs} />
     </Layout>
   );
 };

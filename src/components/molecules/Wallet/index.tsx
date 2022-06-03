@@ -1,19 +1,31 @@
 import React, { useEffect, useState } from "react";
+import { useStore, useStoreMap } from "effector-react";
+
+import { $currentCurrency, $usdTo } from "@store";
+import { $accounts } from "@chains/radix/store";
 
 import { sliceAddress } from "@chains/radix/utils";
 
 import { WalletAction, WalletButton, WalletProps } from "./types";
 
-import { Badge, Text } from "@components/atoms";
+import { Loader } from "@components/atoms";
 import * as BADGES from "@components/atoms/Badge/kinds";
 
+import { ICONS } from "@globalStyle";
 import * as S from "./style";
+import { log } from "@utils";
 
 const BADGE_COPY_TIMEOUT_DURATION = 2500;
 
 export const Wallet = (props: WalletProps) => {
   const { style, className, data, actions, buttons } = props;
   const { address, usdBalance, isActive } = data;
+
+  const accounts = useStoreMap($accounts, (accounts) =>
+    accounts ? accounts.all : []
+  );
+  const currentCurrency = useStore($currentCurrency);
+  const usdTo = useStore($usdTo);
 
   const [badgeTimeout, setBadgeTimeout] = useState<NodeJS.Timeout>();
   const [badgeState, setBadgeState] = useState<string>("");
@@ -40,43 +52,52 @@ export const Wallet = (props: WalletProps) => {
     }
   }, [isActive]);
 
+  const accountIndex = accounts.findIndex(
+    (account) => account.address.toString() === address
+  );
+  log("accounts");
+  log(accounts.map((account) => account.address.toString()));
+  log("addr");
+  log(address);
   return (
-    <S.Wrapper
-      className={className}
-      style={{
-        minHeight: buttons && buttons.length > 0 ? "12rem" : "auto",
-        ...style,
-      }}
-    >
-      <Badge type={badgeState} />
-      <S.Header>
-        <Text
-          label="My wallet"
-          value={sliceAddress(address)}
-          onClick={handleCopyAddress}
-        />
+    <S.Wrapper className={className} style={style}>
+      {/*<Badge type={badgeState} />*/}
+      {accountIndex === -1 ? (
+        <Loader />
+      ) : (
+        <>
+          <S.Header>
+            <S.HeaderAccount>
+              Account #{accountIndex + 1}
+              <div />
+              <span>{sliceAddress(address)}</span>
+              <ICONS.Copy onClick={() => handleCopyAddress()} />
+            </S.HeaderAccount>
 
-        {actions && actions.length > 0 && !badgeState && (
-          <S.HeaderActions>
-            {actions.map((action: WalletAction) => {
-              const { icon, onClick } = action;
-              return <div onClick={() => onClick(data)}>{icon}</div>;
-            })}
-          </S.HeaderActions>
-        )}
-      </S.Header>
-      <S.Balance>
-        <span>USD</span> {usdBalance.toLocaleString()}
-      </S.Balance>
-      {buttons && buttons.length > 0 && (
-        <S.Footer>
-          {buttons.map(({ name, icon, onClick }: WalletButton) => (
-            <S.FooterAction key={name} onClick={() => onClick(data)}>
-              {icon}
-              {name}
-            </S.FooterAction>
-          ))}
-        </S.Footer>
+            {actions && actions.length > 0 && !badgeState && (
+              <S.HeaderActions>
+                {actions.map((action: WalletAction) => {
+                  const { icon, onClick } = action;
+                  return <div onClick={() => onClick(data)}>{icon}</div>;
+                })}
+              </S.HeaderActions>
+            )}
+          </S.Header>
+          <S.Balance>
+            {(usdBalance * usdTo[currentCurrency]).toLocaleString()}{" "}
+            {currentCurrency.toUpperCase()}
+          </S.Balance>
+          {buttons && buttons.length > 0 && (
+            <S.Footer>
+              {buttons.map(({ name, icon, onClick }: WalletButton) => (
+                <S.FooterAction key={name} onClick={() => onClick(data)}>
+                  {icon}
+                  {name}
+                </S.FooterAction>
+              ))}
+            </S.Footer>
+          )}
+        </>
       )}
     </S.Wrapper>
   );

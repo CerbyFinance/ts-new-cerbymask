@@ -1,1 +1,1 @@
-export * from "./TokensList";
+export * from "./Menu";

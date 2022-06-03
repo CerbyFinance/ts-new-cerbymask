@@ -1,29 +1,47 @@
-import { Mnemonic } from "@radixdlt/application";
+import { sha256 } from "js-sha256";
+import { Mnemonic, Network, Wallet } from "@radixdlt/application";
 import { SigningKeychain } from "@radixdlt/account";
 
-import { loadKeystore } from "@chains/radix/utils";
+import {
+  getAccountKeystore,
+  getStorage,
+  setStorage,
+} from "@chains/radix/utils";
 
 export * from "./config";
-export * from "./tokenIcons";
 
 const {
   byEncryptingMnemonicAndSavingKeystore,
   byLoadingAndDecryptingKeystore,
 } = SigningKeychain;
 
-export const createWallet = async (password: string) => {
+export const createWallet = async (password: string, network: Network) => {
   const mnemonic = Mnemonic.generateNew();
-  await byEncryptingMnemonicAndSavingKeystore({
+
+  const masterPassword = sha256(password);
+  const walletResult = await byEncryptingMnemonicAndSavingKeystore({
     mnemonic,
-    password,
-    save: (keystore) => chrome.storage.local.set({ keystore }),
+    password: masterPassword,
+    save: (keystore): Promise<void> => {
+      return setStorage({ keystore });
+    },
   });
-  return mnemonic;
+
+  if (walletResult.isErr()) {
+    throw walletResult.error;
+  }
+
+  const signingKeychain = walletResult.value;
+  return Wallet.create({
+    signingKeychain,
+    network,
+  });
 };
-export const retrieveWallet = async (password: string) => {
+export const retrieveWallet = async () => {
+  const { masterPassword } = await getStorage(["masterPassword"]);
   const wallet = await byLoadingAndDecryptingKeystore({
-    password,
-    load: loadKeystore,
+    password: masterPassword,
+    load: getAccountKeystore,
   });
   return wallet;
 };

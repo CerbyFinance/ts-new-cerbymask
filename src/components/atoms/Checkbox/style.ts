@@ -57,7 +57,6 @@ export const Label = styled.label<CheckboxSC>`
     }
     &:last-child {
       color: ${({ theme: { labelColor } }) => labelColor};
-      margin-left: 0.5rem;
       font-size: 0.825rem;
     }
   }
@@ -71,7 +70,8 @@ export const Checkbox = styled.input<CheckboxSC>`
     span {
       &:first-child {
         background: ${({ theme: { checkboxColor } }) => checkboxColor};
-        border-color: ${({ theme: { checkboxColor } }) => checkboxColor};
+        border-color: ${({ theme: { checkedBorderColor } }) =>
+          checkedBorderColor};
         animation: ${wave} 0.4s ease;
         svg {
           stroke-dashoffset: 0;

@@ -1,40 +1,37 @@
-import { useRouter } from "@router";
-import React, { ReactNode } from "react";
+import React from "react";
+import { publicRoutesNames, useRouter } from "@router";
 
+import { LayoutProps } from "./types";
+
+import { ICONS } from "@globalStyle";
 import * as S from "./style";
-import BackIcon from "@assets/svg/back.svg";
-
-interface LayoutProps {
-  children: ReactNode;
-  footer?: ReactNode;
-  footerBackground?: boolean;
-  style?: React.CSSProperties;
-  className?: string;
-  backButton?: boolean;
-}
+import MiniWolf from "@assets/svg/wolf-mini.svg";
 
 export const Layout = ({
   children,
   footer,
-  footerBackground = true,
   style,
   className,
   backButton,
 }: LayoutProps) => {
-  const { back } = useRouter();
+  const { back, current } = useRouter();
   return (
     <>
       <S.Layout className={className} style={style}>
         {backButton && (
           <S.Header>
-            <BackIcon onClick={() => back()} />
+            <div onClick={() => back()}>
+              <ICONS.Back />
+              Back
+            </div>
+            {current && publicRoutesNames.hasOwnProperty(current.key) ? (
+              <MiniWolf />
+            ) : null}
           </S.Header>
         )}
         {children}
       </S.Layout>
-      {footer && (
-        <S.Footer footerBackground={footerBackground}>{footer}</S.Footer>
-      )}
+      {footer && <S.Footer>{footer}</S.Footer>}
     </>
   );
 };

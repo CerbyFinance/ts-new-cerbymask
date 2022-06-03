@@ -1,6 +1,9 @@
 import styled from "styled-components";
 
+import { COLORS } from "@globalStyle";
+
 export const Paragraph = styled.p`
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.825rem;
+  line-height: 1.25rem;
+  color: ${COLORS.extralight};
 `;

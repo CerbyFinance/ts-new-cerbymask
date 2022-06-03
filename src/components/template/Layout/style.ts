@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 
 export const Layout = styled.section`
-  background-color: ${COLORS.background};
+  background: ${COLORS.background};
   padding: 1.5rem;
   width: 22.5rem;
   min-height: 600px;
@@ -11,14 +11,23 @@ export const Layout = styled.section`
 `;
 export const Header = styled.header`
   margin-bottom: 1rem;
+  font-family: Mulish;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-  svg {
+  & > div {
+    display: flex;
+    align-items: center;
     cursor: pointer;
+
+    & > svg {
+      margin-right: 0.25rem;
+    }
   }
 `;
-export const Footer = styled.footer<{ footerBackground: boolean }>`
-  background: ${({ footerBackground }) =>
-    footerBackground ? "rgba(255, 255, 255, 15%)" : "transparent"};
+export const Footer = styled.footer`
   padding: 1rem 1.5rem 1.25rem;
   position: absolute;
   bottom: 0;

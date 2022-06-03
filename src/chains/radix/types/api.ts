@@ -1,10 +1,10 @@
-import { Radix } from "@radixdlt/application";
+import { KeystoreT, Radix } from "@radixdlt/application";
 
 export type RadixApiType = ReturnType<typeof Radix.create>;
 
-export interface RadixApiOpts {
-  url?: string;
-  password: string;
+export interface StoreAccountOpts {
+  mnemonic: string[];
+  keystore: KeystoreT;
 }
 
 export interface RadixApiContextValue {

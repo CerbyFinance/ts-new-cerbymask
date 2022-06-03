@@ -1,9 +1,7 @@
 import styled from "styled-components";
 
 export const Title = styled.h1`
-  font-family: "Devil Breeze";
-  font-weight: 500;
-  margin-top: 3rem;
+  margin-top: 1rem;
   text-transform: uppercase;
-  font-size: 4.5rem;
+  font-size: 2.75rem;
 `;

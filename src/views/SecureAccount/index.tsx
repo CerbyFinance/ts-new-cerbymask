@@ -1,40 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 import { useStore } from "effector-react";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { $password, setPassword } from "@chains/radix/store";
+import { createWallet } from "@chains/radix/crypto";
+import { $selectedNetwork, setWallet } from "@chains/radix/store";
+import { activateSession, setAccountsIndex } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
 import { Input, Button, Title, Paragraph } from "@components/atoms";
 
-import * as S from "./style";
-
 export const SecureAccount = () => {
-  const password = useStore($password);
   const router = useRouter();
+
+  const selectedNetwork = useStore($selectedNetwork);
+
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [password, setPassword] = useState("");
+
+  const handleContinue = async () => {
+    setLoading(true);
+
+    try {
+      const wallet = await createWallet(password, selectedNetwork);
+      await activateSession(password);
+      setWallet(wallet);
+      setAccountsIndex(0, selectedNetwork);
+
+      router.push(routesNames.CREATE_ACCOUNT as RouteKey);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const footer = (
     <>
-      <S.Title>Set a new password</S.Title>
       <Input
         type="password"
+        label="Password"
         value={password}
-        onChange={(value) => setPassword(value)}
+        onChange={setPassword}
       />
       <Button
         style={{ marginTop: "1.5rem" }}
-        onClick={() => router.push(routesNames.CREATE_ACCOUNT as RouteKey)}
+        onClick={handleContinue}
         disabled={!password}
+        loading={isLoading}
       >
-        Confirm
+        Continue
       </Button>
     </>
   );
   return (
-    <Layout footer={footer}>
-      <Title style={{ marginBottom: ".625rem" }}>Secure your account</Title>
+    <Layout footer={footer} backButton>
+      <Title style={{ marginBottom: "1rem" }}>Secure your wallet</Title>
       <Paragraph>
         Set up your password, that will allow you to easily sign in to the app
         and confirm all the operations you are making. You can’t change it and

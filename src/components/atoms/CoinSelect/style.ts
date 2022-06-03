@@ -1,12 +1,12 @@
 import styled from "styled-components";
 import { StylesConfig } from "react-select";
 
-import { COLORS } from "@globalStyle/colors";
+import { COLORS } from "@globalStyle";
 
 export const selectStyles: StylesConfig = {
   menu: (provided) => ({
     ...provided,
-    backgroundColor: COLORS.background,
+    background: COLORS.background,
     border: "2px solid rgba(255, 255, 255, 0.1)",
     padding: "0.5rem 0.875rem",
     borderRadius: "0.75rem",
@@ -18,7 +18,7 @@ export const selectStyles: StylesConfig = {
   }),
   control: (provided) => ({
     ...provided,
-    backgroundColor: COLORS.background,
+    background: COLORS.background,
     padding: "0 .175rem",
     border: "2px solid rgba(255, 255, 255, 0.1)",
     borderColor: "rgba(255, 255, 255, 0.1) !important",

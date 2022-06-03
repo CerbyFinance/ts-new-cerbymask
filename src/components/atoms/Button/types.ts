@@ -6,4 +6,6 @@ export interface ButtonProps {
   children?: ReactNode;
   style?: CSSProperties;
   className?: string;
+  passive?: boolean;
+  loading?: boolean;
 }

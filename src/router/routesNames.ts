@@ -8,6 +8,7 @@ export const SECURE_ACCOUNT = "SECURE_ACCOUNT";
 export const SEND_COINS = "SEND_COINS";
 export const STAKES = "STAKES";
 export const TOKENS = "TOKENS";
+export const CHECK_RECOVERY_PHRASE = "CHECK_RECOVERY_PHRASE";
 
 export const SIGN_IN = "SIGN_IN";
 export const SIGN_UP = "SIGN_UP";
@@ -15,7 +16,6 @@ export const SIGN_UP = "SIGN_UP";
 export const protectedRoutesNames = {
   ADD_STAKE,
   DASHBOARD,
-  IMPORT_WALLET,
   MY_WALLETS,
   RECEIVE_COINS,
   SEND_COINS,
@@ -27,6 +27,8 @@ export const publicRoutesNames = {
   SIGN_UP,
   CREATE_ACCOUNT,
   SECURE_ACCOUNT,
+  IMPORT_WALLET,
+  CHECK_RECOVERY_PHRASE,
 };
 export const routesNames = {
   ...protectedRoutesNames,

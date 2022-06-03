@@ -6,7 +6,6 @@ import { RouteKey } from "@router/types";
 import { Layout } from "@components/template";
 import { Logo, Button } from "@components/atoms";
 
-import { COLORS } from "@globalStyle/colors";
 import { HaveAccount } from "./style";
 
 export const SignUp = () => {
@@ -17,16 +16,13 @@ export const SignUp = () => {
       <Button
         onClick={() => router.push(routesNames.SECURE_ACCOUNT as RouteKey)}
       >
-        Create new account
+        Create new wallet
       </Button>
       <Button
-        style={{ marginTop: ".625rem", backgroundColor: COLORS.darkblue }}
-        onClick={() =>
-          chrome.runtime.sendMessage({
-            title: "debug-log",
-            data: "click",
-          })
-        }
+        style={{ marginTop: "1rem", background: "rgba(255, 255, 255, 0.1)" }}
+        onClick={() => {
+          router.push(routesNames.IMPORT_WALLET as RouteKey);
+        }}
       >
         Recover existing
       </Button>
@@ -38,7 +34,7 @@ export const SignUp = () => {
     </>
   );
   return (
-    <Layout footer={footer} footerBackground={false}>
+    <Layout footer={footer}>
       <Logo />
     </Layout>
   );

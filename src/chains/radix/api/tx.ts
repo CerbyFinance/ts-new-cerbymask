@@ -5,11 +5,12 @@ import BigNumber from "bignumber.js";
 
 import { log } from "@utils";
 
-import { radixApi, userConfirmation } from ".";
+import { userConfirmation } from ".";
+import { api } from "./api";
 
 // onSubmit callback to redirect user on Dashboard when send operation was handled
 export const sendCoins = (payload: any): Promise<void> => {
-  const { to, amount, rri, onSubmit } = payload;
+  const { to, amount, rri, message, onSubmit } = payload;
 
   return new Promise((resolve, reject) => {
     const recipientResult = AccountAddress.fromUnsafe(to);
@@ -28,10 +29,11 @@ export const sendCoins = (payload: any): Promise<void> => {
       to_account: recipientResult.value,
       amount: amountResult.value,
       tokenIdentifier: rri,
+      message,
     };
     log("transferInput");
     log(transferInput);
-    const { events, completion } = radixApi.transferTokens({
+    const { events, completion } = api.transferTokens({
       transferInput,
       userConfirmation,
       pollTXStatusTrigger: interval(1000),

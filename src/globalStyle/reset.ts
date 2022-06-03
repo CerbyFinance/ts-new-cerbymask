@@ -4,8 +4,7 @@ export const Reset = createGlobalStyle`
 * {
     box-sizing: border-box;
     letter-spacing: .02rem;
-    font-family: "Product Sans", sans-serif;
-    color: white;
+    font-family: Jost, sans-serif;
 }
 
 html, body {
@@ -13,13 +12,20 @@ html, body {
     padding: 0;
 }
 
+html, body, input, a {
+    color: white;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Mulish;
+    font-weight: 800;
+}
 h1, h2, h3, h4, h5, h6, p {
     margin: 0;
 }
 
 a {
     text-decoration: none;
-    color: black;
 }
 
 input, textarea {

@@ -4,7 +4,7 @@ import { BadgeProps } from "./types";
 
 import * as BADGES from "./kinds";
 
-import { ICONS } from "@globalStyle/icons";
+import { ICONS } from "@globalStyle";
 import * as S from "./style";
 
 // currently, this component is being used exclusively by Wallet

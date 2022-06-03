@@ -1,38 +1,73 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+
+import { routesNames, useRouter } from "@router";
+import { RouteKey } from "@router/types";
 
 import { Layout } from "@components/template";
-import { Button, Input, Title } from "@components/atoms";
+import { Button, Input, Textarea, Paragraph, Title } from "@components/atoms";
 
 export const ImportWallet = () => {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
-    name: "",
+    password: "",
     phrase: "",
   });
-  const validation = formData.name && formData.phrase;
+  const validation = formData.password && formData.phrase;
 
   const handleFieldChange = (field: string, value: string) => {
     setFormData((formData) => ({ ...formData, [field]: value }));
   };
 
+  const handleImport = async () => {
+    const { password, phrase } = formData;
+    try {
+      /*
+      await createWallet(password, phrase);
+      await storeAccount({
+        mnemonic,
+        keystore: keystore as KeystoreT,
+      });
+      router.redirect(routesNames.DASHBOARD as RouteKey);
+      */
+    } catch {
+      toast.error("Invalid phrase");
+    }
+  };
+
+  const footer = (
+    <>
+      <Button disabled={!validation} onClick={handleImport}>
+        Import wallet
+      </Button>
+    </>
+  );
+
   return (
-    <Layout>
+    <Layout footer={footer} backButton>
       <Title>Import wallet</Title>
-      <Input
-        label="Title"
-        value={formData.name}
-        onChange={(v) => handleFieldChange("name", v)}
+      <Paragraph style={{ margin: "1rem 0 1.5rem" }}>
+        Write the security phrase below in the fields and set up new password
+      </Paragraph>
+      <Textarea
+        label="Security phrase"
+        value={formData.phrase}
+        onChange={(v) => {
+          handleFieldChange("phrase", v);
+        }}
         style={{ margin: ".625rem 0" }}
+        textareaStyle={{ minHeight: "8.25rem" }}
       />
       <Input
-        label="Private key / Ethereum address / Recovery phrase / ENS"
-        value={formData.phrase}
-        onChange={(v) => handleFieldChange("phrase", v)}
-        useTextarea
+        label="New password"
+        type="password"
+        value={formData.password}
+        onChange={(v) => {
+          handleFieldChange("password", v);
+        }}
         style={{ minHeight: "100px", marginBottom: ".625rem" }}
       />
-      <Button disabled={!validation} onClick={() => {}}>
-        Confirm
-      </Button>
     </Layout>
   );
 };

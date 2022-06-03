@@ -1,43 +1,69 @@
 import React, { useState } from "react";
-import { useStore } from "effector-react";
+import { sha256 } from "js-sha256";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { afterAuth } from "@chains/radix/utils";
-import { $network } from "@chains/radix/store";
+import { login } from "@chains/radix/api";
+import { fetchAccounts, initWallet, setStorage } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
 import { Logo, Input, Button } from "@components/atoms";
 
+import { COLORS } from "@globalStyle";
 import * as S from "./style";
 
 export const SignIn = () => {
-  const network = useStore($network);
   const router = useRouter();
 
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
+
+  const handleSetPassword = (password: string) => {
+    setPassword(password);
+    setStorage({
+      masterPassword: sha256(password),
+    });
+  };
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      await login();
+      await fetchAccounts();
+      await initWallet();
+      router.redirect(routesNames.DASHBOARD as RouteKey);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const footer = (
     <>
-      <S.Title>Enter password</S.Title>
       <Input
         type="password"
+        label="Password"
         value={password}
-        onChange={(value) => setPassword(value)}
+        onChange={handleSetPassword}
       />
       <Button
         style={{ marginTop: "1.5rem" }}
-        onClick={() => afterAuth({ password, url: network.url }, router)}
+        onClick={handleLogin}
         disabled={!password}
+        loading={isLoading}
       >
-        Sign in to your account
+        Log in
       </Button>
-      <S.ForgotPassword
-        onClick={() => router.redirect(routesNames.SIGN_UP as RouteKey)}
+      <S.Action
+        onClick={() => router.push(routesNames.IMPORT_WALLET as RouteKey)}
       >
-        Forgot password?
-      </S.ForgotPassword>
+        Import using Secret Recovery Phrase
+      </S.Action>
+      <S.Action
+        onClick={() => router.redirect(routesNames.SIGN_UP as RouteKey)}
+        style={{ color: COLORS.red }}
+      >
+        Reset wallet
+      </S.Action>
     </>
   );
 

@@ -31,7 +31,7 @@ export const Checkbox = (props: CheckboxProps) => {
             <polyline points="1.5 6 4.5 9 10.5 1" />
           </svg>
         </span>
-        {children && <span>{children}</span>}
+        {children && <span style={{ marginLeft: ".75rem" }}>{children}</span>}
       </S.Label>
     </div>
   );

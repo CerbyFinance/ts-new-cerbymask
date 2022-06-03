@@ -1,10 +1,14 @@
 import { forward } from "effector";
 
-import { Validator } from "@radixdlt/application";
+import { StakePositions, Validator } from "@radixdlt/application";
 import { AccountAddressT } from "@radixdlt/account";
 
 import { Stakes } from "@chains/radix/types";
-import { fetchValidators, fetchStakes } from "@chains/radix/api";
+import {
+  fetchValidators,
+  fetchStakes,
+  fetchActiveAddress,
+} from "@chains/radix/api";
 
 import { radix } from "./domain";
 
@@ -12,7 +16,7 @@ import { radix } from "./domain";
 export const $validators = radix.createStore<Validator[]>([]);
 
 export const getValidators = radix.createEvent();
-const getValidatorsFx = radix.createEffect(async () => {
+export const getValidatorsFx = radix.createEffect(async () => {
   const validators = (await fetchValidators()).filter(
     (validator: Validator) => validator.isExternalStakeAccepted
   );
@@ -27,24 +31,23 @@ forward({
 $validators.on(getValidatorsFx.doneData, (_, validators) => validators);
 
 // Stakes
-export const $stakes = radix.createStore<Stakes>({
-  pendingStakes: [],
-  stakes: [],
-});
+export const $pendingStakes = radix.createStore<StakePositions>([]);
+export const $stakes = radix.createStore<StakePositions>([]);
 
-export const getStakes = radix.createEvent<{
-  activeAddress: AccountAddressT;
-}>();
-const getStakesFx = radix.createEffect(
-  async (payload: { activeAddress: AccountAddressT }) => {
-    const stakes = await fetchStakes(payload);
-    return stakes;
-  }
-);
+export const getStakes = radix.createEvent();
+export const getStakesFx = radix.createEffect(async () => {
+  const address = await fetchActiveAddress();
+  const stakes = await fetchStakes({ address });
+  return stakes;
+});
 
 forward({
   from: getStakes,
   to: getStakesFx,
 });
 
-$stakes.on(getStakesFx.doneData, (_, stakes) => stakes);
+$stakes.on(getStakesFx.doneData, (_, { stakes }) => stakes);
+$pendingStakes.on(
+  getStakesFx.doneData,
+  (_, { pendingStakes }) => pendingStakes
+);

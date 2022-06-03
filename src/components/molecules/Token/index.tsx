@@ -1,45 +1,40 @@
 import React from "react";
+import { useStore } from "effector-react";
+
+import { CURRENCIES_SYMBOLS } from "@utils";
+
+import { $currentCurrency, $usdTo } from "@store";
 
 import { convertToMainUnit } from "@chains/radix/utils";
 
 import { TokenProps } from "./types";
 
-import { Text } from "@components/atoms";
-
 import * as S from "./style";
-import { COLORS } from "@globalStyle/colors";
 
 export const Token = (props: TokenProps) => {
   const {
-    data: { icon, ticker, value, dailyChange, price },
+    data: { icon, ticker, balance, usdBalance },
     style,
     className,
   } = props;
 
-  let dailyChangeColor = "rgba(255, 255, 255, 0.4)";
-  if (dailyChange < 0) {
-    dailyChangeColor = COLORS.red;
-  } else if (dailyChange > 0) {
-    dailyChangeColor = COLORS.green;
-  }
+  const currentCurrency = useStore($currentCurrency);
+  const usdTo = useStore($usdTo);
 
   return (
     <S.Wrapper style={style} className={className}>
       <S.TokenInfo>
         <S.TokenIcon>{icon}</S.TokenIcon>
-        <Text
-          bold
-          label={ticker}
-          labelStyle={{ fontSize: ".75rem" }}
-          value={`${convertToMainUnit(value)}`}
-        />
+        <div>
+          <S.TokenTicker>{ticker}</S.TokenTicker>
+          <S.TokenBalance>
+            {convertToMainUnit(balance)} {ticker}
+          </S.TokenBalance>
+        </div>
       </S.TokenInfo>
       <S.TokenPrice>
-        <span style={{ color: dailyChangeColor }}>
-          {dailyChange > 0 ? "+" : null}
-          {dailyChange}%
-        </span>
-        ${price.toLocaleString()}
+        {CURRENCIES_SYMBOLS[currentCurrency]}
+        {(usdBalance * usdTo[currentCurrency]).toLocaleString()}
       </S.TokenPrice>
     </S.Wrapper>
   );

@@ -1,13 +1,15 @@
 import styled from "styled-components";
 
-import { InputSC } from "./types";
-
-// should be InputSC but there is an error when listening to onFocus, onBlur
-export const Wrapper = styled.div<any>`
-  background: ${({ disabled }) =>
-    disabled ? "rgba(255, 255, 255, 0.05)" : "transparent"};
-  border: ${({ disabled }) =>
-    disabled ? "none" : "2px solid rgba(255, 255, 255, 0.1)"};
+export const Wrapper = styled.div``;
+export const Label = styled.label`
+  font-size: 0.825rem;
+  margin-bottom: 0.5rem;
+  display: block;
+`;
+export const Input = styled.input`
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
   padding: 0.5rem 0.875rem;
-  border-radius: 0.75rem;
+  font-size: 0.825rem;
+  width: 100%;
 `;
