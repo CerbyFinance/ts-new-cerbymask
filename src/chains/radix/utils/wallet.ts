@@ -18,13 +18,14 @@ import {
   setUserTokensFx,
 } from "@chains/radix/store";
 
-import { getStorage, setStorage } from "./storage";
-import { log } from "@utils";
+import { getAccountsIndex, getStorage, setStorage } from "./storage";
 
 export const fetchAccounts = async () => {
-  try {
+  const network = await fetchNetworkId();
+  const index = await getAccountsIndex(network);
+  if (index > 0) {
     await restoreAccountsFx();
-  } catch {
+  } else {
     await setAccountsFx();
   }
 };
@@ -65,14 +66,13 @@ export const autologin = async (router: RouterContextValue) => {
     await login();
     await fetchAccounts();
     await initWallet();
-    authenticate(true);
     router.redirect(routesNames.DASHBOARD as RouteKey);
   } else if (sessionUntil && Date.now() >= sessionUntil && !showedExpired) {
     authenticate(false);
     toast.error("Session expired");
-    router.redirect(routesNames.SIGN_IN as RouteKey);
     setStorage({
       showedExpired: true,
     });
+    router.redirect(routesNames.SIGN_IN as RouteKey);
   }
 };

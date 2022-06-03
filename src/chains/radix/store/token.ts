@@ -1,13 +1,13 @@
 import { radix } from "./domain";
 
-import { BalanceToken, ExchangeToken, ExchangeData } from "@chains/radix/types";
+import { ExchangeToken, ExchangeData } from "@chains/radix/types";
 
 import { fetchPair, fetchPairs } from "@chains/radix/api";
 
 // All tokens exchange data
 export const $pairsData = radix.createStore<ExchangeData>({});
 
-export const getPairsData = radix.createEvent<BalanceToken[]>();
+export const getPairsData = radix.createEvent<any[]>();
 export const getPairsDataFx = radix.createEffect(async (tickers: string[]) => {
   const pairs = await fetchPairs(tickers);
   return pairs;
@@ -28,6 +28,3 @@ export const getXrdDataFx = radix.createEffect(async () => {
 });
 
 $xrdData.on(getXrdDataFx.doneData, (_, data) => data);
-
-// dev
-export const XRD_PRICE = 0.09;

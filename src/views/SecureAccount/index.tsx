@@ -26,7 +26,7 @@ export const SecureAccount = () => {
       const wallet = await createWallet(password, selectedNetwork);
       await activateSession(password);
       setWallet(wallet);
-      setAccountsIndex(0, selectedNetwork);
+      await setAccountsIndex(0, selectedNetwork);
 
       router.push(routesNames.CREATE_ACCOUNT as RouteKey);
     } finally {

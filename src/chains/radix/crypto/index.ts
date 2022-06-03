@@ -1,5 +1,5 @@
 import { sha256 } from "js-sha256";
-import { Mnemonic, Network, Wallet } from "@radixdlt/application";
+import { MnemomicT, Mnemonic, Network, Wallet } from "@radixdlt/application";
 import { SigningKeychain } from "@radixdlt/account";
 
 import {
@@ -15,8 +15,18 @@ const {
   byLoadingAndDecryptingKeystore,
 } = SigningKeychain;
 
-export const createWallet = async (password: string, network: Network) => {
-  const mnemonic = Mnemonic.generateNew();
+export const createWallet = async (
+  password: string,
+  network: Network,
+  phrase?: string
+) => {
+  let mnemonic = Mnemonic.generateNew();
+  if (phrase) {
+    const mnemonicResult = Mnemonic.fromEnglishPhrase(phrase);
+    if (mnemonicResult.isOk()) {
+      mnemonic = mnemonicResult.value;
+    }
+  }
 
   const masterPassword = sha256(password);
   const walletResult = await byEncryptingMnemonicAndSavingKeystore({

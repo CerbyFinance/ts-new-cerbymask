@@ -8,6 +8,10 @@ import { firstValueFrom } from "rxjs";
 import { sha256 } from "js-sha256";
 
 import { log, resetAll } from "@utils";
+
+import { routesNames } from "@router";
+import { RouteKey, RouterContextValue } from "@router/types";
+
 import { DEFAULT_LOCK_TIMEOUT } from "@store";
 
 import { Node } from "@chains/radix/types";
@@ -118,9 +122,10 @@ export const getSelectedNode = async (signingKeychain: SigningKeychainT) => {
   return selectedNode;
 };
 
-export const setDefaultStorage = async () => {
+export const setDefaultStorage = async (router: RouterContextValue) => {
   const radixStorage = await getStorage();
   if (!radixStorage) {
     await resetAll();
+    router.redirect(routesNames.SIGN_UP as RouteKey);
   }
 };

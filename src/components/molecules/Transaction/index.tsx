@@ -7,7 +7,7 @@ import { CURRENCIES_SYMBOLS } from "@utils";
 import { $currentCurrency, $usdTo } from "@store";
 
 import { convertToMainUnit, convertToUsd } from "@chains/radix/utils";
-import { $activeAddress, XRD_PRICE } from "@chains/radix/store";
+import { $activeAddress, $pairsData, XRD_PRICE } from "@chains/radix/store";
 
 import { TransactionProps } from "./types";
 
@@ -25,6 +25,7 @@ export const Transaction = (props: TransactionProps) => {
   const activeAddress = useStoreMap($activeAddress, (addr) => addr.toString());
   const currentCurrency = useStore($currentCurrency);
   const usdTo = useStore($usdTo);
+  const tokenData = useStore($pairsData);
 
   // just taking first action
   const action = actions[0];
@@ -35,8 +36,9 @@ export const Transaction = (props: TransactionProps) => {
 
   const { rri, amount, to_account } = action;
   const ticker = rri.name.toUpperCase();
-  const usdAmount = convertToUsd(amount, XRD_PRICE);
+  const usdAmount = convertToUsd(amount, tokenData[ticker].price);
   const isRecipient = to_account.toString() === activeAddress;
+
   // rendering only transfers
   return (
     <S.Wrapper style={style} className={className}>

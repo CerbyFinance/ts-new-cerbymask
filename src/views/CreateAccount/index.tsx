@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "effector-react";
 
-import { $wallet } from "@chains/radix/store";
+import { log } from "@utils";
 
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
+import { $wallet } from "@chains/radix/store";
+
 import { Layout } from "@components/template";
 import { Button, Checkbox, Paragraph, Title } from "@components/atoms";
 import { RecoveryPhrase } from "@components/molecules";
-import { log } from "@utils";
 
 export const CreateAccount = () => {
   const router = useRouter();

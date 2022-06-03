@@ -16,7 +16,6 @@ import {
 } from "@chains/radix/utils";
 import { TokenAmount, TokenWithIcon } from "@chains/radix/types";
 import {
-  fetchPairs,
   fetchActiveAddress,
   fetchTokenBalances,
   getTxHistory,
@@ -29,6 +28,7 @@ import {
 
 import { radix } from "./domain";
 import { log } from "@utils";
+import { getPairsDataFx } from "./token";
 
 export const setWallet = radix.createEvent<WalletT | null>();
 export const $wallet = restore(setWallet, null);
@@ -76,7 +76,7 @@ export const setUserTokensFx = radix.createEffect(async () => {
   const tokenAmounts: TokenAmount[] = mapTokenAmounts(
     balances.account_balances.liquid_balances
   );
-  const pairsData = await fetchPairs(
+  const pairsData = await getPairsDataFx(
     tokenAmounts.map((balance) => balance.ticker)
   );
   log("balances");
@@ -123,8 +123,6 @@ export const restoreAccounts = radix.createEvent();
 export const restoreAccountsFx = radix.createEffect(async () => {
   const network = await fetchNetworkId();
   const accounts = await restoreLocalHDAccountsToIndex(network);
-  log("restored accounts");
-  log(accounts);
   return accounts;
 });
 $accounts.on(

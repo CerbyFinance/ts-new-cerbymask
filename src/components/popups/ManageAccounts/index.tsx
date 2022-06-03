@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useStoreMap } from "effector-react";
 
+import { log } from "@utils";
+
 import { routesNames, useRouter } from "@router";
 import { RouteKey } from "@router/types";
 
-import { deriveNextAccount, fetchAccounts } from "@chains/radix/api";
+import { deriveNextAccount } from "@chains/radix/api";
 import {
   $accounts,
   $selectedAccount,
@@ -16,7 +18,6 @@ import { SelectItem } from "@components/molecules";
 
 import { COLORS, ICONS } from "@globalStyle";
 import * as S from "./style";
-import { log } from "@utils";
 
 export const ManageAccountsPopup = ({
   close,

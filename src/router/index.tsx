@@ -5,13 +5,16 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { interval } from "rxjs";
+
+import { log } from "@utils";
 
 import { routes } from "./routes";
 
 import { CurrentRoute, RouteKey, RouterContextValue } from "./types";
 import { routesNames } from "./routesNames";
 
-import { autologin, setDefaultStorage } from "@chains/radix/utils";
+import { autologin, getStorage, setDefaultStorage } from "@chains/radix/utils";
 
 import { Layout } from "@components/template";
 import { Loader } from "@components/atoms";
@@ -92,7 +95,7 @@ export const RouterView = ({
   const setup = async () => {
     setLoading(true);
     try {
-      await setDefaultStorage();
+      await setDefaultStorage(router);
       await autologin(router);
     } finally {
       setLoading(false);
@@ -100,7 +103,16 @@ export const RouterView = ({
   };
 
   useEffect(() => {
+    log("setup");
     setup();
+    const sub = interval(5000).subscribe(async () => {
+      const radixStorage = await getStorage();
+      log("current storage");
+      log(radixStorage);
+    });
+    return () => {
+      sub.unsubscribe();
+    };
   }, []);
   useEffect(() => {
     if (current && !views[current.key]) {
@@ -118,11 +130,13 @@ export const RouterView = ({
     <Layout
       style={{
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
       <Loader />
+      Opening wallet...
     </Layout>
   );
 };

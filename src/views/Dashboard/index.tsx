@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useStore, useStoreMap } from "effector-react";
+import { interval } from "rxjs";
 
 import { ConfigNetwork, TokenWithIcon } from "@chains/radix/types";
 
@@ -14,6 +15,7 @@ import {
   $selectedNetwork,
   $txHistory,
   $userTokens,
+  setUserTokens,
 } from "@chains/radix/store";
 
 import { saveNodeUrl, selectNode, setStorage } from "@chains/radix/utils";
@@ -40,7 +42,6 @@ export const Dashboard = () => {
   const [isPopupVisible, setPopupVisible] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [usdBalance, setUsdBalance] = useState<number>(0);
-  const [tokensList, setTokensList] = useState<TokenWithIcon[]>([]);
 
   const handleChangeNetwork = async (data: ConfigNetwork) => {
     setLoading(true);
@@ -78,6 +79,16 @@ export const Dashboard = () => {
   ];
 
   useEffect(() => {
+    // Fetching user balances every 10 seconds
+    const userTokensSub = interval(10000).subscribe(() => {
+      setUserTokens();
+    });
+
+    return () => {
+      userTokensSub.unsubscribe();
+    };
+  }, []);
+  useEffect(() => {
     if (userTokens) {
       log(`Address - ${activeAddress}`);
 
@@ -87,8 +98,6 @@ export const Dashboard = () => {
       if (xrdToken) {
         setUsdBalance(xrdToken.usdBalance);
       }
-
-      setTokensList(userTokens);
     }
   }, [userTokens]);
 
@@ -98,9 +107,9 @@ export const Dashboard = () => {
     {
       label: "My tokens",
       content:
-        tokensList.length > 0 ? (
+        userTokens.length > 0 ? (
           <S.ItemsDivider>
-            {tokensList.map((token) => (
+            {userTokens.map((token) => (
               <Token key={token.rri} data={token} />
             ))}
           </S.ItemsDivider>

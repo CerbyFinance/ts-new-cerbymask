@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useStore, useStoreMap } from "effector-react";
 
+import { log } from "@utils";
+
 import { $currentCurrency, $usdTo } from "@store";
 import { $accounts } from "@chains/radix/store";
 
@@ -13,7 +15,6 @@ import * as BADGES from "@components/atoms/Badge/kinds";
 
 import { ICONS } from "@globalStyle";
 import * as S from "./style";
-import { log } from "@utils";
 
 const BADGE_COPY_TIMEOUT_DURATION = 2500;
 

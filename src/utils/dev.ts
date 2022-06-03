@@ -20,5 +20,6 @@ export const resetAll = async () => {
     keystore: null,
     selectedAddress: null,
     network: DEFAULT_NETWORK,
+    showedExpired: false,
   });
 };

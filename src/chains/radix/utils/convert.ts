@@ -7,7 +7,7 @@ export const convertToMainUnit = (balance: UInt256) =>
     .toFixed()
     .toString();
 
-export const convertToUsd = (balance: UInt256, price: number) => {
+export const convertToUsd = (balance: UInt256, price?: number) => {
   const bnValue = new BigNumber(balance.toString()).dividedBy(10 ** 18);
-  return bnValue.toNumber() * price;
+  return bnValue.toNumber() * (price || 0);
 };
