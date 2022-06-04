@@ -13,6 +13,7 @@ export const Wrapper = styled.div`
 export const TxInfo = styled.div`
   display: flex;
   align-items: center;
+  width: 100%;
 
   svg {
     margin-right: 0.75rem;
@@ -34,6 +35,14 @@ export const TxPrice = styled.div`
   font-size: 1rem;
   text-align: right;
   color: white;
+`;
+export const TxMessage = styled.div<{ isEncrypted?: boolean }>`
+  max-width: 90%;
+  cursor: ${({ isEncrypted }) => (isEncrypted ? "pointer" : "default")};
+  margin-top: 0.25rem;
+  background-color: ${COLORS.darkblue};
+  border-radius: 8rem;
+  padding: 0.5rem 1rem;
 `;
 
 export const TxIcon = styled.div`

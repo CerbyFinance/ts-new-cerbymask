@@ -2,6 +2,8 @@ import React from "react";
 import { useStore } from "effector-react";
 import BigNumber from "bignumber.js";
 
+import { ValidatorsProps } from "./types";
+
 import { sliceAddress } from "@chains/radix/utils";
 
 import { $validators } from "@chains/radix/store";
@@ -9,7 +11,10 @@ import { $validators } from "@chains/radix/store";
 import { ICONS } from "@globalStyle";
 import * as S from "./style";
 
-export const Validators = () => {
+export const Validators = (props: ValidatorsProps) => {
+  const {
+    options: { addStake },
+  } = props;
   const validators = useStore($validators);
 
   return (
@@ -34,7 +39,10 @@ export const Validators = () => {
                 {sliceAddress(addressString, 4)}
                 <ICONS.Copy />
               </S.ValidatorInfo>
-              <div style={{ cursor: "pointer", color: "white" }}>
+              <div
+                style={{ cursor: "pointer", color: "white" }}
+                onClick={addStake}
+              >
                 <ICONS.Plus style={{ marginRight: ".25rem" }} />
                 Add stake
               </div>

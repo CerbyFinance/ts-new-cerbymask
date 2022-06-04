@@ -56,10 +56,6 @@ export const Wallet = (props: WalletProps) => {
   const accountIndex = accounts.findIndex(
     (account) => account.address.toString() === address
   );
-  log("accounts");
-  log(accounts.map((account) => account.address.toString()));
-  log("addr");
-  log(address);
   return (
     <S.Wrapper className={className} style={style}>
       {/*<Badge type={badgeState} />*/}

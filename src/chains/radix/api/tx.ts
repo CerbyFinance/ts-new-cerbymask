@@ -1,6 +1,6 @@
-import { interval } from "rxjs";
+import { firstValueFrom, interval } from "rxjs";
 import { AccountAddress } from "@radixdlt/account";
-import { Amount } from "@radixdlt/application";
+import { Amount, SimpleExecutedTransaction } from "@radixdlt/application";
 import BigNumber from "bignumber.js";
 
 import { log } from "@utils";
@@ -48,4 +48,11 @@ export const sendCoins = (payload: any): Promise<void> => {
       resolve();
     });
   });
+};
+
+export const decryptMessage = async (
+  tx: SimpleExecutedTransaction
+): Promise<string> => {
+  const decrypted: string = await firstValueFrom(api.decryptTransaction(tx));
+  return decrypted;
 };

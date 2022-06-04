@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useStore, useStoreMap } from "effector-react";
 import { interval } from "rxjs";
 
-import { ConfigNetwork, TokenWithIcon } from "@chains/radix/types";
+import { ConfigNetwork } from "@chains/radix/types";
 
 import { log } from "@utils";
 
@@ -15,6 +15,7 @@ import {
   $selectedNetwork,
   $txHistory,
   $userTokens,
+  setTxHistory,
   setUserTokens,
 } from "@chains/radix/store";
 
@@ -69,19 +70,22 @@ export const Dashboard = () => {
       },
       icon: <ICONS.ArrowRightUp />,
     },
-    {
+  ];
+  if (usdBalance > 0) {
+    walletButtons.push({
       name: "Stake",
       onClick: () => {
         router.push(routesNames.STAKES as RouteKey);
       },
       icon: <ICONS.Stake />,
-    },
-  ];
+    });
+  }
 
   useEffect(() => {
     // Fetching user balances every 10 seconds
     const userTokensSub = interval(10000).subscribe(() => {
       setUserTokens();
+      setTxHistory();
     });
 
     return () => {
@@ -89,7 +93,7 @@ export const Dashboard = () => {
     };
   }, []);
   useEffect(() => {
-    if (userTokens) {
+    if (userTokens && userTokens.length > 0) {
       log(`Address - ${activeAddress}`);
 
       const xrdToken = userTokens.find(
@@ -98,8 +102,10 @@ export const Dashboard = () => {
       if (xrdToken) {
         setUsdBalance(xrdToken.usdBalance);
       }
+    } else if (activeAddress) {
+      setUsdBalance(0);
     }
-  }, [userTokens]);
+  }, [userTokens, activeAddress]);
 
   const networks = Object.entries(NETWORKS_LIST);
 

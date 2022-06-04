@@ -63,7 +63,15 @@ export const Stakes = () => {
     },
     {
       label: "Validators",
-      content: <Validators />,
+      content: (
+        <Validators
+          options={{
+            addStake: () => {
+              setCurrentTab(1);
+            },
+          }}
+        />
+      ),
     },
   ];
 
